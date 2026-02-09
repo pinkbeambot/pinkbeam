@@ -39,7 +39,7 @@ export default function SignUpPage() {
     } else if (data.session) {
       // Email confirmation is disabled, user is immediately logged in
       console.log('Sign up successful, session:', data.session)
-      router.push('/dashboard')
+      router.push('/agents/dashboard')
       router.refresh()
     } else {
       console.log('Sign up successful, no session (email confirmation enabled?)', data)
