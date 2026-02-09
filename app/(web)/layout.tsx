@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "../globals.css";
-import { Navigation } from "@/components/layout/Navigation";
+import { WebNavigation } from "@/components/web/navigation/WebNavigation";
 import { Footer } from "@/components/layout/Footer";
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -52,7 +52,7 @@ export default function WebLayout({
 }>) {
   return (
     <div className="relative flex flex-col min-h-screen">
-      <Navigation />
+      <WebNavigation />
       <main id="main-content" className="flex-1 pt-16 lg:pt-20" tabIndex={-1}>
         {children}
       </main>

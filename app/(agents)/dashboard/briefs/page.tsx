@@ -21,27 +21,27 @@ export default function BriefsPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadBriefs()
-  }, [])
+    const loadBriefs = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!user) {
+        router.push('/sign-in')
+        return
+      }
 
-  const loadBriefs = async () => {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (!user) {
-      router.push('/sign-in')
-      return
+      const { data } = await supabase
+        .from('briefs')
+        .select('id, title, created_at, status')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+
+      setBriefs(data || [])
+      setLoading(false)
     }
-
-    const { data } = await supabase
-      .from('briefs')
-      .select('id, title, created_at, status')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-
-    setBriefs(data || [])
-    setLoading(false)
-  }
+    
+    loadBriefs()
+  }, [router])
 
   if (loading) {
     return (

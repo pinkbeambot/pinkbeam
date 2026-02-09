@@ -36,30 +36,30 @@ export default function BriefPage() {
   const [sent, setSent] = useState(false)
 
   useEffect(() => {
-    loadBrief()
-  }, [briefId])
+    const loadBrief = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!user) {
+        router.push('/sign-in')
+        return
+      }
 
-  const loadBrief = async () => {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+      const { data } = await supabase
+        .from('briefs')
+        .select('*')
+        .eq('id', briefId)
+        .eq('user_id', user.id)
+        .single()
+
+      if (data) {
+        setBrief(data)
+      }
+      setLoading(false)
+    }
     
-    if (!user) {
-      router.push('/sign-in')
-      return
-    }
-
-    const { data } = await supabase
-      .from('briefs')
-      .select('*')
-      .eq('id', briefId)
-      .eq('user_id', user.id)
-      .single()
-
-    if (data) {
-      setBrief(data)
-    }
-    setLoading(false)
-  }
+    loadBrief()
+  }, [briefId, router])
 
   if (loading) {
     return (
