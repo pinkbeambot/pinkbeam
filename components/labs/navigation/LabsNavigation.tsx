@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Menu, ChevronRight, Code2, Smartphone, Cloud, Brain, ArrowRight, User, LogOut } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
@@ -214,9 +214,9 @@ function DesktopNav() {
           >
             {link.label}
             {link.hasDropdown && (
-              <motion.span
-                animate={{ rotate: isServicesOpen ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
+              <span
+                className={`opacity-60 transition-transform duration-200 ${isServicesOpen ? 180 : 0 }}
+                
               >
                 <svg
                   width="12"
@@ -233,7 +233,7 @@ function DesktopNav() {
                     strokeLinejoin="round"
                   />
                 </svg>
-              </motion.span>
+              </span>
             )}
           </Link>
 
@@ -392,9 +392,9 @@ function MobileNav({ user, onSignOut }: { user: SupabaseUser | null; onSignOut: 
               className="flex items-center justify-between w-full p-4 text-left"
             >
               <span className="font-display font-semibold text-foreground">Labs Services</span>
-              <motion.span
-                animate={{ rotate: expandedSection === "services" ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
+              <span
+                className={`opacity-60 transition-transform duration-200 ${expandedSection === "services" ? 180 : 0 }}
+                
               >
                 <svg width="16" height="16" viewBox="0 0 12 12" fill="none">
                   <path
@@ -405,7 +405,7 @@ function MobileNav({ user, onSignOut }: { user: SupabaseUser | null; onSignOut: 
                     strokeLinejoin="round"
                   />
                 </svg>
-              </motion.span>
+              </span>
             </button>
             <AnimatePresence>
               {expandedSection === "services" && (
@@ -413,7 +413,7 @@ function MobileNav({ user, onSignOut }: { user: SupabaseUser | null; onSignOut: 
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
+                  
                   className="overflow-hidden"
                 >
                   <div className="px-4 pb-4 space-y-2">

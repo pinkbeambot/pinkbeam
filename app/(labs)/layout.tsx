@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "../globals.css";
-import { LabsNavigation } from "@/components/labs/navigation/LabsNavigation";
+import { Navigation } from "@/components/layout/Navigation";
 import { Footer } from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
@@ -27,7 +27,7 @@ export default function LabsLayout({
 }>) {
   return (
     <div className="relative flex flex-col min-h-screen">
-      <LabsNavigation />
+      <Navigation />
       <main id="main-content" className="flex-1 pt-16 lg:pt-20" tabIndex={-1}>
         {children}
       </main>

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Menu, ChevronRight, Globe, Palette, BarChart3, ArrowRight, User, LogOut } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
@@ -207,92 +206,75 @@ function DesktopNav() {
           >
             {link.label}
             {link.hasDropdown && (
-              <motion.span
-                animate={{ rotate: isServicesOpen ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                className={`opacity-60 transition-transform duration-200 ${isServicesOpen ? "rotate-180" : ""}`}
               >
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 12 12"
-                  fill="none"
-                  className="opacity-60"
-                >
-                  <path
-                    d="M2.5 4.5L6 8L9.5 4.5"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </motion.span>
+                <path
+                  d="M2.5 4.5L6 8L9.5 4.5"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             )}
           </Link>
 
           {/* Services Dropdown */}
-          <AnimatePresence>
-            {link.hasDropdown && isServicesOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                className="absolute top-full left-0 pt-2"
-                style={{ width: "320px" }}
+          {link.hasDropdown && isServicesOpen && (
+            <div
+              className="absolute top-full left-0 pt-2"
+              style={{ width: "320px" }}
+            >
+              <div
+                className="bg-popover border border-border rounded-xl shadow-void-lg p-4"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
               >
-                <div
-                  className="bg-popover border border-border rounded-xl shadow-void-lg p-4"
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <div className="space-y-1">
-                    {webServices.map((service) => (
-                      <ServiceCard key={service.id} service={service} />
-                    ))}
-                  </div>
-                  
-                  {/* All Services Link */}
-                  <div className="mt-3 pt-3 border-t border-border">
-                    <div
-                      className="relative"
-                      onMouseEnter={handleAllServicesEnter}
-                      onMouseLeave={handleAllServicesLeave}
-                    >
-                      <button className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-violet-500 hover:bg-violet-500/10 rounded-lg transition-colors">
-                        <span>All Pink Beam Services</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
-                      
-                      {/* All Services Sub-menu */}
-                      <AnimatePresence>
-                        {isAllServicesOpen && (
-                          <motion.div
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -10 }}
-                            transition={{ duration: 0.15 }}
-                            className="absolute top-0 left-full ml-2 w-56 p-2 bg-popover border border-border rounded-xl shadow-void-lg"
+                <div className="space-y-1">
+                  {webServices.map((service) => (
+                    <ServiceCard key={service.id} service={service} />
+                  ))}
+                </div>
+                
+                {/* All Services Link */}
+                <div className="mt-3 pt-3 border-t border-border">
+                  <div
+                    className="relative"
+                    onMouseEnter={handleAllServicesEnter}
+                    onMouseLeave={handleAllServicesLeave}
+                  >
+                    <button className="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-violet-500 hover:bg-violet-500/10 rounded-lg transition-colors">
+                      <span>All Pink Beam Services</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                    
+                    {/* All Services Sub-menu */}
+                    {isAllServicesOpen && (
+                      <div
+                        className="absolute top-0 left-full ml-2 w-56 p-2 bg-popover border border-border rounded-xl shadow-void-lg"
+                      >
+                        {allServices.map((service) => (
+                          <Link
+                            key={service.id}
+                            href={service.href}
+                            className="block px-3 py-2 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
                           >
-                            {allServices.map((service) => (
-                              <Link
-                                key={service.id}
-                                href={service.href}
-                                className="block px-3 py-2 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
-                              >
-                                <span className="font-medium">{service.name}</span>
-                                <p className="text-xs text-muted-foreground">{service.description}</p>
-                              </Link>
-                            ))}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
+                            <span className="font-medium">{service.name}</span>
+                            <p className="text-xs text-muted-foreground">{service.description}</p>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              </div>
+            </div>
+          )}
         </div>
       ))}
     </nav>
@@ -385,55 +367,46 @@ function MobileNav({ user, onSignOut }: { user: SupabaseUser | null; onSignOut: 
               className="flex items-center justify-between w-full p-4 text-left"
             >
               <span className="font-display font-semibold text-foreground">Web Services</span>
-              <motion.span
-                animate={{ rotate: expandedSection === "services" ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
+              <svg 
+                width="16" 
+                height="16" 
+                viewBox="0 0 12 12" 
+                fill="none"
+                className={`transition-transform duration-200 ${expandedSection === "services" ? "rotate-180" : ""}`}
               >
-                <svg width="16" height="16" viewBox="0 0 12 12" fill="none">
-                  <path
-                    d="M2.5 4.5L6 8L9.5 4.5"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </motion.span>
+                <path
+                  d="M2.5 4.5L6 8L9.5 4.5"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
-            <AnimatePresence>
-              {expandedSection === "services" && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden"
-                >
-                  <div className="px-4 pb-4 space-y-2">
-                    {webServices.map((service) => (
-                      <SheetClose key={service.id} asChild>
-                        <Link
-                          href={service.href}
-                          className="flex items-center gap-3 p-3 rounded-lg border border-border bg-background/50 hover:bg-muted transition-colors"
-                        >
-                          <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-violet-500 shrink-0">
-                            <service.icon className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <span className="font-display font-semibold text-sm text-foreground">
-                              {service.name}
-                            </span>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {service.description}
-                            </p>
-                          </div>
-                        </Link>
-                      </SheetClose>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {expandedSection === "services" && (
+              <div className="px-4 pb-4 space-y-2">
+                {webServices.map((service) => (
+                  <SheetClose key={service.id} asChild>
+                    <Link
+                      href={service.href}
+                      className="flex items-center gap-3 p-3 rounded-lg border border-border bg-background/50 hover:bg-muted transition-colors"
+                    >
+                      <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-violet-500 shrink-0">
+                        <service.icon className="w-4 h-4 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="font-display font-semibold text-sm text-foreground">
+                          {service.name}
+                        </span>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {service.description}
+                        </p>
+                      </div>
+                    </Link>
+                  </SheetClose>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Other Links */}
