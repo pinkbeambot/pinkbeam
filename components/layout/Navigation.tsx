@@ -107,12 +107,10 @@ function ServiceSwitcher({ currentService }: { currentService: typeof services[0
   if (!currentService) {
     // On hub - show services dropdown
     return (
-      <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger asChild>
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-muted/50 hover:bg-muted transition-colors text-sm font-medium">
-            <span className="text-muted-foreground">Services</span>
-            <ChevronDown className={cn("w-3.5 h-3.5 text-muted-foreground transition-transform", open && "rotate-180")} />
-          </button>
+      <DropdownMenu>
+        <DropdownMenuTrigger className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-muted/50 hover:bg-muted transition-colors text-sm font-medium outline-none focus:ring-2 focus:ring-ring">
+          <span className="text-muted-foreground">Services</span>
+          <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-64">
           <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -138,17 +136,15 @@ function ServiceSwitcher({ currentService }: { currentService: typeof services[0
   
   // On a service page - show service badge + switcher
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
-        <button className={cn(
-          "flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-medium transition-colors",
-          currentService.borderColor,
-          currentService.bgHover,
-          "bg-opacity-10"
-        )}>
-          <span className={currentService.textColor}>{currentService.name}</span>
-          <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", open && "rotate-180")} />
-        </button>
+    <DropdownMenu>
+      <DropdownMenuTrigger className={cn(
+        "flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-medium transition-colors outline-none focus:ring-2 focus:ring-ring",
+        currentService.borderColor,
+        currentService.bgHover,
+        "bg-opacity-10"
+      )}>
+        <span className={currentService.textColor}>{currentService.name}</span>
+        <ChevronDown className="w-3.5 h-3.5" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">
         <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">

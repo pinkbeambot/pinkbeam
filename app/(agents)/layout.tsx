@@ -1,32 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "../globals.css";
-import { AgentsNavigation } from "@/components/agents/navigation/AgentsNavigation";
+import { Navigation } from "@/components/layout/Navigation";
 import { Footer } from "@/components/layout/Footer";
-import { ThemeProvider } from "@/components/theme-provider";
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-  preload: true,
-  fallback: ["system-ui", "sans-serif"],
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Pink Beam Agents — Hire AI Employees for $500/Month",
@@ -52,7 +27,7 @@ export default function AgentsLayout({
 }>) {
   return (
     <div className="relative flex flex-col min-h-screen">
-      <AgentsNavigation />
+      <Navigation />
       <main id="main-content" className="flex-1 pt-16 lg:pt-20" tabIndex={-1}>
         {children}
       </main>
