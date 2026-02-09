@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Lightbulb, ArrowRight, Check } from "lucide-react";
+import { SolutionsHero } from "./components/SolutionsHero";
 
 export const metadata: Metadata = {
   title: "Pink Beam Solutions — Strategic Consulting",
@@ -45,36 +47,10 @@ export default function SolutionsPage() {
   return (
     <main className="min-h-screen">
       {/* Hero */}
-      <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-amber-500/5 via-transparent to-transparent" />
-        <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 text-amber-500 text-sm font-medium mb-6">
-              <Lightbulb className="w-4 h-4" />
-              Strategic Consulting
-            </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight mb-6">
-              Strategy that <span className="text-gradient-beam">delivers</span>
-            </h1>
-            <p className="text-xl sm:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Strategic consulting for digital transformation and AI adoption. 
-              Turn technology into competitive advantage.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-gradient-beam hover:opacity-90">
-                Book a Workshop
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-              <Button variant="outline" size="lg">
-                Learn More
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      <SolutionsHero />
 
       {/* Services */}
-      <section className="py-20 lg:py-32 border-t">
+      <section id="services" className="py-20 lg:py-32 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">What we do</h2>
@@ -97,7 +73,7 @@ export default function SolutionsPage() {
       </section>
 
       {/* Engagements */}
-      <section className="py-20 lg:py-32 border-t">
+      <section className="py-20 lg:py-32 border-t bg-muted/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">Engagement options</h2>
@@ -123,7 +99,10 @@ export default function SolutionsPage() {
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full" variant={engagement.name === "Assessment" ? "default" : "outline"}>
+                <Button 
+                  className="w-full" 
+                  variant={engagement.name === "Assessment" ? "default" : "outline"}
+                >
                   Get Started
                 </Button>
               </div>
@@ -141,7 +120,7 @@ export default function SolutionsPage() {
           <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
             Let's discuss your challenges and opportunities.
           </p>
-          <Button size="lg" className="bg-gradient-beam hover:opacity-90">
+          <Button size="lg" className="bg-gradient-to-r from-amber-500 to-amber-600 hover:opacity-90">
             Schedule a Call
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>

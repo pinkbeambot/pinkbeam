@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Code2, ArrowRight, Check } from "lucide-react";
+import { LabsHero } from "./components/LabsHero";
 
 export const metadata: Metadata = {
   title: "Pink Beam Labs — Custom Software Development",
@@ -24,36 +26,10 @@ export default function LabsPage() {
   return (
     <main className="min-h-screen">
       {/* Hero */}
-      <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-transparent to-transparent" />
-        <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 text-cyan-500 text-sm font-medium mb-6">
-              <Code2 className="w-4 h-4" />
-              Software Development
-            </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight mb-6">
-              Build <span className="text-gradient-beam">anything</span>
-            </h1>
-            <p className="text-xl sm:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Custom software development for startups and enterprises. 
-              From MVPs to enterprise systems.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-gradient-beam hover:opacity-90">
-                Start a Project
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-              <Button variant="outline" size="lg">
-                View Case Studies
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      <LabsHero />
 
       {/* Capabilities */}
-      <section className="py-20 lg:py-32 border-t">
+      <section id="services" className="py-20 lg:py-32 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">What we build</h2>
@@ -76,7 +52,7 @@ export default function LabsPage() {
       </section>
 
       {/* Process */}
-      <section className="py-20 lg:py-32 border-t">
+      <section className="py-20 lg:py-32 border-t bg-muted/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">How we work</h2>
@@ -93,7 +69,7 @@ export default function LabsPage() {
               { step: "04", title: "Deploy", desc: "Launch & support" },
             ].map((item) => (
               <div key={item.step} className="text-center p-6">
-                <div className="text-4xl font-bold text-gradient-beam mb-2">{item.step}</div>
+                <div className="text-4xl font-bold text-cyan-500 mb-2">{item.step}</div>
                 <h3 className="font-bold mb-1">{item.title}</h3>
                 <p className="text-sm text-muted-foreground">{item.desc}</p>
               </div>
@@ -111,7 +87,7 @@ export default function LabsPage() {
           <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
             Let's talk about what you want to build.
           </p>
-          <Button size="lg" className="bg-gradient-beam hover:opacity-90">
+          <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:opacity-90">
             Schedule a Consultation
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
