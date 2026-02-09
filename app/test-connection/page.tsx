@@ -37,8 +37,9 @@ export default function TestConnectionPage() {
       } else {
         setResult(`Success! User created:\nEmail: ${testEmail}\nUser ID: ${data.user?.id || 'N/A'}\nSession: ${data.session ? 'Yes' : 'No'}`)
       }
-    } catch (err: any) {
-      setResult(`Fetch Error: ${err.message}\nThis is likely a CORS or network issue.`)
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+      setResult(`Fetch Error: ${errorMessage}\nThis is likely a CORS or network issue.`)
     }
     
     setLoading(false)
