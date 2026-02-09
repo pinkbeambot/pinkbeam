@@ -3,9 +3,8 @@
 import * as React from "react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Menu, X, User, LogOut, Users, Globe, Code2, Lightbulb } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useRouter, usePathname } from "next/navigation";
+import { Menu, X, User, LogOut, Users, Globe, Code2, Lightbulb, ChevronDown, Home, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
@@ -21,7 +20,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { createClient } from "@/lib/supabase/client";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 
-// Service data for dropdown
+// Service configuration
 const services = [
   {
     id: "agents",
@@ -29,6 +28,11 @@ const services = [
     description: "AI employees for your business",
     icon: Users,
     href: "/agents",
+    color: "#FF006E",
+    bgColor: "bg-pink-500",
+    textColor: "text-pink-500",
+    borderColor: "border-pink-500/30",
+    bgHover: "hover:bg-pink-500/10",
   },
   {
     id: "web",
@@ -36,6 +40,11 @@ const services = [
     description: "Website & SEO services",
     icon: Globe,
     href: "/web",
+    color: "#8B5CF6",
+    bgColor: "bg-violet-500",
+    textColor: "text-violet-500",
+    borderColor: "border-violet-500/30",
+    bgHover: "hover:bg-violet-500/10",
   },
   {
     id: "labs",
@@ -43,6 +52,11 @@ const services = [
     description: "Custom software development",
     icon: Code2,
     href: "/labs",
+    color: "#06B6D4",
+    bgColor: "bg-cyan-500",
+    textColor: "text-cyan-500",
+    borderColor: "border-cyan-500/30",
+    bgHover: "hover:bg-cyan-500/10",
   },
   {
     id: "solutions",
@@ -50,17 +64,27 @@ const services = [
     description: "Strategic consulting",
     icon: Lightbulb,
     href: "/solutions",
+    color: "#F59E0B",
+    bgColor: "bg-amber-500",
+    textColor: "text-amber-500",
+    borderColor: "border-amber-500/30",
+    bgHover: "hover:bg-amber-500/10",
   },
 ];
 
-// Navigation links
-const navLinks = [
-  { label: "Services", href: "#services", hasDropdown: true },
-  { label: "About", href: "/about", hasDropdown: false },
-  { label: "Contact", href: "/contact", hasDropdown: false },
-];
+// Detect current service from pathname
+function useCurrentService() {
+  const pathname = usePathname();
+  
+  if (pathname?.startsWith("/agents")) return services.find(s => s.id === "agents") || null;
+  if (pathname?.startsWith("/web")) return services.find(s => s.id === "web") || null;
+  if (pathname?.startsWith("/labs")) return services.find(s => s.id === "labs") || null;
+  if (pathname?.startsWith("/solutions")) return services.find(s => s.id === "solutions") || null;
+  
+  return null; // Hub / homepage
+}
 
-// Logo component
+// Logo component - links to hub
 function Logo({ className }: { className?: string }) {
   return (
     <Link href="/" className={cn("flex items-center gap-2", className)}>
@@ -76,35 +100,329 @@ function Logo({ className }: { className?: string }) {
   );
 }
 
-// Service Card for dropdown
-function ServiceCard({ service }: { service: typeof services[0] }) {
-  const Icon = service.icon;
+// Service Switcher Component
+function ServiceSwitcher({ currentService }: { currentService: typeof services[0] | null }) {
+  const [open, setOpen] = useState(false);
+  
+  if (!currentService) {
+    // On hub - show services dropdown
+    return (
+      <DropdownMenu open={open} onOpenChange={setOpen}>
+        <DropdownMenuTrigger asChild>
+          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-muted/50 hover:bg-muted transition-colors text-sm font-medium">
+            <span className="text-muted-foreground">Services</span>
+            <ChevronDown className={cn("w-3.5 h-3.5 text-muted-foreground transition-transform", open && "rotate-180")} />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-64">
+          <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            Pink Beam Services
+          </div>
+          {services.map((service) => (
+            <DropdownMenuItem key={service.id} asChild>
+              <Link href={service.href} className="flex items-center gap-3 cursor-pointer">
+                <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", service.bgColor)}>
+                  <service.icon className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium">{service.name}</p>
+                  <p className="text-xs text-muted-foreground">{service.description}</p>
+                </div>
+              </Link>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
+  
+  // On a service page - show service badge + switcher
   return (
-    <Link
-      href={service.href}
-      className="group flex items-start gap-3 p-3 rounded-lg transition-colors hover:bg-muted"
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <button className={cn(
+          "flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-medium transition-colors",
+          currentService.borderColor,
+          currentService.bgHover,
+          "bg-opacity-10"
+        )}>
+          <span className={currentService.textColor}>{currentService.name}</span>
+          <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", open && "rotate-180")} />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-64">
+        <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          Switch Service
+        </div>
+        <DropdownMenuItem asChild>
+          <Link href="/" className="flex items-center gap-3 cursor-pointer">
+            <div className="w-8 h-8 rounded-lg bg-gradient-beam flex items-center justify-center">
+              <Home className="w-4 h-4 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="font-medium">Hub</p>
+              <p className="text-xs text-muted-foreground">Back to home</p>
+            </div>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        {services
+          .filter(s => s.id !== currentService.id)
+          .map((service) => (
+            <DropdownMenuItem key={service.id} asChild>
+              <Link href={service.href} className="flex items-center gap-3 cursor-pointer">
+                <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", service.bgColor)}>
+                  <service.icon className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium">{service.name}</p>
+                  <p className="text-xs text-muted-foreground">{service.description}</p>
+                </div>
+              </Link>
+            </DropdownMenuItem>
+          ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+// Hub Link - shown when on service pages
+function HubLink({ currentService }: { currentService: typeof services[0] | null }) {
+  if (!currentService) return null;
+  
+  return (
+    <Link 
+      href="/"
+      className="hidden lg:flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
     >
-      <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-pink-500 shrink-0">
-        <Icon className="w-5 h-5 text-white" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <span className="font-display font-semibold text-sm text-foreground">
-          {service.name}
-        </span>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          {service.description}
-        </p>
-      </div>
+      <ArrowLeft className="w-3.5 h-3.5" />
+      <span>Hub</span>
     </Link>
   );
 }
 
+// Breadcrumbs component
+function Breadcrumbs({ currentService }: { currentService: typeof services[0] | null }) {
+  const pathname = usePathname();
+  
+  if (!currentService || pathname === currentService.href) {
+    return null; // Don't show breadcrumbs on hub or service home pages
+  }
+  
+  // Parse path segments for nested pages
+  const segments = pathname?.split("/").filter(Boolean) || [];
+  
+  return (
+    <div className="hidden lg:flex items-center gap-2 text-sm text-muted-foreground">
+      <Link href="/" className="hover:text-foreground transition-colors">Hub</Link>
+      <span className="text-muted-foreground/50">/</span>
+      <Link 
+        href={currentService.href} 
+        className={cn("hover:text-foreground transition-colors", currentService.textColor)}
+      >
+        {currentService.name}
+      </Link>
+      {segments.length > 1 && (
+        <>
+          <span className="text-muted-foreground/50">/</span>
+          <span className="text-foreground capitalize">
+            {segments[segments.length - 1].replace(/-/g, " ")}
+          </span>
+        </>
+      )}
+    </div>
+  );
+}
+
+// User Avatar Dropdown Component
+function UserDropdown({ user, onSignOut }: { user: SupabaseUser; onSignOut: () => void }) {
+  const initials = user.email?.charAt(0).toUpperCase() || "U";
+  
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+          <Avatar className="h-8 w-8">
+            <AvatarFallback className="bg-gradient-beam text-white text-xs">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuItem asChild>
+          <Link href="/agents/dashboard">
+            <User className="mr-2 h-4 w-4" />
+            Dashboard
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={onSignOut}>
+          <LogOut className="mr-2 h-4 w-4" />
+          Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+// Mobile Navigation
+function MobileNav({ 
+  user, 
+  onSignOut, 
+  currentService 
+}: { 
+  user: SupabaseUser | null; 
+  onSignOut: () => void;
+  currentService: typeof services[0] | null;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild className="lg:hidden">
+        <Button variant="ghost" size="icon" className="h-9 w-9">
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Open menu</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-full sm:w-80">
+        <SheetHeader>
+          <SheetTitle>
+            <div className="flex items-center gap-2">
+              <div className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-beam">
+                <span className="text-white font-display font-bold text-sm">PB</span>
+              </div>
+              <span className="font-display font-bold text-xl">
+                <span className="text-gradient-beam">Pink</span>
+                <span className="text-foreground"> Beam</span>
+              </span>
+            </div>
+          </SheetTitle>
+        </SheetHeader>
+        
+        <div className="mt-8 space-y-6">
+          {/* Service Section */}
+          {currentService && (
+            <div className="p-4 rounded-xl border bg-muted/50">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">Current Service</p>
+              <div className="flex items-center gap-3">
+                <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", currentService.bgColor)}>
+                  <currentService.icon className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="font-semibold">{currentService.name}</p>
+                  <p className="text-xs text-muted-foreground">{currentService.description}</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {/* Services List */}
+          <div className="space-y-3">
+            <p className="text-sm font-medium text-muted-foreground px-2">
+              {currentService ? "Switch Service" : "Services"}
+            </p>
+            {!currentService && (
+              <SheetClose asChild>
+                <Link
+                  href="/"
+                  className="flex items-center gap-3 px-2 py-3 rounded-lg hover:bg-muted transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-gradient-beam flex items-center justify-center">
+                    <Home className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Hub</p>
+                    <p className="text-xs text-muted-foreground">Platform home</p>
+                  </div>
+                </Link>
+              </SheetClose>
+            )}
+            {currentService && (
+              <SheetClose asChild>
+                <Link
+                  href="/"
+                  className="flex items-center gap-3 px-2 py-3 rounded-lg hover:bg-muted transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-gradient-beam flex items-center justify-center">
+                    <Home className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Back to Hub</p>
+                    <p className="text-xs text-muted-foreground">Platform home</p>
+                  </div>
+                </Link>
+              </SheetClose>
+            )}
+            {services
+              .filter(s => s.id !== currentService?.id)
+              .map((service) => (
+                <SheetClose key={service.id} asChild>
+                  <Link
+                    href={service.href}
+                    className="flex items-center gap-3 px-2 py-3 rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", service.bgColor)}>
+                      <service.icon className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-medium">{service.name}</p>
+                      <p className="text-xs text-muted-foreground">{service.description}</p>
+                    </div>
+                  </Link>
+                </SheetClose>
+              ))}
+          </div>
+          
+          {/* Other Links */}
+          <div className="space-y-1">
+            <SheetClose asChild>
+              <Link
+                href="/about"
+                className="block px-2 py-3 text-lg font-medium hover:bg-muted rounded-lg transition-colors"
+              >
+                About
+              </Link>
+            </SheetClose>
+            <SheetClose asChild>
+              <Link
+                href="/contact"
+                className="block px-2 py-3 text-lg font-medium hover:bg-muted rounded-lg transition-colors"
+              >
+                Contact
+              </Link>
+            </SheetClose>
+          </div>
+
+          {/* CTA Section */}
+          {!user && (
+            <div className="space-y-3 pt-4 border-t">
+              <SheetClose asChild>
+                <Button variant="outline" className="w-full" asChild>
+                  <Link href="/sign-in">Sign in</Link>
+                </Button>
+              </SheetClose>
+              <SheetClose asChild>
+                <Button className="w-full bg-gradient-beam hover:opacity-90" asChild>
+                  <Link href="/agents">Get Started</Link>
+                </Button>
+              </SheetClose>
+            </div>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+// Main Navigation Component
 export function Navigation() {
-  const [user, setUser] = useState<SupabaseUser | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const currentService = useCurrentService();
   const supabase = createClient();
 
   // Check auth status
@@ -112,10 +430,10 @@ export function Navigation() {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      setLoading(false);
     };
     getUser();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
     });
@@ -149,81 +467,28 @@ export function Navigation() {
     >
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo */}
-          <Logo />
-
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <div key={link.label} className="relative">
-                {link.hasDropdown ? (
-                  <div
-                    className="relative"
-                    onMouseEnter={() => setIsServicesOpen(true)}
-                    onMouseLeave={() => setIsServicesOpen(false)}
-                  >
-                    <button className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                      {link.label}
-                    </button>
-                    <AnimatePresence>
-                      {isServicesOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 10 }}
-                          transition={{ duration: 0.2 }}
-                          className="absolute top-full left-0 mt-2 w-72 p-3 rounded-xl border bg-popover shadow-lg"
-                        >
-                          <div className="space-y-1">
-                            {services.map((service) => (
-                              <ServiceCard key={service.id} service={service} />
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                ) : (
-                  <Link
-                    href={link.href}
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                )}
-              </div>
-            ))}
+          {/* Left: Logo + Service Switcher */}
+          <div className="flex items-center gap-4">
+            <Logo />
+            <div className="hidden lg:block">
+              <ServiceSwitcher currentService={currentService} />
+            </div>
+            <div className="hidden lg:block">
+              <HubLink currentService={currentService} />
+            </div>
+          </div>
+          
+          {/* Center: Breadcrumbs (desktop only) */}
+          <div className="hidden lg:flex flex-1 justify-center">
+            <Breadcrumbs currentService={currentService} />
           </div>
 
-          {/* Right side actions */}
+          {/* Right: Actions */}
           <div className="flex items-center gap-2">
             <ThemeToggle />
             
             {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-gradient-beam text-white text-xs">
-                        {user.email?.charAt(0).toUpperCase() || "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuItem asChild>
-                    <Link href="/agents/dashboard">
-                      <User className="mr-2 h-4 w-4" />
-                      Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Sign out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <UserDropdown user={user} onSignOut={handleSignOut} />
             ) : (
               <div className="hidden sm:flex items-center gap-2">
                 <Button variant="ghost" size="sm" asChild>
@@ -235,77 +500,8 @@ export function Navigation() {
               </div>
             )}
 
-            {/* Mobile menu button */}
-            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-              <SheetTrigger asChild className="lg:hidden">
-                <Button variant="ghost" size="icon" className="h-9 w-9">
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Open menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-full sm:w-80">
-                <SheetHeader>
-                  <SheetTitle>
-                    <Logo />
-                  </SheetTitle>
-                </SheetHeader>
-                <div className="mt-8 space-y-6">
-                  <div className="space-y-3">
-                    <p className="text-sm font-medium text-muted-foreground px-2">Services</p>
-                    {services.map((service) => (
-                      <SheetClose key={service.id} asChild>
-                        <Link
-                          href={service.href}
-                          className="flex items-center gap-3 px-2 py-3 rounded-lg hover:bg-muted transition-colors"
-                        >
-                          <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-pink-500 shrink-0">
-                            <service.icon className="w-5 h-5 text-white" />
-                          </div>
-                          <div>
-                            <p className="font-medium">{service.name}</p>
-                            <p className="text-sm text-muted-foreground">{service.description}</p>
-                          </div>
-                        </Link>
-                      </SheetClose>
-                    ))}
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <SheetClose asChild>
-                      <Link
-                        href="/about"
-                        className="block px-2 py-3 text-lg font-medium hover:bg-muted rounded-lg transition-colors"
-                      >
-                        About
-                      </Link>
-                    </SheetClose>
-                    <SheetClose asChild>
-                      <Link
-                        href="/contact"
-                        className="block px-2 py-3 text-lg font-medium hover:bg-muted rounded-lg transition-colors"
-                      >
-                        Contact
-                      </Link>
-                    </SheetClose>
-                  </div>
-
-                  {!user && (
-                    <div className="space-y-3 pt-4 border-t">
-                      <SheetClose asChild>
-                        <Button variant="outline" className="w-full" asChild>
-                          <Link href="/sign-in">Sign in</Link>
-                        </Button>
-                      </SheetClose>
-                      <SheetClose asChild>
-                        <Button className="w-full bg-gradient-beam hover:opacity-90" asChild>
-                          <Link href="/agents">Get Started</Link>
-                        </Button>
-                      </SheetClose>
-                    </div>
-                  )}
-                </div>
-              </SheetContent>
-            </Sheet>
+            {/* Mobile menu */}
+            <MobileNav user={user} onSignOut={handleSignOut} currentService={currentService} />
           </div>
         </div>
       </nav>
