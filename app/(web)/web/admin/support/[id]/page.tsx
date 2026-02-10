@@ -21,6 +21,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { FadeIn } from '@/components/animations'
+import { FileUpload } from '@/components/file-upload'
+import { FileList } from '@/components/file-list'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -205,12 +207,17 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
   const [assigneeId, setAssigneeId] = useState('')
   const [savingAssignment, setSavingAssignment] = useState(false)
   const [updateError, setUpdateError] = useState<string | null>(null)
+  const [files, setFiles] = useState<Array<{ id: string; name: string; mimeType: string; size: number; bucket: string; createdAt: string; uploadedBy?: { id: string; name: string | null; email: string } }>>([])
+  const [commentFileIds, setCommentFileIds] = useState<string[]>([])
 
   const fetchTicket = useCallback(async () => {
     try {
       setError(null)
-      const res = await fetch(`/api/tickets/${id}`)
-      const data = await res.json()
+      const [ticketRes, filesRes] = await Promise.all([
+        fetch(`/api/tickets/${id}`),
+        fetch(`/api/files?ticketId=${id}`),
+      ])
+      const data = await ticketRes.json()
       if (data.success) {
         setTicket(data.data)
         setAssigneeId(data.data.assignee?.id || '')
@@ -218,6 +225,8 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
       } else {
         setError('Ticket not found')
       }
+      const filesData = await filesRes.json()
+      if (filesData.success) setFiles(filesData.data)
     } catch {
       setError('Failed to load ticket')
     } finally {
@@ -264,6 +273,14 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
       })
       const data = await res.json()
       if (data.success) {
+        if (commentFileIds.length > 0) {
+          await fetch('/api/files/associate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fileIds: commentFileIds, ticketId: id, commentId: data.data.id }),
+          }).catch(() => {})
+          setCommentFileIds([])
+        }
         setNewComment('')
         setIsInternal(false)
         fetchTicket()
@@ -433,6 +450,14 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
                         rows={3}
                         className={isInternal ? 'border-amber-500/30' : ''}
                       />
+                      <FileUpload
+                        bucket="attachments"
+                        uploadedById={ADMIN_ID}
+                        ticketId={id}
+                        onUploadComplete={(file) => setCommentFileIds((prev) => [...prev, file.id])}
+                        maxFiles={5}
+                        compact
+                      />
                       <div className="flex items-center justify-between">
                         <label className="flex items-center gap-2 cursor-pointer">
                           <input
@@ -513,6 +538,18 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
                         {ticket.description}
                       </p>
                     </div>
+                    {files.length > 0 && (
+                      <div>
+                        <span className="text-muted-foreground">Attachments ({files.length})</span>
+                        <div className="mt-2">
+                          <FileList
+                            files={files}
+                            canDelete
+                            onDelete={(fileId) => setFiles((prev) => prev.filter((f) => f.id !== fileId))}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>

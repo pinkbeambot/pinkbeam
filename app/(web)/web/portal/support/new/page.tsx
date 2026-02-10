@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Loader2, Send, FileText } from 'lucide-react'
+import { ArrowLeft, Loader2, Send, FileText, Paperclip } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { FadeIn } from '@/components/animations'
 import { ticketTemplates } from '@/lib/ticket-templates'
 import { getSuggestedArticles, type KBArticle } from '@/lib/knowledge-base'
+import { FileUpload } from '@/components/file-upload'
 
 // TODO: Replace with real auth context from WEB-008
 const CLIENT_ID = 'test-client'
@@ -40,6 +41,7 @@ export default function NewTicketPage() {
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('GENERAL')
   const [priority, setPriority] = useState('MEDIUM')
+  const [uploadedFileIds, setUploadedFileIds] = useState<string[]>([])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -60,6 +62,14 @@ export default function NewTicketPage() {
       })
       const data = await res.json()
       if (data.success) {
+        // Associate any uploaded files with the new ticket
+        if (uploadedFileIds.length > 0) {
+          await fetch('/api/files/associate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fileIds: uploadedFileIds, ticketId: data.data.id }),
+          }).catch(() => {})
+        }
         router.push(`/web/portal/support/${data.data.id}`)
       } else {
         const errMsg = typeof data.error === 'string'
@@ -226,6 +236,20 @@ export default function NewTicketPage() {
                 <p className="text-xs text-muted-foreground">
                   Minimum 10 characters. The more detail you provide, the faster we can help.
                 </p>
+              </div>
+
+              {/* Attachments */}
+              <div className="space-y-2">
+                <Label>Attachments (optional)</Label>
+                <FileUpload
+                  bucket="attachments"
+                  uploadedById={CLIENT_ID}
+                  onUploadComplete={(file) =>
+                    setUploadedFileIds((prev) => [...prev, file.id])
+                  }
+                  maxFiles={5}
+                  compact
+                />
               </div>
 
               {/* Submit */}

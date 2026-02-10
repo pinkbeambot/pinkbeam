@@ -16,6 +16,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
 import { FadeIn } from '@/components/animations'
+import { FileUpload } from '@/components/file-upload'
+import { FileList } from '@/components/file-list'
 
 // TODO: Replace with real auth context from WEB-008
 const CLIENT_ID = 'test-client'
@@ -196,20 +198,26 @@ export default function TicketDetailPage({ params }: { params: Promise<{ id: str
   const [error, setError] = useState<string | null>(null)
   const [newComment, setNewComment] = useState('')
   const [submittingComment, setSubmittingComment] = useState(false)
+  const [files, setFiles] = useState<Array<{ id: string; name: string; mimeType: string; size: number; bucket: string; createdAt: string; uploadedBy?: { id: string; name: string | null; email: string } }>>([])
+  const [commentFileIds, setCommentFileIds] = useState<string[]>([])
 
   const fetchTicket = useCallback(async () => {
     try {
       setError(null)
-      const res = await fetch(`/api/tickets/${id}`)
-      const data = await res.json()
+      const [ticketRes, filesRes] = await Promise.all([
+        fetch(`/api/tickets/${id}`),
+        fetch(`/api/files?ticketId=${id}`),
+      ])
+      const data = await ticketRes.json()
       if (data.success) {
-        // Filter out internal comments for client view
         const clientComments = data.data.comments.filter((c: Comment) => !c.isInternal)
         setTicket({ ...data.data, comments: clientComments })
         if (data.activity) setActivity(data.activity)
       } else {
         setError('Ticket not found')
       }
+      const filesData = await filesRes.json()
+      if (filesData.success) setFiles(filesData.data)
     } catch {
       setError('Failed to load ticket')
     } finally {
@@ -237,8 +245,16 @@ export default function TicketDetailPage({ params }: { params: Promise<{ id: str
       })
       const data = await res.json()
       if (data.success) {
+        if (commentFileIds.length > 0) {
+          await fetch('/api/files/associate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fileIds: commentFileIds, ticketId: id, commentId: data.data.id }),
+          }).catch(() => {})
+          setCommentFileIds([])
+        }
         setNewComment('')
-        fetchTicket() // refresh to get latest comments + activity
+        fetchTicket()
       }
     } catch {
       // silent
@@ -342,6 +358,15 @@ export default function TicketDetailPage({ params }: { params: Promise<{ id: str
                 {ticket.description}
               </p>
             </div>
+            {files.length > 0 && (
+              <div>
+                <p className="text-sm text-muted-foreground mb-2">Attachments</p>
+                <FileList
+                  files={files}
+                  onDelete={(fileId) => setFiles((prev) => prev.filter((f) => f.id !== fileId))}
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
       </FadeIn>
@@ -408,6 +433,14 @@ export default function TicketDetailPage({ params }: { params: Promise<{ id: str
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   rows={3}
+                />
+                <FileUpload
+                  bucket="attachments"
+                  uploadedById={CLIENT_ID}
+                  ticketId={id}
+                  onUploadComplete={(file) => setCommentFileIds((prev) => [...prev, file.id])}
+                  maxFiles={5}
+                  compact
                 />
                 <div className="flex justify-end">
                   <Button

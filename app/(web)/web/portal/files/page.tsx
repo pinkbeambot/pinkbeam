@@ -1,29 +1,72 @@
 'use client'
 
-import Link from 'next/link'
-import { FileText, Download, Eye, CheckCircle, Clock, ArrowRight } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
+import { Upload, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { FadeIn } from '@/components/animations'
+import { FileUpload } from '@/components/file-upload'
+import { FileList } from '@/components/file-list'
 
-const files = [
-  { id: 1, name: 'Homepage Design v2.fig', type: 'figma', size: '12.5 MB', date: '2026-02-18', status: 'in-review' },
-  { id: 2, name: 'Style Guide.pdf', type: 'pdf', size: '3.2 MB', date: '2026-02-15', status: 'approved' },
-  { id: 3, name: 'Wireframes v1.fig', type: 'figma', size: '8.1 MB', date: '2026-02-10', status: 'approved' },
-  { id: 4, name: 'Brand Assets.zip', type: 'zip', size: '45.2 MB', date: '2026-02-05', status: 'approved' },
-]
+// TODO: Replace with real auth context from WEB-008
+const CLIENT_ID = 'test-client'
 
-function getStatusColor(status: string) {
-  const colors: Record<string, string> = {
-    'approved': 'bg-green-500/10 text-green-500 border-green-500/20',
-    'in-review': 'bg-amber-500/10 text-amber-500 border-amber-500/20',
-    'pending': 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-  }
-  return colors[status] || 'bg-gray-500/10 text-gray-500'
+interface FileRecord {
+  id: string
+  name: string
+  mimeType: string
+  size: number
+  bucket: string
+  createdAt: string
+  uploadedBy?: { id: string; name: string | null; email: string }
 }
 
+const bucketFilters = [
+  { value: '', label: 'All Files' },
+  { value: 'deliverables', label: 'Deliverables' },
+  { value: 'attachments', label: 'Attachments' },
+]
+
 export default function FilesPage() {
+  const [files, setFiles] = useState<FileRecord[]>([])
+  const [loading, setLoading] = useState(true)
+  const [uploadOpen, setUploadOpen] = useState(false)
+  const [bucketFilter, setBucketFilter] = useState('')
+
+  const fetchFiles = useCallback(async () => {
+    try {
+      const params = new URLSearchParams({ uploadedById: CLIENT_ID })
+      if (bucketFilter) params.set('bucket', bucketFilter)
+      const res = await fetch(`/api/files?${params}`)
+      const data = await res.json()
+      if (data.success) setFiles(data.data)
+    } catch {
+      // silent
+    } finally {
+      setLoading(false)
+    }
+  }, [bucketFilter])
+
+  useEffect(() => {
+    fetchFiles()
+  }, [fetchFiles])
+
+  const handleUploadComplete = (file: FileRecord) => {
+    setFiles((prev) => [file, ...prev])
+  }
+
+  const handleDelete = (fileId: string) => {
+    setFiles((prev) => prev.filter((f) => f.id !== fileId))
+  }
+
   return (
     <div className="space-y-6">
       <FadeIn>
@@ -34,46 +77,74 @@ export default function FilesPage() {
               Access all your project files and deliverables
             </p>
           </div>
-          <Button>
-            Upload File
-          </Button>
+          <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Upload className="w-4 h-4 mr-2" />
+                Upload File
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Upload Files</DialogTitle>
+              </DialogHeader>
+              <FileUpload
+                bucket="deliverables"
+                uploadedById={CLIENT_ID}
+                onUploadComplete={handleUploadComplete}
+                maxFiles={10}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+      </FadeIn>
+
+      <FadeIn delay={0.05}>
+        <div className="flex gap-2">
+          {bucketFilters.map((f) => (
+            <Badge
+              key={f.value}
+              variant="outline"
+              className={`cursor-pointer transition-colors ${
+                bucketFilter === f.value
+                  ? 'bg-violet-500/10 text-violet-500 border-violet-500/30'
+                  : 'hover:bg-muted'
+              }`}
+              onClick={() => setBucketFilter(f.value)}
+            >
+              {f.label}
+            </Badge>
+          ))}
         </div>
       </FadeIn>
 
       <FadeIn delay={0.1}>
         <Card>
           <CardHeader>
-            <CardTitle>All Files</CardTitle>
+            <CardTitle>
+              {bucketFilter
+                ? bucketFilters.find((f) => f.value === bucketFilter)?.label
+                : 'All Files'}
+              {files.length > 0 && (
+                <span className="text-sm font-normal text-muted-foreground ml-2">
+                  ({files.length})
+                </span>
+              )}
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {files.map((file) => (
-                <div key={file.id} className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-violet-500" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{file.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {file.size} • {new Date(file.date).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Badge variant="outline" className={getStatusColor(file.status)}>
-                      {file.status}
-                    </Badge>
-                    <Button variant="ghost" size="icon">
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon">
-                      <Download className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <FileList
+                files={files}
+                canDelete
+                onDelete={handleDelete}
+                emptyMessage="No files yet. Upload your first file to get started."
+              />
+            )}
           </CardContent>
         </Card>
       </FadeIn>
