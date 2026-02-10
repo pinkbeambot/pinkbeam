@@ -1,34 +1,35 @@
 import { type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
+// Dashboard routes that require authentication
+const protectedDashboardRoutes = [
+  '/agents/dashboard',
+  '/web/dashboard',
+  '/labs/dashboard',
+  '/solutions/dashboard',
+  '/dashboard/platform',
+]
+
 export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request)
 
+  // Check if current path is a protected dashboard route
+  const isProtectedRoute = protectedDashboardRoutes.some(route => 
+    request.nextUrl.pathname.startsWith(route)
+  )
+
   // Protected routes - redirect to sign-in if not authenticated
-  // Agents dashboard
-  if (request.nextUrl.pathname.startsWith('/agents/dashboard') && !user) {
+  if (isProtectedRoute && !user) {
     return Response.redirect(new URL('/sign-in', request.url))
   }
-  
-  // Future service dashboards (when built)
-  // if (request.nextUrl.pathname.startsWith('/web/dashboard') && !user) {
-  //   return Response.redirect(new URL('/sign-in', request.url))
-  // }
-  // if (request.nextUrl.pathname.startsWith('/labs/dashboard') && !user) {
-  //   return Response.redirect(new URL('/sign-in', request.url))
-  // }
-  // if (request.nextUrl.pathname.startsWith('/solutions/dashboard') && !user) {
-  //   return Response.redirect(new URL('/sign-in', request.url))
-  // }
 
   // Auth pages - redirect to dashboard if already authenticated
-  // Default to agents dashboard for now
   if (
     (request.nextUrl.pathname === '/sign-in' || 
      request.nextUrl.pathname === '/sign-up') && 
     user
   ) {
-    return Response.redirect(new URL('/agents/dashboard', request.url))
+    return Response.redirect(new URL('/dashboard', request.url))
   }
 
   return supabaseResponse
