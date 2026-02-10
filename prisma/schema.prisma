@@ -1,34 +1,140 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-// User roles for the platform
+model User {
+  id          String          @id @default(cuid())
+  email       String          @unique
+  name        String?
+  role        UserRole        @default(CLIENT)
+  phone       String?
+  company     String?
+  website     String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  lastLoginAt DateTime?
+  projects    Project[]
+  quotes      Quote[]
+  tickets     SupportTicket[]
+
+  @@map("users")
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  status      ProjectStatus @default(LEAD)
+  clientId    String
+  services    ServiceType[]
+  budget      Decimal?      @db.Decimal(10, 2)
+  deadline    DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  invoices    Invoice[]
+  client      User          @relation(fields: [clientId], references: [id])
+  quotes      Quote[]
+
+  @@map("projects")
+}
+
+model Quote {
+  id          String      @id @default(cuid())
+  projectId   String
+  clientId    String
+  status      QuoteStatus @default(DRAFT)
+  amount      Decimal     @db.Decimal(10, 2)
+  description String?
+  validUntil  DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  client      User        @relation(fields: [clientId], references: [id])
+  project     Project     @relation(fields: [projectId], references: [id])
+
+  @@map("quotes")
+}
+
+model Invoice {
+  id          String    @id @default(cuid())
+  projectId   String
+  amount      Decimal   @db.Decimal(10, 2)
+  description String?
+  status      String    @default("PENDING")
+  issuedAt    DateTime  @default(now())
+  dueAt       DateTime?
+  paidAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  project     Project   @relation(fields: [projectId], references: [id])
+
+  @@map("invoices")
+}
+
+model SupportTicket {
+  id          String    @id @default(cuid())
+  clientId    String
+  title       String
+  description String
+  status      String    @default("OPEN")
+  priority    String    @default("MEDIUM")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  resolvedAt  DateTime?
+  client      User      @relation(fields: [clientId], references: [id])
+
+  @@map("support_tickets")
+}
+
+model BlogPost {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  excerpt     String?
+  content     String
+  metaTitle   String?
+  metaDesc    String?
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("blog_posts")
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  action     String
+  entityType String
+  entityId   String?
+  userId     String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@map("activity_logs")
+}
+
 enum UserRole {
   ADMIN
   MANAGER
   CLIENT
 }
 
-// Project status
 enum ProjectStatus {
-  LEAD        // Initial inquiry
-  QUOTED      // Quote sent
-  ACCEPTED    // Quote accepted
-  IN_PROGRESS // Work started
-  REVIEW      // Under review
-  COMPLETED   // Done
-  ON_HOLD     // Paused
-  CANCELLED   // Cancelled
+  LEAD
+  QUOTED
+  ACCEPTED
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+  ON_HOLD
+  CANCELLED
 }
 
-// Service types
 enum ServiceType {
   DESIGN
   DEVELOPMENT
@@ -37,179 +143,10 @@ enum ServiceType {
   CONSULTING
 }
 
-// Quote status
 enum QuoteStatus {
   DRAFT
   SENT
   ACCEPTED
   REJECTED
   EXPIRED
-}
-
-model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  role          UserRole  @default(CLIENT)
-  
-  // Profile
-  phone         String?
-  company       String?
-  website       String?
-  
-  // Metadata
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  lastLoginAt   DateTime?
-  
-  // Relations
-  projects      Project[]
-  quotes        Quote[]
-  tickets       SupportTicket[]
-  
-  @@map("users")
-}
-
-model Project {
-  id          String        @id @default(cuid())
-  
-  // Basic info
-  title       String
-  description String?
-  status      ProjectStatus @default(LEAD)
-  
-  // Relations
-  clientId    String
-  client      User          @relation(fields: [clientId], references: [id])
-  
-  // Project details
-  services    ServiceType[]
-  budget      Decimal?      @db.Decimal(10, 2)
-  deadline    DateTime?
-  
-  // Metadata
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  
-  // Relations
-  quotes      Quote[]
-  invoices    Invoice[]
-  
-  @@map("projects")
-}
-
-model Quote {
-  id          String     @id @default(cuid())
-  
-  // Relations
-  projectId   String
-  project     Project    @relation(fields: [projectId], references: [id])
-  
-  clientId    String
-  client      User       @relation(fields: [clientId], references: [id])
-  
-  // Quote details
-  status      QuoteStatus @default(DRAFT)
-  amount      Decimal     @db.Decimal(10, 2)
-  description String?
-  
-  // Validity
-  validUntil  DateTime?
-  
-  // Metadata
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  
-  @@map("quotes")
-}
-
-model Invoice {
-  id          String    @id @default(cuid())
-  
-  // Relations
-  projectId   String
-  project     Project   @relation(fields: [projectId], references: [id])
-  
-  // Invoice details
-  amount      Decimal   @db.Decimal(10, 2)
-  description String?
-  status      String    @default("PENDING") // PENDING, PAID, OVERDUE
-  
-  // Dates
-  issuedAt    DateTime  @default(now())
-  dueAt       DateTime?
-  paidAt      DateTime?
-  
-  // Metadata
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  @@map("invoices")
-}
-
-model SupportTicket {
-  id          String    @id @default(cuid())
-  
-  // Relations
-  clientId    String
-  client      User      @relation(fields: [clientId], references: [id])
-  
-  // Ticket details
-  title       String
-  description String
-  status      String    @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
-  priority    String    @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
-  
-  // Metadata
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  resolvedAt  DateTime?
-  
-  @@map("support_tickets")
-}
-
-// Blog posts for content marketing
-model BlogPost {
-  id          String    @id @default(cuid())
-  
-  // Content
-  title       String
-  slug        String    @unique
-  excerpt     String?
-  content     String
-  
-  // SEO
-  metaTitle   String?
-  metaDesc    String?
-  
-  // Status
-  published   Boolean   @default(false)
-  publishedAt DateTime?
-  
-  // Metadata
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  @@map("blog_posts")
-}
-
-// Activity log for audit trail
-model ActivityLog {
-  id          String    @id @default(cuid())
-  
-  // What happened
-  action      String    // e.g., "PROJECT_CREATED", "QUOTE_SENT"
-  entityType  String    // e.g., "PROJECT", "QUOTE"
-  entityId    String?
-  
-  // Who did it
-  userId      String?
-  
-  // Details
-  metadata    Json?     // Additional context
-  
-  // When
-  createdAt   DateTime  @default(now())
-  
-  @@map("activity_logs")
 }
