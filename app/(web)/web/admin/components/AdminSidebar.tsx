@@ -2,15 +2,16 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { 
-  LayoutDashboard, 
-  FolderKanban, 
-  Users, 
-  UserCircle, 
-  FileText, 
-  DollarSign, 
+import {
+  LayoutDashboard,
+  FolderKanban,
+  Users,
+  UserCircle,
+  FileText,
+  DollarSign,
   Receipt,
   PenTool,
+  MessageSquare,
   Settings,
   Menu,
   X,
@@ -28,6 +29,7 @@ const navItems = [
   { href: '/web/admin/quotes', icon: FileText, label: 'Quotes' },
   { href: '/web/admin/finance', icon: DollarSign, label: 'Finance' },
   { href: '/web/admin/invoices', icon: Receipt, label: 'Invoices' },
+  { href: '/web/admin/support', icon: MessageSquare, label: 'Support' },
   { href: '/web/admin/content', icon: PenTool, label: 'Content' },
   { href: '/web/admin/settings', icon: Settings, label: 'Settings' },
 ]

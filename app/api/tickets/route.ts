@@ -1,0 +1,123 @@
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
+import { calculateSlaDeadline } from '@/lib/sla'
+import { sendTicketCreatedEmail, sendTicketAdminNotification } from '@/lib/email'
+
+const createTicketSchema = z.object({
+  clientId: z.string().min(1, 'Client ID is required'),
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(10, 'Please provide more details'),
+  priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).optional().default('MEDIUM'),
+  category: z
+    .enum(['GENERAL', 'BUG', 'FEATURE_REQUEST', 'BILLING', 'TECHNICAL'])
+    .optional()
+    .default('GENERAL'),
+  projectId: z.string().optional(),
+})
+
+// GET /api/tickets — List tickets with filters
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const status = searchParams.get('status')
+    const priority = searchParams.get('priority')
+    const category = searchParams.get('category')
+    const clientId = searchParams.get('clientId')
+    const assigneeId = searchParams.get('assigneeId')
+
+    const where: Record<string, unknown> = {}
+    if (status) where.status = status
+    if (priority) where.priority = priority
+    if (category) where.category = category
+    if (clientId) where.clientId = clientId
+    if (assigneeId) where.assigneeId = assigneeId
+
+    const tickets = await prisma.supportTicket.findMany({
+      where,
+      include: {
+        client: { select: { id: true, name: true, email: true, company: true } },
+        assignee: { select: { id: true, name: true, email: true } },
+        _count: { select: { comments: true } },
+      },
+      orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }],
+    })
+
+    return NextResponse.json({ success: true, data: tickets })
+  } catch (error) {
+    console.error('Error fetching tickets:', error)
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch tickets' },
+      { status: 500 }
+    )
+  }
+}
+
+// POST /api/tickets — Create ticket
+export async function POST(request: Request) {
+  try {
+    const body = await request.json()
+    const result = createTicketSchema.safeParse(body)
+
+    if (!result.success) {
+      return NextResponse.json(
+        { success: false, error: result.error.flatten() },
+        { status: 400 }
+      )
+    }
+
+    const data = result.data
+    const slaDeadline = calculateSlaDeadline(data.priority)
+
+    const ticket = await prisma.supportTicket.create({
+      data: {
+        clientId: data.clientId,
+        title: data.title,
+        description: data.description,
+        priority: data.priority,
+        category: data.category,
+        projectId: data.projectId || null,
+        slaDeadline,
+      },
+      include: {
+        client: { select: { id: true, name: true, email: true, company: true } },
+      },
+    })
+
+    // Log activity
+    await prisma.activityLog.create({
+      data: {
+        action: 'ticket_created',
+        entityType: 'SupportTicket',
+        entityId: ticket.id,
+        userId: data.clientId,
+        metadata: { priority: data.priority, category: data.category },
+      },
+    })
+
+    // Send email notifications (fire and forget)
+    const emailData = {
+      id: ticket.id,
+      title: data.title,
+      clientName: ticket.client?.name || '',
+      clientEmail: ticket.client?.email || '',
+      status: 'OPEN',
+      priority: data.priority,
+      category: data.category,
+    }
+    sendTicketCreatedEmail(emailData).catch((err) =>
+      console.error('[email] ticket created notification failed:', err)
+    )
+    sendTicketAdminNotification(emailData).catch((err) =>
+      console.error('[email] ticket admin notification failed:', err)
+    )
+
+    return NextResponse.json({ success: true, data: ticket }, { status: 201 })
+  } catch (error) {
+    console.error('Error creating ticket:', error)
+    return NextResponse.json(
+      { success: false, error: 'Failed to create ticket' },
+      { status: 500 }
+    )
+  }
+}
