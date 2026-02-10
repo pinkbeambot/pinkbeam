@@ -401,7 +401,9 @@ function MobileNav({
               </SheetClose>
               <SheetClose asChild>
                 <Button className="w-full bg-gradient-beam hover:opacity-90" asChild>
-                  <Link href="/agents">Get Started</Link>
+                  <Link href={currentService ? `${currentService.href}#pricing` : "/sign-up"}>
+                    Get Started
+                  </Link>
                 </Button>
               </SheetClose>
             </div>
@@ -491,7 +493,9 @@ export function Navigation() {
                   <Link href="/sign-in">Sign in</Link>
                 </Button>
                 <Button size="sm" className="bg-gradient-beam hover:opacity-90" asChild>
-                  <Link href="/agents">Get Started</Link>
+                  <Link href={currentService ? `${currentService.href}#pricing` : "/sign-up"}>
+                    Get Started
+                  </Link>
                 </Button>
               </div>
             )}
