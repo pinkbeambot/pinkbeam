@@ -7,13 +7,33 @@ import { PlatformDashboard } from "@/app/(main)/dashboard/components/PlatformDas
 // - Fetch user services from database
 // - Aggregate data from all services
 
-const mockDashboardData = {
+interface DashboardService {
+  id: string;
+  name: string;
+  description: string;
+  status: "active" | "inactive" | "pending";
+  stats: Record<string, string | number>;
+}
+
+interface DashboardActivity {
+  id: string;
+  service: string;
+  action: string;
+  time: string;
+}
+
+interface DashboardData {
+  services: DashboardService[];
+  recentActivity: DashboardActivity[];
+}
+
+const mockDashboardData: DashboardData = {
   services: [
     {
-      id: "agents" as const,
+      id: "agents",
       name: "AI Employees",
       description: "Manage your AI workforce",
-      status: "active" as const,
+      status: "active",
       stats: {
         "Active Employees": "3",
         "Tasks Completed": "127",
@@ -21,10 +41,10 @@ const mockDashboardData = {
       },
     },
     {
-      id: "web" as const,
+      id: "web",
       name: "Web Services",
       description: "Website & SEO management",
-      status: "active" as const,
+      status: "active",
       stats: {
         "Sites": "1",
         "Uptime": "99.9%",
@@ -35,13 +55,13 @@ const mockDashboardData = {
   recentActivity: [
     {
       id: "1",
-      service: "agents" as const,
+      service: "agents",
       action: "Sarah completed competitor analysis",
       time: "2 hours ago",
     },
     {
       id: "2",
-      service: "web" as const,
+      service: "web",
       action: "Website performance optimization completed",
       time: "1 day ago",
     },
@@ -52,7 +72,7 @@ export default function PlatformDashboardPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <PlatformDashboard data={mockDashboardData as any} />
+        <PlatformDashboard data={mockDashboardData} />
       </div>
     </div>
   );

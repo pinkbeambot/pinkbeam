@@ -46,10 +46,7 @@ export default function SarahDashboardPage() {
   const [newSourceName, setNewSourceName] = useState('')
 
   useEffect(() => {
-    loadData()
-  }, [])
-
-  const loadData = async () => {
+    const loadData = async () => {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -94,7 +91,9 @@ export default function SarahDashboardPage() {
     setBriefs(briefsData || [])
 
     setLoading(false)
-  }
+    }
+    loadData()
+  }, [router])
 
   const addCompetitor = async () => {
     if (!newCompetitor.trim() || !config) return
