@@ -232,15 +232,34 @@ export function QuotePageClient() {
     }
 
     setIsSubmitting(true);
+    setErrors([]);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const res = await fetch("/api/quotes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    // Clear localStorage on success
-    localStorage.removeItem("quoteFormData");
-    
-    setIsSubmitting(false);
-    setIsSuccess(true);
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (data.error?.fieldErrors) {
+          const fieldErrors = Object.values(data.error.fieldErrors).flat() as string[];
+          setErrors(fieldErrors.length > 0 ? fieldErrors : ["Failed to submit. Please try again."]);
+        } else {
+          setErrors([typeof data.error === "string" ? data.error : "Failed to submit. Please try again."]);
+        }
+        return;
+      }
+
+      localStorage.removeItem("quoteFormData");
+      setIsSuccess(true);
+    } catch {
+      setErrors(["Network error. Please check your connection and try again."]);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSuccess) {

@@ -1,6 +1,10 @@
 import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
+import dotenv from 'dotenv'
+
+// Ensure .env.local values override any system-level env vars (e.g., from `supabase link`).
+dotenv.config({ path: '.env.local', override: true })
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,

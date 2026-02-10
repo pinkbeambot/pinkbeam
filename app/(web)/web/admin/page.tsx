@@ -1,62 +1,37 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { 
-  DollarSign, 
-  FolderKanban, 
-  Users, 
+import {
+  DollarSign,
+  FolderKanban,
+  Users,
   FileText,
   TrendingUp,
   TrendingDown,
   ArrowRight,
   Plus,
   Clock,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { FadeIn } from '@/components/animations'
 
-// Mock data for admin dashboard
-const kpis = [
-  { 
-    label: 'Revenue (MTD)', 
-    value: '$12,450', 
-    change: '+12%', 
-    trend: 'up',
-    icon: DollarSign 
-  },
-  { 
-    label: 'Active Projects', 
-    value: '8', 
-    change: '+2', 
-    trend: 'up',
-    icon: FolderKanban 
-  },
-  { 
-    label: 'Total Clients', 
-    value: '24', 
-    change: '+3', 
-    trend: 'up',
-    icon: Users 
-  },
-  { 
-    label: 'Pending Quotes', 
-    value: '6', 
-    change: '-1', 
-    trend: 'down',
-    icon: FileText 
-  },
-]
+interface QuoteRequest {
+  id: string
+  fullName: string
+  company: string | null
+  projectType: string
+  services: string[]
+  budgetRange: string
+  status: string
+  createdAt: string
+}
 
-const recentQuotes = [
-  { id: 'Q-001', client: 'Acme Corp', service: 'Website Redesign', amount: 5000, status: 'new', date: '2026-02-18' },
-  { id: 'Q-002', client: 'TechStart Inc', service: 'E-commerce Platform', amount: 12000, status: 'contacted', date: '2026-02-17' },
-  { id: 'Q-003', client: 'Local Cafe', service: 'Landing Page', amount: 1500, status: 'proposal', date: '2026-02-15' },
-  { id: 'Q-004', client: 'Marketing Pro', service: 'SEO Package', amount: 2000, status: 'accepted', date: '2026-02-14' },
-]
-
+// Active projects and deadlines are still mock — will be connected in WEB-013
 const activeProjects = [
   { id: '1', name: 'Acme Corp Website', client: 'Acme Corp', progress: 65, dueDate: '2026-03-15', status: 'in-progress' },
   { id: '2', name: 'E-commerce Platform', client: 'TechStart Inc', progress: 15, dueDate: '2026-04-01', status: 'planning' },
@@ -71,12 +46,12 @@ const upcomingDeadlines = [
 
 function getStatusColor(status: string) {
   const colors: Record<string, string> = {
-    'new': 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-    'contacted': 'bg-amber-500/10 text-amber-500 border-amber-500/20',
-    'qualified': 'bg-purple-500/10 text-purple-500 border-purple-500/20',
-    'proposal': 'bg-violet-500/10 text-violet-500 border-violet-500/20',
-    'accepted': 'bg-green-500/10 text-green-500 border-green-500/20',
-    'declined': 'bg-red-500/10 text-red-500 border-red-500/20',
+    'NEW': 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+    'CONTACTED': 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+    'QUALIFIED': 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+    'PROPOSAL': 'bg-violet-500/10 text-violet-500 border-violet-500/20',
+    'ACCEPTED': 'bg-green-500/10 text-green-500 border-green-500/20',
+    'DECLINED': 'bg-red-500/10 text-red-500 border-red-500/20',
     'in-progress': 'bg-blue-500/10 text-blue-500 border-blue-500/20',
     'planning': 'bg-amber-500/10 text-amber-500 border-amber-500/20',
     'review': 'bg-violet-500/10 text-violet-500 border-violet-500/20',
@@ -84,7 +59,73 @@ function getStatusColor(status: string) {
   return colors[status] || 'bg-gray-500/10 text-gray-500'
 }
 
+const statusLabels: Record<string, string> = {
+  NEW: 'New',
+  CONTACTED: 'Contacted',
+  QUALIFIED: 'Qualified',
+  PROPOSAL: 'Proposal',
+  ACCEPTED: 'Accepted',
+  DECLINED: 'Declined',
+}
+
 export default function AdminDashboard() {
+  const [quotes, setQuotes] = useState<QuoteRequest[]>([])
+  const [quotesLoading, setQuotesLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchQuotes() {
+      try {
+        const res = await fetch('/api/quotes')
+        const data = await res.json()
+        if (data.success) {
+          setQuotes(data.data)
+        }
+      } catch {
+        console.error('Failed to fetch quotes')
+      } finally {
+        setQuotesLoading(false)
+      }
+    }
+    fetchQuotes()
+  }, [])
+
+  const pendingQuotes = quotes.filter(
+    (q) => !['ACCEPTED', 'DECLINED'].includes(q.status)
+  ).length
+  const newQuotes = quotes.filter((q) => q.status === 'NEW').length
+  const recentQuotes = quotes.slice(0, 4)
+
+  const kpis = [
+    {
+      label: 'Revenue (MTD)',
+      value: '$12,450',
+      change: '+12%',
+      trend: 'up' as const,
+      icon: DollarSign
+    },
+    {
+      label: 'Active Projects',
+      value: String(activeProjects.length),
+      change: '+2',
+      trend: 'up' as const,
+      icon: FolderKanban
+    },
+    {
+      label: 'Total Clients',
+      value: '24',
+      change: '+3',
+      trend: 'up' as const,
+      icon: Users
+    },
+    {
+      label: 'Pending Quotes',
+      value: quotesLoading ? '...' : String(pendingQuotes),
+      change: newQuotes > 0 ? `${newQuotes} new` : '0 new',
+      trend: newQuotes > 0 ? 'up' as const : 'down' as const,
+      icon: FileText
+    },
+  ]
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -155,22 +196,35 @@ export default function AdminDashboard() {
               </Button>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                {recentQuotes.map((quote) => (
-                  <div key={quote.id} className="flex items-center justify-between p-3 rounded-lg border">
-                    <div>
-                      <p className="font-medium">{quote.client}</p>
-                      <p className="text-sm text-muted-foreground">{quote.service}</p>
+              {quotesLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : recentQuotes.length === 0 ? (
+                <div className="text-center py-8">
+                  <FileText className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">No quote requests yet</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {recentQuotes.map((quote) => (
+                    <div key={quote.id} className="flex items-center justify-between p-3 rounded-lg border">
+                      <div>
+                        <p className="font-medium">{quote.fullName}</p>
+                        <p className="text-sm text-muted-foreground capitalize">
+                          {quote.projectType.replace(/-/g, ' ')}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium text-sm">{quote.budgetRange}</p>
+                        <Badge variant="outline" className={getStatusColor(quote.status)}>
+                          {statusLabels[quote.status] || quote.status}
+                        </Badge>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-medium">${quote.amount.toLocaleString()}</p>
-                      <Badge variant="outline" className={getStatusColor(quote.status)}>
-                        {quote.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </FadeIn>
@@ -206,7 +260,7 @@ export default function AdminDashboard() {
                         <span className="font-medium">{project.progress}%</span>
                       </div>
                       <div className="h-2 bg-muted rounded-full overflow-hidden">
-                        <div 
+                        <div
                           className="h-full bg-violet-500 rounded-full transition-all"
                           style={{ width: `${project.progress}%` }}
                         />
