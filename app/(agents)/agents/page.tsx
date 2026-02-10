@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { createMetadata, serviceMetadata, structuredData } from "@/lib/metadata";
 import {
   Hero,
   ProblemSection,
@@ -11,56 +12,42 @@ import {
   FAQ,
   FinalCTA,
 } from "@/components/agents/sections";
-import {
-  OrganizationSchema,
-  BreadcrumbSchema,
-  WebPageSchema,
-} from "@/components/seo/StructuredData";
 
-export const metadata: Metadata = {
-  title: "Pink Beam — Hire AI Employees for $500/Month",
-  description:
-    "Build your AI workforce with Pink Beam. Hire AI employees for research, sales, support, content, and design starting at $500/month. Replace $12K+ human salaries.",
-  alternates: {
-    canonical: "https://pinkbeam.io/agents",
-  },
-  openGraph: {
-    title: "Pink Beam — Hire AI Employees for $500/Month",
-    description:
-      "Build your AI workforce with Pink Beam. Hire AI employees for research, sales, support, and design starting at $500/month.",
-    url: "https://pinkbeam.io/agents",
-    images: [
-      {
-        url: "/api/og?title=Pink+Beam&subtitle=AI+Employees+for+Your+Business&type=default",
-        width: 1200,
-        height: 630,
-        alt: "Pink Beam - AI Employees for Your Business",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Pink Beam — Hire AI Employees for $500/Month",
-    description:
-      "Build your AI workforce with Pink Beam. Hire AI employees for research, sales, support, and design starting at $500/month.",
-    images: ["/api/og?title=Pink+Beam&subtitle=AI+Employees+for+Your+Business&type=default"],
-  },
-};
+export const metadata: Metadata = createMetadata({
+  ...serviceMetadata.agents,
+  title: "AI Employees — Hire AI Workers for $500/Month",
+  description: "Build your AI workforce with Pink Beam. Hire AI employees for research, sales, support, content, and design starting at $500/month.",
+});
+
+// JSON-LD structured data
+const webPageJsonLd = structuredData.webPage({
+  title: "AI Employees — Hire AI Workers for $500/Month",
+  description: "Build your AI workforce with Pink Beam. Hire AI employees for research, sales, support, content, and design starting at $500/month.",
+  path: "/agents",
+});
+
+const serviceJsonLd = structuredData.service({
+  name: "AI Employees",
+  description: "AI-powered employees that work 24/7 for your business",
+  path: "/agents",
+});
+
+const softwareJsonLd = structuredData.softwareApplication();
 
 export default function HomePage() {
   return (
     <>
-      <OrganizationSchema />
-      <BreadcrumbSchema
-        items={[
-          { name: "Home", item: "https://pinkbeam.io/" },
-          { name: "AI Employees", item: "https://pinkbeam.io/agents" },
-        ]}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
       />
-      <WebPageSchema
-        title="Pink Beam — Hire AI Employees for $500/Month"
-        description="Build your AI workforce with Pink Beam. Hire AI employees for research, sales, support, content, and design starting at $500/month."
-        url="https://pinkbeam.io/agents"
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareJsonLd) }}
       />
       <main className="min-h-screen">
         <Hero />

@@ -1,15 +1,34 @@
 import type { Metadata } from "next";
+import { createMetadata, serviceMetadata, structuredData } from "@/lib/metadata";
 import { WebPageClient } from "./WebPageClient";
 
-export const metadata: Metadata = {
-  title: "Pink Beam Web — Website & SEO Services",
-  description:
-    "High-performance websites, SEO optimization, and ongoing maintenance. Starting at $2,000.",
-  alternates: {
-    canonical: "https://pinkbeam.io/web",
-  },
-};
+export const metadata: Metadata = createMetadata(serviceMetadata.web);
+
+// JSON-LD structured data
+const serviceJsonLd = structuredData.service({
+  name: "Web Services",
+  description: "Professional website design, development, and SEO services",
+  path: "/web",
+});
+
+const webPageJsonLd = structuredData.webPage({
+  title: "Web Services — Website & SEO",
+  description: "Professional website design, development, and SEO services. Fast, beautiful websites that convert.",
+  path: "/web",
+});
 
 export default function WebPage() {
-  return <WebPageClient />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
+      />
+      <WebPageClient />
+    </>
+  );
 }
