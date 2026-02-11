@@ -1,0 +1,109 @@
+# Database Schema Design Guide
+
+## Design Principles
+
+### Normalization
+- First Normal Form (1NF): Atomic values only
+- Second Normal Form (2NF): No partial dependencies
+- Third Normal Form (3NF): No transitive dependencies
+- Denormalize selectively for read performance
+
+### Naming Conventions
+- Tables: plural, snake_case (e.g., `user_accounts`)
+- Columns: singular, snake_case (e.g., `created_at`)
+- Primary keys: `id` or `{table}_id`
+- Foreign keys: `{referenced_table}_id`
+- Indexes: `idx_{table}_{column(s)}`
+
+## Schema Checklist
+
+### Core Tables
+- [ ] Primary keys defined (prefer UUID or bigint)
+- [ ] Timestamps included (created_at, updated_at)
+- [ ] Soft delete considered (deleted_at)
+- [ ] Appropriate data types chosen
+
+### Relationships
+- [ ] Foreign keys defined
+- [ ] Cascade behavior specified
+- [ ] Junction tables for many-to-many
+- [ ] Self-referencing relationships handled
+
+### Constraints
+- [ ] NOT NULL where appropriate
+- [ ] UNIQUE constraints for natural keys
+- [ ] CHECK constraints for data validation
+- [ ] Default values set
+
+### Indexes
+- [ ] Primary key indexed
+- [ ] Foreign keys indexed
+- [ ] Query patterns analyzed
+- [ ] Composite indexes for common filters
+- [ ] Partial indexes for filtered queries
+
+### Performance
+- [ ] Partitioning strategy (if needed)
+- [ ] Read replicas considered
+- [ ] Caching layer designed
+- [ ] Connection pooling configured
+
+## Example Schema
+
+```sql
+-- Users table
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    status VARCHAR(20) DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_status ON users(status) WHERE deleted_at IS NULL;
+
+-- Posts table
+CREATE TABLE posts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id),
+    title VARCHAR(255) NOT NULL,
+    content TEXT,
+    published_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_posts_user_id ON posts(user_id);
+CREATE INDEX idx_posts_published ON posts(published_at) WHERE published_at IS NOT NULL;
+```
+
+## Migration Strategy
+
+### Best Practices
+- One migration per logical change
+- Migrations should be reversible
+- Test migrations on production-like data
+- Never modify existing migrations after deployment
+
+### Process
+1. Create migration file with timestamp
+2. Write up and down migrations
+3. Test locally
+4. Code review
+5. Deploy to staging
+6. Deploy to production
+
+## Documentation
+
+- [ ] Entity Relationship Diagram (ERD)
+- [ ] Data dictionary with descriptions
+- [ ] Enum values documented
+- [ ] API surface documented
+
+---
+*This is a placeholder file created for LABS-TASK-010*

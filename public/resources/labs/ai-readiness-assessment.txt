@@ -1,0 +1,45 @@
+# AI Readiness Assessment
+
+## Overview
+This assessment helps engineering teams evaluate their readiness for integrating AI capabilities into their products and workflows.
+
+## Assessment Areas
+
+### 1. Data Infrastructure
+- [ ] Data collection pipelines in place
+- [ ] Data quality monitoring systems
+- [ ] Scalable storage solutions
+- [ ] Data privacy compliance (GDPR, CCPA)
+
+### 2. Technical Capabilities
+- [ ] API-first architecture
+- [ ] Microservices or modular design
+- [ ] CI/CD pipelines
+- [ ] Monitoring and logging infrastructure
+
+### 3. Team Readiness
+- [ ] ML/AI expertise available
+- [ ] Data engineering capabilities
+- [ ] Product management alignment
+- [ ] Executive sponsorship
+
+### 4. Use Case Clarity
+- [ ] Clear problem definition
+- [ ] Success metrics defined
+- [ ] ROI expectations documented
+- [ ] User personas identified
+
+## Scoring
+- 0-25: Early stage - Focus on foundation
+- 26-50: Developing - Address gaps before AI integration
+- 51-75: Ready - Can begin pilot projects
+- 76-100: Advanced - Ready for full AI implementation
+
+## Next Steps
+1. Complete the assessment
+2. Identify priority gaps
+3. Create remediation plan
+4. Schedule follow-up review
+
+---
+*This is a placeholder file created for LABS-TASK-010*

@@ -1,0 +1,138 @@
+# Code Review Guidelines
+
+## Purpose
+Ensure code quality, maintainability, and knowledge sharing through consistent code review practices.
+
+## Review Process
+
+### Before Submitting
+- [ ] All tests passing
+- [ ] Self-review completed
+- [ ] Code follows style guide
+- [ ] Documentation updated
+- [ ] Commit messages are clear
+
+### Review Assignment
+- **Primary Reviewer:** Domain expert for the code area
+- **Secondary Reviewer:** Team member from different domain (optional)
+- **Required Approvals:** Minimum 1 for standard PRs, 2 for critical paths
+
+## Review Checklist
+
+### Functionality
+- [ ] Code meets requirements
+- [ ] Edge cases handled
+- [ ] Error handling implemented
+- [ ] No obvious bugs or logic errors
+- [ ] Performance considerations addressed
+
+### Code Quality
+- [ ] Code is readable and understandable
+- [ ] Naming is clear and consistent
+- [ ] Functions are appropriately sized
+- [ ] No code duplication (DRY principle)
+- [ ] SOLID principles followed
+
+### Testing
+- [ ] Unit tests included
+- [ ] Integration tests where appropriate
+- [ ] Test coverage meets threshold (>80%)
+- [ ] Edge cases are tested
+- [ ] Mocks/stubs used appropriately
+
+### Security
+- [ ] No hardcoded secrets
+- [ ] Input validation present
+- [ ] SQL injection prevention
+- [ ] XSS prevention measures
+- [ ] Authentication/authorization correct
+
+### Documentation
+- [ ] Complex logic is commented
+- [ ] Public APIs documented
+- [ ] README updated if needed
+- [ ] Breaking changes noted
+- [ ] Deployment notes included
+
+## Review Comments
+
+### Types of Comments
+1. **Blocking:** Must be resolved before merge
+   - Security issues
+   - Logic errors
+   - Missing tests
+   - Breaking changes
+
+2. **Suggestions:** Recommended but optional
+   - Refactoring opportunities
+   - Alternative approaches
+   - Performance improvements
+
+3. **Nits:** Minor style preferences
+   - Formatting
+   - Naming preferences
+   - Organizational suggestions
+
+### Comment Etiquette
+- Be respectful and constructive
+- Explain the "why" behind suggestions
+- Provide examples when helpful
+- Acknowledge good practices
+- Use `@mention` for specific questions
+
+## Response Guidelines
+
+### As Author
+- Respond to all comments
+- Ask for clarification if needed
+- Push fixes as separate commits
+- Re-request review when ready
+
+### As Reviewer
+- Respond promptly (within 24 hours)
+- Be flexible on minor issues
+- Approve with suggestions when appropriate
+- Follow up on previous concerns
+
+## Special Cases
+
+### Large PRs
+- Break into smaller PRs when possible
+- Provide detailed description
+- Schedule synchronous review session
+- Consider pair reviewing
+
+### Emergency Fixes
+- Expedited review process
+- Post-merge review for hotfixes
+- Retrospective on root cause
+
+### Dependency Updates
+- Automated checks for security updates
+- Review changelog for breaking changes
+- Test in staging environment
+
+## Metrics
+
+Track and review periodically:
+- Average review time
+- Number of review rounds
+- Defects caught in review
+- Review participation rate
+
+## Tools & Automation
+
+### Automated Checks
+- Linting (ESLint, Prettier)
+- Type checking
+- Unit test execution
+- Security scanning
+- Dependency vulnerability checks
+
+### IDE Integration
+- Pre-commit hooks
+- Inline PR comments
+- Code coverage reports
+
+---
+*This is a placeholder file created for LABS-TASK-010*
