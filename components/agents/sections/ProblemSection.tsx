@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Users, Headphones } from "lucide-react";
+import { Search, Users, Headphones, PenTool, Palette } from "lucide-react";
 import { Card, CardContent } from "@/components/ui";
 import { StaggerContainer } from "@/components/animations";
 import { FadeIn } from "@/components/animations";
@@ -27,6 +27,20 @@ const painPoints = [
     description: "Every morning starts with 30+ support requests. Password resets, feature questions, refund requests. You're paying yourself founder salary to do $15/hour work.",
     color: "bg-accent-cyan",
   },
+  {
+    icon: PenTool,
+    title: "The Content Treadmill",
+    headline: "Content Creation Never Ships",
+    description: "Your audience needs fresh content, but writing blog posts, social captions, and newsletters takes 20+ hours weekly. You're either creating mediocre content or not creating at all.",
+    color: "bg-accent-amber",
+  },
+  {
+    icon: Palette,
+    title: "The Design Bottleneck",
+    headline: "Design Work Piles Up",
+    description: "Every project needs graphics, decks, and brand assets. You're either paying $3K for freelance designers or spending nights in Figma doing mediocre work when you should be building.",
+    color: "bg-accent-indigo",
+  },
 ];
 
 export function ProblemSection() {
@@ -45,26 +59,26 @@ export function ProblemSection() {
           </p>
         </FadeIn>
 
-        {/* Pain Point Cards */}
-        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-          {painPoints.map((point) => {
+        {/* Pain Point Cards - Responsive Grid */}
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-5">
+          {painPoints.map((point, index) => {
             const Icon = point.icon;
             return (
-              <Card key={point.title} variant="elevated" className="group h-full">
-                <CardContent className="pt-6 flex flex-col h-full">
+              <Card key={point.title} variant="elevated" className="group h-full hover:border-pink-500/30 transition-all duration-300">
+                <CardContent className="p-5 flex flex-col h-full">
                   {/* Icon */}
-                  <div className={`${point.color} w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="w-7 h-7 text-white" />
+                  <div className={`${point.color} w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon className="w-6 h-6 text-white" />
                   </div>
-                  
+
                   {/* Content */}
-                  <p className="text-caption text-muted-foreground mb-2">
+                  <p className="text-xs text-muted-foreground mb-2 font-medium">
                     {point.title}
                   </p>
-                  <h3 className="text-h4 font-display font-semibold mb-4">
+                  <h3 className="text-sm font-display font-semibold mb-3 text-foreground leading-snug">
                     {point.headline}
                   </h3>
-                  <p className="text-body text-muted-foreground flex-1">
+                  <p className="text-xs text-muted-foreground flex-1 leading-relaxed">
                     {point.description}
                   </p>
                 </CardContent>

@@ -1,7 +1,9 @@
 "use client";
 
-import { Search, Users, Headphones, PenTool, Check } from "lucide-react";
+import Link from "next/link";
+import { Search, Users, Headphones, PenTool, Palette, Video, Check, ArrowRight } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui";
+import { Button } from "@/components/ui";
 import { FadeIn } from "@/components/animations";
 
 const employeeTabs = [
@@ -65,6 +67,36 @@ const employeeTabs = [
     ],
     color: "bg-accent-amber",
   },
+  {
+    id: "designer",
+    label: "Designer",
+    icon: Palette,
+    name: "LUMEN",
+    role: "Visual Designer",
+    capabilities: [
+      "Brand Assets: Create logos, icons, and design systems that reflect your brand",
+      "Social Graphics: Design engaging posts, stories, and carousel graphics at scale",
+      "Presentation Decks: Build polished pitch decks and marketing materials",
+      "Ad Creatives: Produce high-converting banner ads and social campaign visuals",
+      "Design Consistency: Maintain brand guidelines across all deliverables automatically",
+    ],
+    color: "bg-accent-indigo",
+  },
+  {
+    id: "video",
+    label: "Video",
+    icon: Video,
+    name: "FLUX",
+    role: "Motion Designer",
+    capabilities: [
+      "Short-Form Video: Create TikTok, Reels, and YouTube Shorts optimized for each platform",
+      "Animated Explainers: Build engaging product demos and how-to videos",
+      "Video Editing: Edit raw footage, add captions, effects, and music automatically",
+      "Social Clips: Transform long-form content into shareable video snippets",
+      "Auto-Optimization: Repurpose and adapt videos for different platforms and audiences",
+    ],
+    color: "bg-pink-400",
+  },
 ];
 
 export function EmployeeTabs() {
@@ -118,10 +150,16 @@ export function EmployeeTabs() {
                     </div>
                     <h3 className="text-h3 font-display font-bold mb-1">{tab.name}</h3>
                     <p className="text-body text-pink-500 font-medium mb-4">{tab.role}</p>
-                    <p className="text-small text-muted-foreground">
-                      Fully autonomous team member with built-in capabilities 
+                    <p className="text-small text-muted-foreground mb-6">
+                      Fully autonomous team member with built-in capabilities
                       and continuous learning.
                     </p>
+                    <Link href={`/agents/employees/${tab.id}`}>
+                      <Button variant="beam" size="sm" className="w-full group">
+                        Learn More
+                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                      </Button>
+                    </Link>
                   </div>
 
                   {/* Right: Capabilities */}

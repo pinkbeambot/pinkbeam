@@ -3,42 +3,13 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Check, Globe, MessageSquare, Palette, Code, Rocket, Search } from "lucide-react";
+import { ArrowRight, Check, Globe, MessageSquare, Rocket } from "lucide-react";
 import { FadeIn } from "@/components/animations";
 import { WebHero } from "./components/WebHero";
-
-const services = [
-  {
-    title: "Website Design",
-    description: "Beautiful, conversion-focused designs that reflect your brand and engage visitors.",
-    icon: Palette,
-  },
-  {
-    title: "Development",
-    description: "Clean, performant code using Next.js, React, and modern frameworks.",
-    icon: Code,
-  },
-  {
-    title: "SEO Optimization",
-    description: "Technical SEO, content strategy, and ongoing optimization to rank higher.",
-    icon: Search,
-  },
-  {
-    title: "Analytics & Tracking",
-    description: "Setup and configuration of analytics to measure what matters.",
-    icon: Globe,
-  },
-  {
-    title: "Content Updates",
-    description: "Regular updates to keep your site fresh, accurate, and engaging.",
-    icon: MessageSquare,
-  },
-  {
-    title: "Maintenance & Support",
-    description: "Ongoing maintenance, security updates, and technical support.",
-    icon: Rocket,
-  },
-];
+import { WebProblemSection } from "@/components/web/sections/WebProblemSection";
+import { WebServicesSection } from "@/components/web/sections/WebServicesSection";
+import { WebTestimonialsSection } from "@/components/web/sections/WebTestimonialsSection";
+import { WebFAQSection } from "@/components/web/sections/WebFAQSection";
 
 const processSteps = [
   {
@@ -47,17 +18,17 @@ const processSteps = [
     description: "We learn about your business, goals, and target audience to create a strategy.",
   },
   {
-    icon: Palette,
+    icon: "palette", // Using string to avoid circular imports
     title: "Design",
     description: "Wireframes and visual designs that align with your brand and convert visitors.",
   },
   {
-    icon: Code,
+    icon: "code",
     title: "Development",
     description: "Clean, fast code with modern frameworks. Built for performance and scale.",
   },
   {
-    icon: Search,
+    icon: "search",
     title: "SEO & Launch",
     description: "Optimization for search engines, analytics setup, and smooth deployment.",
   },
@@ -95,31 +66,11 @@ export function WebPageClient() {
       {/* Hero */}
       <WebHero />
 
-      {/* Services */}
-      <section id="features" className="py-20 lg:py-32 bg-background">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <FadeIn className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Everything you need</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              From design to deployment to ongoing optimization
-            </p>
-          </FadeIn>
+      {/* Problem Section */}
+      <WebProblemSection />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {services.map((service, index) => (
-              <FadeIn key={service.title} delay={index * 0.1} direction="up">
-                <div className="group p-6 rounded-2xl border bg-card h-full hover:shadow-lg hover:border-violet-500/30 transition-all duration-300">
-                  <div className="w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center mb-4 group-hover:bg-violet-500/20 transition-colors">
-                    <service.icon className="w-6 h-6 text-violet-500" />
-                  </div>
-                  <h3 className="text-lg font-bold mb-2">{service.title}</h3>
-                  <p className="text-sm text-muted-foreground">{service.description}</p>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Services Section with Tabs */}
+      <WebServicesSection />
 
       {/* Process */}
       <section className="py-20 lg:py-32 border-t bg-muted/30">
@@ -132,27 +83,30 @@ export function WebPageClient() {
           </FadeIn>
 
           <div className="max-w-4xl mx-auto">
-            {processSteps.map((step, index) => (
-              <FadeIn key={step.title} delay={index * 0.1} direction="up">
-                <div className="flex gap-6 mb-8 last:mb-0">
-                  <div className="flex flex-col items-center">
-                    <div className="w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0">
-                      <step.icon className="w-5 h-5 text-violet-500" />
+            {processSteps.map((step, index) => {
+              const Icon = typeof step.icon === 'string' ? null : step.icon;
+              return (
+                <FadeIn key={step.title} delay={index * 0.1} direction="up">
+                  <div className="flex gap-6 mb-8 last:mb-0">
+                    <div className="flex flex-col items-center">
+                      <div className="w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0">
+                        {Icon && <Icon className="w-5 h-5 text-violet-500" />}
+                      </div>
+                      {index < processSteps.length - 1 && (
+                        <div className="w-px h-full bg-border mt-4" />
+                      )}
                     </div>
-                    {index < processSteps.length - 1 && (
-                      <div className="w-px h-full bg-border mt-4" />
-                    )}
-                  </div>
-                  <div className="pb-8">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-sm font-medium text-violet-500">0{index + 1}</span>
-                      <h3 className="text-xl font-bold">{step.title}</h3>
+                    <div className="pb-8">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-sm font-medium text-violet-500">0{index + 1}</span>
+                        <h3 className="text-xl font-bold">{step.title}</h3>
+                      </div>
+                      <p className="text-muted-foreground">{step.description}</p>
                     </div>
-                    <p className="text-muted-foreground">{step.description}</p>
                   </div>
-                </div>
-              </FadeIn>
-            ))}
+                </FadeIn>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -175,7 +129,7 @@ export function WebPageClient() {
             ].map((item, index) => (
               <FadeIn key={item.title} delay={index * 0.15} direction="up">
                 <div className={`
-                  group relative aspect-[4/3] rounded-2xl overflow-hidden 
+                  group relative aspect-[4/3] rounded-2xl overflow-hidden
                   bg-gradient-to-br ${item.gradient} border
                   hover:shadow-lg hover:scale-[1.02] transition-all duration-300
                 `}>
@@ -207,7 +161,7 @@ export function WebPageClient() {
           <FadeIn className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">Simple pricing</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Choose the plan that fits your needs
+              Get a ballpark estimate below, or use our calculator for more details
             </p>
           </FadeIn>
 
@@ -235,24 +189,40 @@ export function WebPageClient() {
                       </li>
                     ))}
                   </ul>
-                  <Button 
-                    className="w-full" 
+                  <Button
+                    className="w-full"
                     variant={tier.name === "Professional" ? "default" : "outline"}
                     asChild
                   >
-                    <Link href="/contact">
-                      Get Started
+                    <Link href="/web/quote">
+                      Get a Quote
                     </Link>
                   </Button>
                 </div>
               </FadeIn>
             ))}
           </div>
+
+          <FadeIn className="text-center mt-12">
+            <p className="text-body text-muted-foreground">
+              Need exact pricing?{" "}
+              <Link href="/web/pricing" className="text-violet-500 hover:text-violet-600 font-medium">
+                Use our pricing calculator
+              </Link>{" "}
+              to get a detailed estimate
+            </p>
+          </FadeIn>
         </div>
       </section>
 
+      {/* Testimonials */}
+      <WebTestimonialsSection />
+
+      {/* FAQ */}
+      <WebFAQSection />
+
       {/* CTA */}
-      <section className="py-20 lg:py-32 border-t">
+      <section className="py-20 lg:py-32 border-t bg-muted/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center" direction="up">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
@@ -262,8 +232,8 @@ export function WebPageClient() {
               Let's discuss your project and create something amazing together.
             </p>
             <Button size="lg" className="bg-gradient-to-r from-violet-500 to-violet-600 hover:opacity-90" asChild>
-              <Link href="/contact">
-                Schedule a Call
+              <Link href="/web/quote">
+                Start Your Project
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
             </Button>

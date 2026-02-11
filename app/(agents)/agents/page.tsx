@@ -3,12 +3,10 @@ import { createMetadata, serviceMetadata, structuredData } from "@/lib/metadata"
 import {
   Hero,
   ProblemSection,
-  SolutionSection,
   HowItWorks,
   EmployeeTabs,
-  UseCases,
-  TrustSignals,
   Testimonials,
+  PricingSection,
   FAQ,
   FinalCTA,
 } from "@/components/agents/sections";
@@ -52,12 +50,10 @@ export default function HomePage() {
       <main className="min-h-screen">
         <Hero />
         <ProblemSection />
-        <SolutionSection />
-        <HowItWorks />
         <EmployeeTabs />
-        <UseCases />
-        <TrustSignals />
-        <Testimonials />
+        <HowItWorks />
+        <PricingSection />
+        <Testimonials title="Why We Built Pink Beam Agents" />
         <FAQ />
         <FinalCTA />
       </main>

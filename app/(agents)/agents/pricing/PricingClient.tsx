@@ -8,6 +8,7 @@ import { PricingToggle } from "./components/PricingToggle";
 import { PricingCard } from "./components/PricingCard";
 import { FeatureComparisonTable } from "./components/FeatureComparison";
 import { PricingFAQ } from "./components/PricingFAQ";
+import { ROICalculator } from "./components/ROICalculator";
 import { cn } from "@/lib/utils";
 import { getFieldErrors, pricingContactSchema } from "@/lib/validation";
 import {
@@ -78,6 +79,9 @@ export default function PricingClient() {
           </div>
         </div>
       </section>
+
+      {/* ROI Calculator Section */}
+      <ROICalculator />
 
       {/* Feature Comparison */}
       <section className="py-16 md:py-24">

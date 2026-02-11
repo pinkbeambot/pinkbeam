@@ -260,7 +260,7 @@ function CostComparisonChart({
 }
 
 // Main calculator component
-export default function ROICalculatorContent() {
+export function ROICalculator() {
   // Input states
   const [teamSize, setTeamSize] = useState<number>(5);
   const [avgSalary, setAvgSalary] = useState<number>(60000);
@@ -332,13 +332,12 @@ Calculate your savings at https://pinkbeam.io/calculator
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative py-16 md:py-24 overflow-hidden">
+    <section className="py-16 md:py-24 bg-background border-t">
+      <div className="relative overflow-hidden">
         {/* Background glow */}
-        <div className="absolute inset-0 bg-gradient-beam-glow pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-beam-glow pointer-events-none opacity-50" />
 
-        <div className="container relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
           <FadeIn>
             <div className="text-center max-w-3xl mx-auto mb-16">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
@@ -655,63 +654,7 @@ Calculate your savings at https://pinkbeam.io/calculator
             </div>
           </div>
         </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-16 bg-muted/30">
-        <div className="container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SlideUp>
-            <div className="text-center mb-12">
-              <h2 className="text-h2 font-display font-bold mb-4">
-                How We Calculate Savings
-              </h2>
-              <p className="text-muted-foreground">
-                Transparent methodology behind our ROI calculator
-              </p>
-            </div>
-          </SlideUp>
-
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid md:grid-cols-3 gap-6 will-change-transform"
-          >
-            {[
-              {
-                title: "Human Cost",
-                description:
-                  "Based on your team's average salary plus the hourly cost of time spent on repetitive tasks.",
-              },
-              {
-                title: "AI Cost",
-                description:
-                  "Flat monthly pricing: Research ($500), Sales ($600), Support ($600), Content ($500).",
-              },
-              {
-                title: "Your Savings",
-                description:
-                  "The difference between human and AI costs, representing pure value add to your business.",
-              },
-            ].map((item, index) => (
-              <motion.div key={index} variants={itemVariants}>
-                <Card className="h-full border-border/50 hover:border-primary/30 transition-colors">
-                  <CardContent className="p-6">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                      <span className="text-primary font-display font-bold">
-                        {index + 1}
-                      </span>
-                    </div>
-                    <h3 className="text-h4 font-display font-semibold mb-2">{item.title}</h3>
-                    <p className="text-sm text-muted-foreground">{item.description}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-    </div>
+      </div>
+    </section>
   );
 }

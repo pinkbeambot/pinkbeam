@@ -50,7 +50,7 @@ export function WebHero() {
           <FadeInOnMount delay={0.3}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
               <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-violet-500 to-violet-600 hover:opacity-90 shadow-lg shadow-violet-500/25" asChild>
-                <Link href="/contact">
+                <Link href="/web/quote">
                   Get a Quote
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>

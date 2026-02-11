@@ -1,41 +1,32 @@
 "use client";
 
-import { useState } from "react";
 import { Quote } from "lucide-react";
-import { FadeIn } from "@/components/animations";
 
-const founderQuotes = [
-  {
-    quote: "We're building AI employees because we needed them ourselves. Sarah, Mike, and Alex handle our research, sales, and support—so our team can focus on building.",
-    name: "Founders",
-    company: "Pink Beam",
-    initials: "PB",
-    color: "bg-pink-500",
-  },
-];
+const founderQuote = {
+  quote: "We're building AI employees because we needed them ourselves. Sarah, Mike, and Alex handle our research, sales, and support—so our team can focus on building.",
+  name: "Founders",
+  company: "Pink Beam",
+  initials: "PB",
+  color: "bg-pink-500",
+};
 
-interface TestimonialsProps {
-  title?: string;
-}
-
-export function Testimonials({ title = "Why We Built Pink Beam" }: TestimonialsProps) {
-  const [current] = useState(0);
-
+export function WhyWeBuild() {
   return (
     <section className="py-20 md:py-32 bg-background overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <FadeIn className="text-center mb-16">
+        <div className="text-center mb-16">
           <h2 className="text-h2 font-display font-bold mb-4">
-            {title}
+            Why We Built{" "}
+            <span className="text-gradient-beam">Pink Beam</span>
           </h2>
           <p className="text-lead text-muted-foreground max-w-2xl mx-auto">
             We're not here to replace your team. We're here to help you scale without burning out.
           </p>
-        </FadeIn>
+        </div>
 
         {/* Quote */}
-        <FadeIn delay={0.1}>
+        <div>
           <div className="relative max-w-3xl mx-auto">
             {/* Quote Icon */}
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-pink-500/10 flex items-center justify-center">
@@ -45,28 +36,28 @@ export function Testimonials({ title = "Why We Built Pink Beam" }: TestimonialsP
             {/* Quote Content */}
             <div className="bg-surface-elevated rounded-2xl p-8 md:p-12 border border-border pt-16 text-center">
               <blockquote className="text-h4 md:text-h3 font-display font-medium text-foreground mb-8 leading-relaxed">
-                "{founderQuotes[current].quote}"
+                "{founderQuote.quote}"
               </blockquote>
 
               {/* Attribution */}
               <div className="flex items-center justify-center gap-4">
-                <div className={`${founderQuotes[current].color} w-12 h-12 rounded-full flex items-center justify-center`}>
+                <div className={`${founderQuote.color} w-12 h-12 rounded-full flex items-center justify-center`}>
                   <span className="text-white font-display font-bold">
-                    {founderQuotes[current].initials}
+                    {founderQuote.initials}
                   </span>
                 </div>
                 <div className="text-left">
                   <p className="font-display font-semibold text-foreground">
-                    {founderQuotes[current].name}
+                    {founderQuote.name}
                   </p>
                   <p className="text-small text-muted-foreground">
-                    {founderQuotes[current].company}
+                    {founderQuote.company}
                   </p>
                 </div>
               </div>
             </div>
           </div>
-        </FadeIn>
+        </div>
       </div>
     </section>
   );

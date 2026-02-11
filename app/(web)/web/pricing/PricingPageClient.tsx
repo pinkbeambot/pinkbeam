@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { ArrowRight, Check, Calculator, HelpCircle, ChevronDown, DollarSign } from "lucide-react";
 import { FadeIn, FadeInOnMount } from "@/components/animations";
+import { WebROICalculator } from "@/components/web/sections/WebROICalculator";
 
 // Calculator types
 type ProjectType = "landing" | "starter" | "business" | "ecommerce" | "custom";
@@ -432,6 +433,9 @@ export function PricingPageClient() {
           </div>
         </div>
       </section>
+
+      {/* ROI Calculator */}
+      <WebROICalculator />
 
       {/* Maintenance Plans */}
       <section id="maintenance" className="py-20 lg:py-32 border-t bg-muted/30">
