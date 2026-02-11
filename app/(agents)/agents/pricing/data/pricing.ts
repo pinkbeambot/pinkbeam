@@ -31,8 +31,8 @@ export const pricingTiers: PricingTier[] = [
   {
     name: "Starter",
     price: {
-      monthly: 500,
-      annual: 5000, // 2 months free
+      monthly: 397,
+      annual: 3970, // 2 months free
     },
     employees: 1,
     description: "Perfect for trying out AI employees",
@@ -52,8 +52,8 @@ export const pricingTiers: PricingTier[] = [
   {
     name: "Growth",
     price: {
-      monthly: 1200,
-      annual: 12000, // 2 months free
+      monthly: 997,
+      annual: 9970, // 2 months free
     },
     employees: 3,
     description: "Most popular for growing teams",
@@ -78,7 +78,7 @@ export const pricingTiers: PricingTier[] = [
       annual: 0,
     },
     employees: -1, // Unlimited
-    description: "For teams with 10+ employees",
+    description: "For teams scaling with 5+ employees",
     features: [
       "Unlimited AI employees",
       "Dedicated account manager",
@@ -92,7 +92,7 @@ export const pricingTiers: PricingTier[] = [
     cta: "Contact Sales",
     ctaAction: () => console.log("Scale plan - Contact Sales"),
     popular: false,
-    badge: "For teams 10+",
+    badge: "For teams 5+",
   },
 ];
 
@@ -186,17 +186,17 @@ export const featureComparisons: FeatureComparison[] = [
 export const addOns: AddOn[] = [
   {
     name: "Extra Sources Pack",
-    price: 50,
+    price: 49,
     description: "Add 10 additional data sources to any employee",
   },
   {
     name: "Priority Support",
-    price: 100,
+    price: 99,
     description: "Upgrade to 1-hour response time on Starter plan",
   },
   {
     name: "Custom Training Session",
-    price: 200,
+    price: 199,
     description: "1-hour dedicated training with our AI specialists",
   },
 ];

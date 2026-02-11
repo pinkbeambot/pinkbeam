@@ -9,7 +9,7 @@ import {
 export const metadata: Metadata = {
   title: "Sarah — AI Market Intelligence Analyst | Pink Beam",
   description:
-    "Hire Sarah, your AI Market Intelligence Analyst. Monitors competitors, tracks funding rounds, and delivers weekly intelligence briefs for $500/month.",
+    "Hire Sarah, your AI Market Intelligence Analyst. Monitors competitors, tracks funding rounds, and delivers weekly intelligence briefs for $397/month.",
   alternates: {
     canonical: "https://pinkbeam.io/agents/employees/researcher",
   },

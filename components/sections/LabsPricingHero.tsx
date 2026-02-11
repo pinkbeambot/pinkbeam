@@ -5,7 +5,7 @@ import { DollarSign, ChevronDown } from "lucide-react";
 
 export function LabsPricingHero() {
   return (
-    <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden bg-gradient-void">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-void">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-beam-glow opacity-20 pointer-events-none" />
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />

@@ -13,14 +13,14 @@ import {
 
 export const metadata: Metadata = createMetadata({
   ...serviceMetadata.agents,
-  title: "AI Employees — Hire AI Workers for $500/Month",
-  description: "Build your AI workforce with Pink Beam. Hire AI employees for research, sales, support, content, and design starting at $500/month.",
+  title: "AI Employees — Hire AI Workers for $397/Month",
+  description: "Build your AI workforce with Pink Beam. Hire AI employees for research, sales, support, content, and design starting at $397/month.",
 });
 
 // JSON-LD structured data
 const webPageJsonLd = structuredData.webPage({
-  title: "AI Employees — Hire AI Workers for $500/Month",
-  description: "Build your AI workforce with Pink Beam. Hire AI employees for research, sales, support, content, and design starting at $500/month.",
+  title: "AI Employees — Hire AI Workers for $397/Month",
+  description: "Build your AI workforce with Pink Beam. Hire AI employees for research, sales, support, content, and design starting at $397/month.",
   path: "/agents",
 });
 

@@ -90,9 +90,9 @@ export function generatePageMetadata(meta: PageMeta): Metadata {
 
 // Default SEO metadata
 export const defaultMeta: PageMeta = {
-  title: "Pink Beam — Hire AI Employees for $500/Month",
+  title: "Pink Beam — Hire AI Employees for $397/Month",
   description:
-    "Build your AI workforce with Pink Beam. Hire AI employees for research, sales, support, content, and design starting at $500/month. Replace $12K+ human salaries.",
+    "Build your AI workforce with Pink Beam. Hire AI employees for research, sales, support, content, and design starting at $397/month. Replace $12K+ human salaries.",
   keywords: [
     "AI employees",
     "AI workforce",

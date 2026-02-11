@@ -735,7 +735,7 @@ export function demoWelcomeTemplate(data: DemoWelcomeData): { subject: string; h
     button('View Your Brief', data.viewBriefUrl) +
     `<p style="font-size: 15px; line-height: 1.6; color: #444;">
       <strong>Want briefs like this every week?</strong> Hire your own AI employee 
-      starting at just $500/month and get personalized intelligence delivered to your inbox.
+      starting at just $397/month and get personalized intelligence delivered to your inbox.
     </p>` +
     `<p style="font-size: 15px; line-height: 1.6; color: #444;">
       Questions? Just reply to this email — we're always happy to help.

@@ -9,7 +9,7 @@ export function OrganizationSchema() {
     url: "https://pinkbeam.io",
     logo: "https://pinkbeam.io/logo.png",
     description:
-      "Hire AI employees for your business. AI-powered workforce for research, sales, support, content, and design starting at $500/month.",
+      "Hire AI employees for your business. AI-powered workforce for research, sales, support, content, and design starting at $397/month.",
     sameAs: [
       "https://twitter.com/pinkbeam",
       "https://linkedin.com/company/pinkbeam",
@@ -21,7 +21,7 @@ export function OrganizationSchema() {
     },
     offers: {
       "@type": "Offer",
-      price: "500.00",
+      price: "397.00",
       priceCurrency: "USD",
       priceValidUntil: "2026-12-31",
       availability: "https://schema.org/InStock",
@@ -60,7 +60,7 @@ export function SoftwareApplicationSchema({
     operatingSystem,
     offers: {
       "@type": "Offer",
-      price: "500.00",
+      price: "397.00",
       priceCurrency: "USD",
     },
     aggregateRating: {

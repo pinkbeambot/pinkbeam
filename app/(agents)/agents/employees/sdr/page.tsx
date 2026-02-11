@@ -9,7 +9,7 @@ import {
 export const metadata: Metadata = {
   title: "Mike — AI Sales Development Rep | Pink Beam",
   description:
-    "Hire Mike, your AI Sales Development Representative. Researches prospects, writes personalized emails, and books qualified meetings for $600/month.",
+    "Hire Mike, your AI Sales Development Representative. Researches prospects, writes personalized emails, and books qualified meetings for $497/month.",
   alternates: {
     canonical: "https://pinkbeam.io/agents/employees/sdr",
   },

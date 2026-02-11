@@ -8,7 +8,7 @@ const industryUseCases = [
     icon: Rocket,
     title: "Startups",
     headline: "Move Faster with Less Burn",
-    description: "$500/month per AI employee vs $5-8k/month for hiring. Pre-seed to Series A founders use Pink Beam to validate ideas, generate leads, and launch products without the payroll overhead.",
+    description: "$397/month per AI employee vs $5-8k/month for hiring. Pre-seed to Series A founders use Pink Beam to validate ideas, generate leads, and launch products without the payroll overhead.",
     color: "bg-pink-500",
   },
   {

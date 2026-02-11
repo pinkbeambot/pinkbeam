@@ -73,16 +73,63 @@ const services = [
   },
 ];
 
+// Employee configuration for Agents
+const employees = [
+  { id: "sdr", name: "Mike", role: "SDR", href: "/agents/employees/sdr" },
+  { id: "researcher", name: "Sarah", role: "Researcher", href: "/agents/employees/researcher" },
+  { id: "support", name: "Alex", role: "Support", href: "/agents/employees/support" },
+  { id: "content", name: "Casey", role: "Content", href: "/agents/employees/content" },
+  { id: "designer", name: "LUMEN", role: "Designer", href: "/agents/employees/designer" },
+  { id: "video", name: "FLUX", role: "Video", href: "/agents/employees/video" },
+];
+
+// Solutions services configuration
+const solutionsServices = [
+  { id: "ai-strategy", name: "AI Strategy", href: "/solutions/services/ai-strategy" },
+  { id: "digital-transformation", name: "Digital Transformation", href: "/solutions/services/digital-transformation" },
+  { id: "technology-advisory", name: "Technology Advisory", href: "/solutions/services/technology-advisory" },
+  { id: "growth-strategy", name: "Growth Strategy", href: "/solutions/services/growth-strategy" },
+];
+
 // Detect current service from pathname
 function useCurrentService() {
   const pathname = usePathname();
-  
+
   if (pathname?.startsWith("/agents")) return services.find(s => s.id === "agents") || null;
   if (pathname?.startsWith("/web")) return services.find(s => s.id === "web") || null;
   if (pathname?.startsWith("/labs")) return services.find(s => s.id === "labs") || null;
   if (pathname?.startsWith("/solutions")) return services.find(s => s.id === "solutions") || null;
-  
+
   return null; // Launchpad / homepage
+}
+
+// Detect contextual dropdown based on pathname
+function useContextualDropdown() {
+  const pathname = usePathname();
+
+  // Agents employees
+  if (pathname?.startsWith("/agents/employees/")) {
+    const currentEmployee = employees.find(e => pathname.includes(e.id));
+    return {
+      type: "employees",
+      label: "Employees",
+      current: currentEmployee,
+      items: employees,
+    };
+  }
+
+  // Solutions services
+  if (pathname?.startsWith("/solutions/services/")) {
+    const currentService = solutionsServices.find(s => pathname.includes(s.id));
+    return {
+      type: "solutions-services",
+      label: "Services",
+      current: currentService,
+      items: solutionsServices,
+    };
+  }
+
+  return null;
 }
 
 // Logo component - links to launchpad
@@ -183,51 +230,70 @@ function ServiceSwitcher({ currentService }: { currentService: typeof services[0
   );
 }
 
-// Launchpad Link - shown when on service pages
-function LaunchpadLink({ currentService }: { currentService: typeof services[0] | null }) {
-  if (!currentService) return null;
+// Contextual Dropdown - shows different dropdowns based on route
+function ContextualDropdown() {
+  const contextual = useContextualDropdown();
+  const currentService = useCurrentService();
+
+  if (!contextual) return null;
 
   return (
-    <Link
-      href="/"
-      className="hidden lg:flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-    >
-      <ArrowLeft className="w-3.5 h-3.5" />
-      <span>Launchpad</span>
-    </Link>
+    <DropdownMenu>
+      <DropdownMenuTrigger className={cn(
+        "flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-medium transition-colors outline-none focus:ring-2 focus:ring-ring",
+        currentService?.borderColor || "border-border",
+        currentService?.bgHover || "hover:bg-muted",
+        "bg-opacity-10"
+      )}>
+        <span className={currentService?.textColor || "text-foreground"}>
+          {contextual.current?.name || contextual.label}
+        </span>
+        <ChevronDown className="w-3.5 h-3.5" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-64">
+        <div className="px-3 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          {contextual.label}
+        </div>
+        {contextual.items.map((item: any) => (
+          <DropdownMenuItem key={item.id} asChild>
+            <Link href={item.href} className="flex items-center gap-3 cursor-pointer">
+              <div className="flex-1">
+                <p className="font-medium">{item.name}</p>
+                {item.role && <p className="text-xs text-muted-foreground">{item.role}</p>}
+              </div>
+              {contextual.current?.id === item.id && (
+                <div className="w-1.5 h-1.5 rounded-full bg-gradient-beam" />
+              )}
+            </Link>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
-// Breadcrumbs component
-function Breadcrumbs({ currentService }: { currentService: typeof services[0] | null }) {
+// Back Button - goes up one directory level
+function BackButton() {
   const pathname = usePathname();
-  
-  if (!currentService || pathname === currentService.href) {
-    return null; // Don't show breadcrumbs on launchpad or service home pages
-  }
-  
-  // Parse path segments for nested pages
-  const segments = pathname?.split("/").filter(Boolean) || [];
-  
+  const currentService = useCurrentService();
+
+  // Don't show on homepage
+  if (!pathname || pathname === "/") return null;
+
+  // Calculate parent path
+  const segments = pathname.split("/").filter(Boolean);
+  const parentPath = segments.length > 1
+    ? "/" + segments.slice(0, -1).join("/")
+    : "/";
+
   return (
-    <div className="hidden lg:flex items-center gap-2 text-sm text-muted-foreground">
-      <Link href="/" className="hover:text-foreground transition-colors">Launchpad</Link>
-      <span className="text-muted-foreground/50">/</span>
-      <Link 
-        href={currentService.href} 
-        className={cn("hover:text-foreground transition-colors", currentService.textColor)}
-      >
-        {currentService.name}
-      </Link>
-      {segments.length > 1 && (
-        <>
-          <span className="text-muted-foreground/50">/</span>
-          <span className="text-foreground capitalize">
-            {segments[segments.length - 1].replace(/-/g, " ")}
-          </span>
-        </>
-      )}
-    </div>
+    <Link
+      href={parentPath}
+      className="hidden lg:flex items-center justify-center w-8 h-8 rounded-full border border-border hover:bg-muted transition-colors"
+      title="Go back"
+    >
+      <ArrowLeft className="w-3.5 h-3.5 text-muted-foreground" />
+    </Link>
   );
 }
 
@@ -466,20 +532,18 @@ export function Navigation() {
     >
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Left: Logo + Service Switcher */}
-          <div className="flex items-center gap-4">
+          {/* Left: Logo + Service Switcher + Contextual Dropdown + Back Button */}
+          <div className="flex items-center gap-3">
             <Logo />
             <div className="hidden lg:block">
               <ServiceSwitcher currentService={currentService} />
             </div>
             <div className="hidden lg:block">
-              <LaunchpadLink currentService={currentService} />
+              <ContextualDropdown />
             </div>
-          </div>
-          
-          {/* Center: Breadcrumbs (desktop only) */}
-          <div className="hidden lg:flex flex-1 justify-center">
-            <Breadcrumbs currentService={currentService} />
+            <div className="hidden lg:block">
+              <BackButton />
+            </div>
           </div>
 
           {/* Right: Actions */}

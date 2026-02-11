@@ -82,7 +82,7 @@ const problems = [
   {
     icon: DollarSign,
     title: "Expensive SDR Hiring",
-    description: "$6,000+/month for a full-time SDR, plus benefits, training, and management overhead.",
+    description: "$5,000+/month for a full-time SDR, plus benefits, training, and management overhead.",
   },
   {
     icon: Target,
@@ -128,7 +128,7 @@ const faqs = [
 
 export default function SDRClient() {
   const [meetingsPerMonth, setMeetingsPerMonth] = useState(20);
-  const costPerMonth = 600;
+  const costPerMonth = 497;
   const costPerMeeting = (costPerMonth / meetingsPerMonth).toFixed(2);
 
   return (
@@ -266,11 +266,11 @@ export default function SDRClient() {
                   <div className="mt-8 space-y-4">
                     <div className="flex justify-between items-center p-4 bg-muted rounded-lg">
                       <span className="text-muted-foreground">Human SDR Cost</span>
-                      <span className="text-lg font-bold text-foreground">$6,000/mo</span>
+                      <span className="text-lg font-bold text-foreground">$5,000/mo</span>
                     </div>
                     <div className="flex justify-between items-center p-4 bg-accent-purple/10 rounded-lg border border-accent-purple/30">
                       <span className="text-accent-purple">Mike Cost</span>
-                      <span className="text-lg font-bold text-accent-purple">$600/mo</span>
+                      <span className="text-lg font-bold text-accent-purple">$497/mo</span>
                     </div>
                   </div>
                 </div>
@@ -284,11 +284,11 @@ export default function SDRClient() {
                     ${costPerMeeting}
                   </div>
                   <p className="text-muted-foreground mb-6">
-                    vs. $300+ per meeting with a human SDR
+                    vs. $250+ per meeting with a human SDR
                   </p>
                   <div className="p-4 bg-green-500/10 rounded-lg border border-green-500/30">
                     <p className="text-green-600 font-semibold">
-                      Save ${((300 - parseFloat(costPerMeeting)) * meetingsPerMonth).toFixed(0)} per month
+                      Save ${((250 - parseFloat(costPerMeeting)) * meetingsPerMonth).toFixed(0)} per month
                     </p>
                   </div>
                 </div>
@@ -302,10 +302,10 @@ export default function SDRClient() {
       <EmployeeCostComparison
         roleName="Mike (AI SDR)"
         humanTitle="Full-Time SDR"
-        humanCost={6000}
-        aiCost={600}
+        humanCost={5000}
+        aiCost={497}
         colorClass="text-purple-500"
-        savings={64800}
+        savings={54036}
       />
 
       {/* Pricing Section */}
@@ -324,7 +324,7 @@ export default function SDRClient() {
             <div className="max-w-md mx-auto">
               <PricingCard
                 name="Mike — SDR"
-                price={600}
+                price={497}
                 description="Full-cycle sales development representative"
                 features={[
                   "Unlimited prospect research",

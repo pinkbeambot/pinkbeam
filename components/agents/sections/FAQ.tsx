@@ -36,7 +36,7 @@ const faqItems = [
   },
   {
     question: "How much does it cost?",
-    answer: "Individual employees start at $500/month. Full teams start at $1,500/month. Compare that to $6K-12K/month for a human hire—plus benefits, onboarding, and management overhead. Annual plans include two months free.",
+    answer: "Individual employees start at $397/month. Full teams start at $997/month. Compare that to $6K-12K/month for a human hire—plus benefits, onboarding, and management overhead. Annual plans include two months free.",
   },
   {
     question: "Can I cancel anytime?",

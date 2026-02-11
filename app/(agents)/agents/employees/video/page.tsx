@@ -9,7 +9,7 @@ import {
 export const metadata: Metadata = {
   title: "FLUX — AI Motion Designer | Pink Beam",
   description:
-    "Hire FLUX, your AI Motion Designer. Creates product explainers, social video cuts, motion graphics, and multi-format exports for $500/month.",
+    "Hire FLUX, your AI Motion Designer. Creates product explainers, social video cuts, motion graphics, and multi-format exports for $447/month.",
   alternates: {
     canonical: "https://pinkbeam.io/agents/employees/video",
   },

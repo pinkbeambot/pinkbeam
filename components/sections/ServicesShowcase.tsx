@@ -17,7 +17,7 @@ const services = [
       "Work around the clock, no time off",
       "Learn and improve from your feedback",
       "Perfect for scaling without hiring",
-      "Start from $500/month",
+      "Start from $397/month",
     ],
     color: "bg-pink-500",
     textColor: "text-pink-500",

@@ -133,7 +133,7 @@ const faqs = [
 
 export default function ResearcherClient() {
   const [hoursPerWeek, setHoursPerWeek] = useState(15);
-  const costPerMonth = 500;
+  const costPerMonth = 397;
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
@@ -280,7 +280,7 @@ export default function ResearcherClient() {
                     </div>
                     <div className="flex justify-between items-center p-4 bg-pink-500/10 rounded-lg border border-pink-500/30">
                       <span className="text-pink-500">Sarah Cost</span>
-                      <span className="text-lg font-bold text-pink-500">$500/mo</span>
+                      <span className="text-lg font-bold text-pink-500">$397/mo</span>
                     </div>
                   </div>
                 </div>
@@ -298,7 +298,7 @@ export default function ResearcherClient() {
                   </p>
                   <div className="p-4 bg-green-500/10 rounded-lg border border-green-500/30">
                     <p className="text-green-600 font-semibold">
-                      Save ${((hoursPerWeek * 4 * 50 - 500) * 12).toLocaleString()} annually
+                      Save ${((hoursPerWeek * 4 * 50 - 397) * 12).toLocaleString()} annually
                     </p>
                   </div>
                 </div>
@@ -313,9 +313,9 @@ export default function ResearcherClient() {
         roleName="Sarah (AI Researcher)"
         humanTitle="Full-Time Market Analyst"
         humanCost={7000}
-        aiCost={500}
+        aiCost={397}
         colorClass="text-pink-500"
-        savings={78000}
+        savings={79236}
       />
 
       {/* Pricing Section */}
@@ -334,7 +334,7 @@ export default function ResearcherClient() {
             <div className="max-w-md mx-auto">
               <PricingCard
                 name="Sarah — Researcher"
-                price={500}
+                price={397}
                 description="Full-time market intelligence analyst"
                 features={[
                   "Unlimited research requests",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DollarSign, HelpCircle, Plus, Mail } from "lucide-react";
+import { DollarSign, HelpCircle, Plus, Mail, ChevronDown } from "lucide-react";
 import { FadeIn } from "@/components/animations";
 import { Button, Input } from "@/components/ui";
 import { PricingToggle } from "./components/PricingToggle";
@@ -44,32 +44,47 @@ export default function PricingClient() {
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
-      <section className="pt-20 pb-16 md:pt-32 md:pb-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-void">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-gradient-beam-glow opacity-20 pointer-events-none" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] bg-pink-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center max-w-3xl mx-auto">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-pink-500/10 mb-6">
               <DollarSign className="w-7 h-7 text-pink-500" />
             </div>
-            <h1 className="text-hero font-display font-bold mb-6">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold mb-6 text-white tracking-tight">
               Simple, Transparent{" "}
               <span className="text-gradient-beam">Pricing</span>
             </h1>
-            <p className="text-lead text-muted-foreground mb-8">
-              Hire AI employees for less than a single human salary. Start small,
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              AI employees starting at $397/month. Start small,
               scale as you grow. No hidden fees, no surprises.
             </p>
-            <PricingToggle
-              isAnnual={isAnnual}
-              onToggle={setIsAnnual}
-              savingsText="Save 2 months free with annual billing"
-            />
           </FadeIn>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground">
+          <span className="text-xs uppercase tracking-wider">Scroll</span>
+          <ChevronDown className="w-5 h-5 text-pink-500 animate-bounce" />
         </div>
       </section>
 
       {/* Pricing Tiers */}
       <section className="py-16 md:py-24 bg-surface-sunken">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          {/* Pricing Toggle */}
+          <FadeIn className="mb-12">
+            <PricingToggle
+              isAnnual={isAnnual}
+              onToggle={setIsAnnual}
+              savingsText="Save 2 months free with annual billing"
+              themeColor="bg-pink-500"
+            />
+          </FadeIn>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
             {pricingTiers.map((tier, index) => (
               <FadeIn key={tier.name} delay={index * 0.1}>

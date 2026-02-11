@@ -10,7 +10,7 @@ const pricingData = [
   {
     name: "AI Employees",
     icon: Zap,
-    startingPrice: "$500",
+    startingPrice: "$397",
     period: "/month",
     description: "Hire autonomous AI workers",
     color: "bg-pink-500",
@@ -25,7 +25,7 @@ const pricingData = [
   {
     name: "Websites",
     icon: Code,
-    startingPrice: "$2,000",
+    startingPrice: "$1,997",
     period: "project",
     description: "High-performance websites",
     color: "bg-violet-500",
@@ -34,14 +34,14 @@ const pricingData = [
     features: [
       "Complete site design & development",
       "SEO & performance included",
-      "Maintenance plans from $99/mo",
+      "Maintenance plans from $79/mo",
     ],
   },
   {
     name: "Custom Software",
     icon: Lightbulb,
-    startingPrice: "Custom",
-    period: "pricing",
+    startingPrice: "$4,997",
+    period: "project",
     description: "Purpose-built applications",
     color: "bg-cyan-500",
     textColor: "text-cyan-500",
@@ -55,8 +55,8 @@ const pricingData = [
   {
     name: "Consulting",
     icon: Briefcase,
-    startingPrice: "Hourly",
-    period: "rates",
+    startingPrice: "$1,997",
+    period: "engagement",
     description: "Strategic expert guidance",
     color: "bg-amber-500",
     textColor: "text-amber-500",

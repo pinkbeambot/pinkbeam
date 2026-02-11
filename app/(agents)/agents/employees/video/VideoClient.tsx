@@ -163,7 +163,7 @@ export default function VideoClient() {
 
       {/* VALIS Quote */}
       <EmployeeVALISQuote
-        quote="Great video marketing isn't about hiring expensive production agencies—it's about creating consistent, high-quality content at scale. FLUX delivers this for $500/month instead of $15K+ per video."
+        quote="Great video marketing isn't about hiring expensive production agencies—it's about creating consistent, high-quality content at scale. FLUX delivers this for $447/month instead of $15K+ per video."
         colorClass="border-pink-500/30 bg-pink-500/5 text-pink-400"
       />
 
@@ -321,9 +321,9 @@ export default function VideoClient() {
         roleName="FLUX (AI Video)"
         humanTitle="Video Production Agency"
         humanCost={15000}
-        aiCost={500}
+        aiCost={447}
         colorClass="text-pink-500"
-        savings={174000}
+        savings={174636}
       />
 
       {/* Pricing Section */}
@@ -342,7 +342,7 @@ export default function VideoClient() {
             <div className="max-w-md mx-auto">
               <PricingCard
                 name="FLUX — Video"
-                price={500}
+                price={447}
                 description="Motion graphics producer"
                 features={[
                   "Unlimited video requests",

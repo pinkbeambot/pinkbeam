@@ -8,21 +8,21 @@ import {
 export const metadata: Metadata = {
   title: "Pricing — Pink Beam AI Employees",
   description:
-    "Simple, transparent pricing for AI employees. Hire AI employees for $500/month. No hidden fees, no surprises. Starter, Growth, and Scale plans available.",
+    "Simple, transparent pricing for AI employees. Hire AI employees for $397/month. No hidden fees, no surprises. Starter, Growth, and Scale plans available.",
   alternates: {
     canonical: "https://pinkbeam.io/agents/pricing",
   },
   openGraph: {
     title: "Pricing — Pink Beam AI Employees",
     description:
-      "Simple, transparent pricing for AI employees. Hire AI employees for $500/month. No hidden fees, no surprises.",
+      "Simple, transparent pricing for AI employees. Hire AI employees for $397/month. No hidden fees, no surprises.",
     url: "https://pinkbeam.io/agents/pricing",
     images: [
       {
         url: "/api/og?type=pricing",
         width: 1200,
         height: 630,
-        alt: "Pink Beam Pricing - $500/month per AI employee",
+        alt: "Pink Beam Pricing - $397/month per AI employee",
       },
     ],
   },
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Pricing — Pink Beam AI Employees",
     description:
-      "Simple, transparent pricing for AI employees. Hire AI employees for $500/month.",
+      "Simple, transparent pricing for AI employees. Hire AI employees for $397/month.",
     images: ["/api/og?type=pricing"],
   },
 };
@@ -46,7 +46,7 @@ export default function PricingPage() {
       />
       <WebPageSchema
         title="Pricing — Pink Beam AI Employees"
-        description="Simple, transparent pricing for AI employees. Hire AI employees for $500/month."
+        description="Simple, transparent pricing for AI employees. Hire AI employees for $397/month."
         url="https://pinkbeam.io/agents/pricing"
       />
       <PricingClient />

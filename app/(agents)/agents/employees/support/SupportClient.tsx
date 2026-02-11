@@ -293,9 +293,9 @@ export default function SupportClient() {
         roleName="Alex (AI Support)"
         humanTitle="5 Support Reps (24/7)"
         humanCost={20000}
-        aiCost={600}
+        aiCost={497}
         colorClass="text-cyan-500"
-        savings={232800}
+        savings={234036}
       />
 
       {/* Pricing Section */}
@@ -314,7 +314,7 @@ export default function SupportClient() {
             <div className="max-w-md mx-auto">
               <PricingCard
                 name="Alex — Support"
-                price={600}
+                price={497}
                 description="24/7 customer support specialist"
                 features={[
                   "Unlimited ticket volume",

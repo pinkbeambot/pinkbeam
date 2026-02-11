@@ -33,11 +33,11 @@ interface CalculatorState {
 
 // Base prices
 const basePrices: Record<ProjectType, { min: number; max: number }> = {
-  landing: { min: 2500, max: 5000 },
-  starter: { min: 5000, max: 8000 },
-  business: { min: 10000, max: 18000 },
-  ecommerce: { min: 15000, max: 30000 },
-  custom: { min: 25000, max: 50000 },
+  landing: { min: 1997, max: 4500 },
+  starter: { min: 3997, max: 6997 },
+  business: { min: 7997, max: 14997 },
+  ecommerce: { min: 12997, max: 24997 },
+  custom: { min: 19997, max: 44997 },
 };
 
 // Multipliers
@@ -70,8 +70,8 @@ function calculatePrice(state: CalculatorState): { min: number; max: number } {
   // Page count adjustment for non-landing pages
   if (state.projectType !== "landing") {
     const extraPages = Math.max(0, state.pageCount - 5);
-    min += extraPages * 300;
-    max += extraPages * 500;
+    min += extraPages * 250;
+    max += extraPages * 450;
   }
 
   // Feature multipliers
@@ -132,7 +132,7 @@ const faqs = [
 const maintenancePlans = [
   {
     name: "Essential",
-    price: "$99",
+    price: "$79",
     period: "/month",
     description: "For simple websites",
     features: [
@@ -145,7 +145,7 @@ const maintenancePlans = [
   },
   {
     name: "Growth",
-    price: "$249",
+    price: "$197",
     period: "/month",
     description: "For business websites",
     features: [
@@ -161,7 +161,7 @@ const maintenancePlans = [
   },
   {
     name: "Scale",
-    price: "$499",
+    price: "$397",
     period: "/month",
     description: "For mission-critical sites",
     features: [

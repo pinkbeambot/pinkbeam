@@ -150,7 +150,7 @@ export default function DesignerClient() {
 
       {/* VALIS Quote */}
       <EmployeeVALISQuote
-        quote="Great design isn't about hiring expensive agencies—it's about having unlimited access to quality visuals when you need them. LUMEN delivers this for $400/month instead of $10K+ agency retainers."
+        quote="Great design isn't about hiring expensive agencies—it's about having unlimited access to quality visuals when you need them. LUMEN delivers this for $347/month instead of $10K+ agency retainers."
         colorClass="border-indigo-500/30 bg-indigo-500/5 text-indigo-400"
       />
 
@@ -264,9 +264,9 @@ export default function DesignerClient() {
         roleName="LUMEN (AI Designer)"
         humanTitle="Design Agency Retainer"
         humanCost={10000}
-        aiCost={400}
+        aiCost={347}
         colorClass="text-indigo-500"
-        savings={115200}
+        savings={115836}
       />
 
       {/* Pricing Section */}
@@ -285,7 +285,7 @@ export default function DesignerClient() {
             <div className="max-w-md mx-auto">
               <PricingCard
                 name="LUMEN — Designer"
-                price={400}
+                price={347}
                 description="On-demand visual designer"
                 features={[
                   "Unlimited design requests",

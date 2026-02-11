@@ -9,7 +9,7 @@ import {
 export const metadata: Metadata = {
   title: "LUMEN — AI Visual Designer | Pink Beam",
   description:
-    "Hire LUMEN, your AI Visual Designer. Creates marketing assets, brand collateral, social graphics, and presentations for $400/month.",
+    "Hire LUMEN, your AI Visual Designer. Creates marketing assets, brand collateral, social graphics, and presentations for $347/month.",
   alternates: {
     canonical: "https://pinkbeam.io/agents/employees/designer",
   },

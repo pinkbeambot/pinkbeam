@@ -4,9 +4,9 @@ import { Navigation } from "@/components/layout/Navigation";
 import { Footer } from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
-  title: "Pink Beam Agents — Hire AI Employees for $500/Month",
+  title: "Pink Beam Agents — Hire AI Employees for $397/Month",
   description:
-    "Build your AI workforce with Pink Beam. Hire AI employees for research, sales, support, content, and design starting at $500/month. Replace $12K+ human salaries.",
+    "Build your AI workforce with Pink Beam. Hire AI employees for research, sales, support, content, and design starting at $397/month. Replace $12K+ human salaries.",
   metadataBase: new URL("https://pinkbeam.io"),
 };
 

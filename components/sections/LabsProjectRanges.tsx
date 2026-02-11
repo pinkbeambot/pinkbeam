@@ -7,7 +7,7 @@ import { Check } from "lucide-react";
 const projects = [
   {
     name: "MVP / Proof of Concept",
-    priceRange: "$25,000 - $50,000",
+    priceRange: "$19,997 - $44,997",
     timeline: "8-12 weeks",
     scope: "Lean, validated product to test market fit",
     features: [
@@ -26,7 +26,7 @@ const projects = [
   },
   {
     name: "Standard Project",
-    priceRange: "$50,000 - $100,000",
+    priceRange: "$39,997 - $79,997",
     timeline: "12-20 weeks",
     scope: "Production-ready system with core features and integrations",
     features: [
@@ -46,7 +46,7 @@ const projects = [
   },
   {
     name: "Enterprise System",
-    priceRange: "$100,000+",
+    priceRange: "$79,997+",
     timeline: "20+ weeks",
     scope: "Complex, scalable system with advanced features",
     features: [

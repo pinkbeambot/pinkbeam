@@ -153,7 +153,7 @@ export async function GET(request: NextRequest) {
             fontFamily: "Space Grotesk",
           }}
         >
-          $500/month
+          $397/month
         </div>
         <div
           style={{

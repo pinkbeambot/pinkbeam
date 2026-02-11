@@ -19,7 +19,7 @@ const models = [
     name: "Workshops",
     icon: Lightbulb,
     tagline: "Quick clarity, fast alignment",
-    price: "$2,500 - $10,000",
+    price: "$1,997 - $7,997",
     duration: "Half-day to multi-day",
     description:
       "Intensive strategy sessions that get your team aligned and give you a clear action plan. Perfect for kicking off new initiatives or unblocking stalled ones.",
@@ -42,7 +42,7 @@ const models = [
     name: "Assessments",
     icon: Search,
     tagline: "Deep-dive analysis with a roadmap",
-    price: "$10,000 - $25,000",
+    price: "$7,997 - $19,997",
     duration: "2-3 weeks",
     description:
       "Comprehensive evaluation of your technology, processes, and opportunities. You get a detailed report with specific, prioritized recommendations.",
@@ -66,7 +66,7 @@ const models = [
     name: "Retainers",
     icon: Users,
     tagline: "Fractional CTO on your team",
-    price: "$5,000 - $20,000/mo",
+    price: "$3,997 - $14,997/mo",
     duration: "Monthly (no long-term contract)",
     description:
       "Ongoing strategic partnership with senior technology leadership. Like having a CTO on speed dial without the $300K+ salary.",
@@ -90,7 +90,7 @@ const models = [
     name: "Projects",
     icon: Rocket,
     tagline: "End-to-end strategy & execution",
-    price: "$30,000 - $500,000+",
+    price: "$24,997 - $497,000+",
     duration: "2-12 months",
     description:
       "Complete strategic initiatives from discovery through implementation. Dedicated team, milestone-based delivery, measurable outcomes.",

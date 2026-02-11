@@ -138,7 +138,7 @@ const faqs = [
 
 export default function ContentClient() {
   const [piecesPerMonth, setPiecesPerMonth] = useState(10);
-  const costPerMonth = 500;
+  const costPerMonth = 397;
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
@@ -337,9 +337,9 @@ export default function ContentClient() {
         roleName="Casey (AI Content)"
         humanTitle="Content Marketing Manager"
         humanCost={5000}
-        aiCost={500}
+        aiCost={397}
         colorClass="text-amber-500"
-        savings={54000}
+        savings={55236}
       />
 
       {/* Pricing Section */}
@@ -358,7 +358,7 @@ export default function ContentClient() {
             <div className="max-w-md mx-auto">
               <PricingCard
                 name="Casey — Content"
-                price={500}
+                price={397}
                 description="Full-stack content marketing specialist"
                 features={[
                   "Unlimited content creation",
