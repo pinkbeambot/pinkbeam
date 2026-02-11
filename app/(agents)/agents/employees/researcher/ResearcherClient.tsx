@@ -1,10 +1,15 @@
 "use client";
 
-import { Search, Bell, FileText, TrendingUp, Target, Clock, Check } from "lucide-react";
+import { Search, Bell, FileText, TrendingUp, Target, Clock, Check, AlertTriangle, Zap, DollarSign, Calculator } from "lucide-react";
+import { useState } from "react";
 import { EmployeeHero } from "../components/EmployeeHero";
 import { CapabilityCard } from "../components/CapabilityCard";
 import { PricingCard } from "../components/PricingCard";
 import { IntegrationShowcase } from "../components/IntegrationShowcase";
+import { EmployeeProblemSection } from "../components/EmployeeProblemSection";
+import { EmployeeVALISQuote } from "../components/EmployeeVALISQuote";
+import { EmployeeCostComparison } from "../components/EmployeeCostComparison";
+import { EmployeeFAQ } from "../components/EmployeeFAQ";
 import { FadeIn } from "@/components/animations";
 import { Quote } from "lucide-react";
 
@@ -68,7 +73,67 @@ const integrations = [
   { name: "Email", icon: "Em" },
 ];
 
+const problems = [
+  {
+    icon: Clock,
+    title: "Research Takes 20+ Hours/Week",
+    description: "Your team spends entire days scanning news, tracking competitors, and reading industry reports instead of executing strategy.",
+  },
+  {
+    icon: AlertTriangle,
+    title: "You're Always One Step Behind",
+    description: "Competitors move faster because you miss critical market signals buried in thousands of sources.",
+  },
+  {
+    icon: TrendingUp,
+    title: "No Consistent Intelligence Process",
+    description: "Market research happens ad-hoc. Your team lacks a systematic way to stay informed and spot trends early.",
+  },
+  {
+    icon: DollarSign,
+    title: "Full-Time Analysts Cost $80K+",
+    description: "Hiring a market intelligence analyst costs $80,000+/year, plus benefits, training, and management overhead.",
+  },
+];
+
+const faqs = [
+  {
+    question: "How long does it take to set up Sarah?",
+    answer: "Initial setup takes about 20 minutes. You'll define your competitors, focus areas, and preferred sources. Sarah starts monitoring within 1 hour and delivers your first brief on Monday.",
+  },
+  {
+    question: "Can Sarah monitor specific companies or topics?",
+    answer: "Absolutely. You can configure Sarah to track specific competitors, technologies, funding rounds, regulatory changes, or any custom topics relevant to your business.",
+  },
+  {
+    question: "How does Sarah find relevant information?",
+    answer: "Sarah monitors 50+ sources including news APIs, RSS feeds, Twitter/X, SEC filings, and industry publications. She uses AI to filter signal from noise and surface only what matters.",
+  },
+  {
+    question: "What if I need research beyond Monday briefs?",
+    answer: "Sarah can handle ad-hoc research requests anytime. Just ask her to investigate a specific topic, competitor, or trend, and she'll deliver a detailed brief within hours.",
+  },
+  {
+    question: "Can Sarah integrate with our existing tools?",
+    answer: "Yes! Sarah delivers briefs via email, Slack, or your preferred channel. She can also sync with Notion, Google Docs, or any tool that accepts webhooks.",
+  },
+  {
+    question: "How is this different from news aggregators?",
+    answer: "News aggregators dump raw headlines. Sarah analyzes, filters, synthesizes, and provides strategic recommendations. She understands your business context and surfaces only relevant intelligence.",
+  },
+  {
+    question: "What's your refund policy?",
+    answer: "We offer a 30-day money-back guarantee. If Sarah doesn't deliver actionable intelligence in the first month, we'll refund your payment—no questions asked.",
+  },
+  {
+    question: "How many sources can Sarah monitor?",
+    answer: "Sarah monitors 50+ sources by default and can scale to 100+ based on your needs. She prioritizes quality over quantity—only surfacing truly relevant updates.",
+  },
+];
+
 export default function ResearcherClient() {
+  const [hoursPerWeek, setHoursPerWeek] = useState(15);
+  const costPerMonth = 500;
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
@@ -80,6 +145,20 @@ export default function ResearcherClient() {
         icon={Search}
         iconColor="bg-pink-500"
         ctaText="Configure Sarah"
+      />
+
+      {/* Problem Section */}
+      <EmployeeProblemSection
+        title="Stop Missing Market Signals"
+        description="Get ahead of competitors with 24/7 market intelligence"
+        problems={problems}
+        colorClass="text-pink-500"
+      />
+
+      {/* VALIS Quote */}
+      <EmployeeVALISQuote
+        quote="The best strategic advantage is information others don't have. Sarah turns data chaos into competitive intelligence—24/7, without the $80K analyst salary."
+        colorClass="border-pink-500/30 bg-pink-500/5 text-pink-400"
       />
 
       {/* Capabilities Section */}
@@ -94,9 +173,19 @@ export default function ResearcherClient() {
             </p>
           </FadeIn>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {capabilities.map((capability, index) => (
-              <FadeIn key={index} delay={index * 0.1}>
+          {/* Featured Capabilities - Top 2 */}
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            {capabilities.slice(0, 2).map((capability, index) => (
+              <FadeIn key={index} delay={index * 0.05}>
+                <CapabilityCard {...capability} iconColor="bg-pink-500" />
+              </FadeIn>
+            ))}
+          </div>
+
+          {/* Other Capabilities - Bottom 3 */}
+          <div className="grid md:grid-cols-3 gap-6">
+            {capabilities.slice(2).map((capability, index) => (
+              <FadeIn key={index + 2} delay={(index + 2) * 0.05}>
                 <CapabilityCard {...capability} iconColor="bg-pink-500" />
               </FadeIn>
             ))}
@@ -150,32 +239,84 @@ export default function ResearcherClient() {
         integrations={integrations}
       />
 
-      {/* Testimonial Section */}
+      {/* ROI Calculator */}
       <section className="py-20 bg-background">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <FadeIn>
-            <div className="relative bg-surface-elevated rounded-2xl p-8 md:p-12 border border-border">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-pink-500/10 flex items-center justify-center">
-                <Quote className="w-6 h-6 text-pink-500" />
-              </div>
-              <blockquote className="text-h4 font-display font-medium text-foreground text-center mb-8 pt-4">
-                "Sarah's weekly briefs have become essential to our strategic planning. 
-                We've identified three competitive threats early and adjusted our roadmap accordingly. 
-                It's like having a full-time analyst for a fraction of the cost."
-              </blockquote>
-              <div className="flex items-center justify-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-pink-500 flex items-center justify-center">
-                  <span className="text-white font-display font-bold">JL</span>
+          <FadeIn className="text-center mb-12">
+            <h2 className="text-h2 font-display font-bold mb-4">
+              Time <span className="text-gradient-beam">Savings Calculator</span>
+            </h2>
+            <p className="text-lead text-muted-foreground">
+              See how much time Sarah saves your team
+            </p>
+          </FadeIn>
+
+          <FadeIn delay={0.1}>
+            <div className="bg-surface-elevated rounded-2xl p-8 border border-border">
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-4">
+                    Hours spent on research per week: <span className="text-pink-500 font-bold">{hoursPerWeek}</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="5"
+                    max="40"
+                    value={hoursPerWeek}
+                    onChange={(e) => setHoursPerWeek(parseInt(e.target.value))}
+                    className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-pink-500"
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                    <span>5 hours</span>
+                    <span>40 hours</span>
+                  </div>
+
+                  <div className="mt-8 space-y-4">
+                    <div className="flex justify-between items-center p-4 bg-muted rounded-lg">
+                      <span className="text-muted-foreground">Manual Research Cost</span>
+                      <span className="text-lg font-bold text-foreground">
+                        ${(hoursPerWeek * 4 * 50).toLocaleString()}/mo
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center p-4 bg-pink-500/10 rounded-lg border border-pink-500/30">
+                      <span className="text-pink-500">Sarah Cost</span>
+                      <span className="text-lg font-bold text-pink-500">$500/mo</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <p className="font-display font-semibold text-foreground">Jennifer Lee</p>
-                  <p className="text-small text-muted-foreground">VP Strategy, TechVentures Inc.</p>
+
+                <div className="text-center md:text-left">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-500/10 text-pink-500 text-sm font-medium mb-4">
+                    <Calculator className="w-4 h-4" />
+                    Annual Time Savings
+                  </div>
+                  <div className="text-6xl font-display font-bold text-foreground mb-2">
+                    {hoursPerWeek * 52}
+                  </div>
+                  <p className="text-muted-foreground mb-6">
+                    hours saved per year
+                  </p>
+                  <div className="p-4 bg-green-500/10 rounded-lg border border-green-500/30">
+                    <p className="text-green-600 font-semibold">
+                      Save ${((hoursPerWeek * 4 * 50 - 500) * 12).toLocaleString()} annually
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
           </FadeIn>
         </div>
       </section>
+
+      {/* Cost Comparison */}
+      <EmployeeCostComparison
+        roleName="Sarah (AI Researcher)"
+        humanTitle="Full-Time Market Analyst"
+        humanCost={7000}
+        aiCost={500}
+        colorClass="text-pink-500"
+        savings={78000}
+      />
 
       {/* Pricing Section */}
       <section id="pricing" className="py-20 md:py-32 bg-surface-sunken">
@@ -211,6 +352,9 @@ export default function ResearcherClient() {
           </FadeIn>
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <EmployeeFAQ faqs={faqs} />
     </main>
   );
 }

@@ -45,7 +45,7 @@ const pricingData = [
     description: "Purpose-built applications",
     color: "bg-cyan-500",
     textColor: "text-cyan-500",
-    href: "/labs",
+    href: "/labs/pricing",
     features: [
       "Full-stack web & mobile apps",
       "APIs & integrations",
@@ -60,7 +60,7 @@ const pricingData = [
     description: "Strategic expert guidance",
     color: "bg-amber-500",
     textColor: "text-amber-500",
-    href: "/solutions",
+    href: "/solutions/pricing",
     features: [
       "Operational strategy",
       "Tech planning & roadmaps",

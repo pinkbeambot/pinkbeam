@@ -1,9 +1,14 @@
 "use client";
 
-import { Video, Film, Scissors, Play, Clapperboard, MonitorPlay, Check } from "lucide-react";
+import { Video, Film, Scissors, Play, Clapperboard, MonitorPlay, Check, Clock, TrendingDown, DollarSign, AlertCircle, Quote } from "lucide-react";
 import { EmployeeHero } from "../components/EmployeeHero";
 import { CapabilityCard } from "../components/CapabilityCard";
 import { PricingCard } from "../components/PricingCard";
+import { IntegrationShowcase } from "../components/IntegrationShowcase";
+import { EmployeeProblemSection } from "../components/EmployeeProblemSection";
+import { EmployeeVALISQuote } from "../components/EmployeeVALISQuote";
+import { EmployeeCostComparison } from "../components/EmployeeCostComparison";
+import { EmployeeFAQ } from "../components/EmployeeFAQ";
 import { FadeIn } from "@/components/animations";
 
 const capabilities = [
@@ -26,6 +31,11 @@ const capabilities = [
     icon: MonitorPlay,
     title: "Multi-Format Export",
     description: "Automatically generate videos in multiple aspect ratios and formats for every platform you publish on.",
+  },
+  {
+    icon: Clock,
+    title: "3-5 Day Turnaround",
+    description: "Submit unlimited video requests with quick turnaround times. No more waiting months for production agencies.",
   },
 ];
 
@@ -62,6 +72,73 @@ const deliverables = [
   "Source project files",
 ];
 
+const problems = [
+  {
+    icon: Clock,
+    title: "Video Production Takes Months",
+    description: "Agencies quote 6-8 weeks for a single explainer video. Your product launch is delayed waiting for video assets.",
+  },
+  {
+    icon: TrendingDown,
+    title: "Social Video Strategy is Nonexistent",
+    description: "You know video content drives 10x engagement but creating short-form clips manually is impossible at scale.",
+  },
+  {
+    icon: DollarSign,
+    title: "Production Agencies Cost $15K+ Per Video",
+    description: "A single 2-minute explainer video costs $15,000-$50,000 from agencies. Multiple videos per month is financially impossible.",
+  },
+  {
+    icon: AlertCircle,
+    title: "Format Inconsistency Across Platforms",
+    description: "Your YouTube video doesn't work on TikTok. Instagram Reels need different cuts. Reformatting manually takes days.",
+  },
+];
+
+const integrations = [
+  { name: "YouTube", icon: "YT" },
+  { name: "TikTok", icon: "TT" },
+  { name: "Instagram", icon: "IG" },
+  { name: "Vimeo", icon: "Vi" },
+  { name: "Wistia", icon: "Wi" },
+  { name: "After Effects", icon: "AE" },
+];
+
+const faqs = [
+  {
+    question: "How long does it take to set up FLUX?",
+    answer: "Initial setup takes about 45 minutes. You'll provide brand assets (logos, colors, fonts), style references, and sample videos. FLUX starts creating within 48 hours.",
+  },
+  {
+    question: "What video formats does FLUX deliver?",
+    answer: "FLUX delivers MP4, MOV, and WebM formats in multiple resolutions (1080p, 4K) and aspect ratios (16:9, 9:16, 1:1). Source project files included.",
+  },
+  {
+    question: "How does the unlimited request system work?",
+    answer: "Submit as many video requests as you want via your dashboard. FLUX works through them in 3-5 day cycles. Most clients submit 2-4 videos per month.",
+  },
+  {
+    question: "Can FLUX create videos from raw footage?",
+    answer: "Yes! FLUX can edit raw footage, add motion graphics, create animations from scratch, or repurpose existing long-form content into clips.",
+  },
+  {
+    question: "What if we need revisions?",
+    answer: "Unlimited revisions are included. Submit feedback and FLUX will iterate until you're satisfied—typically 1-2 revision rounds.",
+  },
+  {
+    question: "Can FLUX create live-action videos with actors?",
+    answer: "FLUX specializes in motion graphics, animation, and editing. For live-action filming with actors, we recommend a video production company.",
+  },
+  {
+    question: "What's your refund policy?",
+    answer: "We offer a 30-day money-back guarantee. If FLUX doesn't deliver quality videos in the first month, we'll refund your payment—no questions asked.",
+  },
+  {
+    question: "How is this different from hiring a video editor on Fiverr?",
+    answer: "FLUX provides consistent quality, unlimited requests, brand learning, multi-format optimization, and reliable turnaround times—not one-off gigs.",
+  },
+];
+
 export default function VideoClient() {
   return (
     <main className="min-h-screen">
@@ -76,6 +153,20 @@ export default function VideoClient() {
         ctaText="Configure FLUX"
       />
 
+      {/* Problem Section */}
+      <EmployeeProblemSection
+        title="Video Production at Scale"
+        description="Create unlimited professional videos without agency costs or long wait times"
+        problems={problems}
+        colorClass="text-pink-500"
+      />
+
+      {/* VALIS Quote */}
+      <EmployeeVALISQuote
+        quote="Great video marketing isn't about hiring expensive production agencies—it's about creating consistent, high-quality content at scale. FLUX delivers this for $500/month instead of $15K+ per video."
+        colorClass="border-pink-500/30 bg-pink-500/5 text-pink-400"
+      />
+
       {/* Capabilities Section */}
       <section className="py-20 md:py-32 bg-background">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -88,9 +179,19 @@ export default function VideoClient() {
             </p>
           </FadeIn>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {capabilities.map((capability, index) => (
-              <FadeIn key={index} delay={index * 0.1}>
+          {/* Featured Capabilities - Top 2 */}
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            {capabilities.slice(0, 2).map((capability, index) => (
+              <FadeIn key={index} delay={index * 0.05}>
+                <CapabilityCard {...capability} iconColor="bg-pink-400" />
+              </FadeIn>
+            ))}
+          </div>
+
+          {/* Other Capabilities - Bottom 3 */}
+          <div className="grid md:grid-cols-3 gap-6">
+            {capabilities.slice(2).map((capability, index) => (
+              <FadeIn key={index + 2} delay={(index + 2) * 0.05}>
                 <CapabilityCard {...capability} iconColor="bg-pink-400" />
               </FadeIn>
             ))}
@@ -208,6 +309,23 @@ export default function VideoClient() {
         </div>
       </section>
 
+      {/* Platform Integrations */}
+      <IntegrationShowcase
+        title="Platform Integrations"
+        description="FLUX publishes directly to your video platforms"
+        integrations={integrations}
+      />
+
+      {/* Cost Comparison */}
+      <EmployeeCostComparison
+        roleName="FLUX (AI Video)"
+        humanTitle="Video Production Agency"
+        humanCost={15000}
+        aiCost={500}
+        colorClass="text-pink-500"
+        savings={174000}
+      />
+
       {/* Pricing Section */}
       <section id="pricing" className="py-20 md:py-32 bg-background">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
@@ -243,6 +361,9 @@ export default function VideoClient() {
           </FadeIn>
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <EmployeeFAQ faqs={faqs} />
     </main>
   );
 }

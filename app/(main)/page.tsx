@@ -6,7 +6,6 @@ import { WhoIsPinkBeamFor } from "@/components/sections/WhoIsPinkBeamFor";
 import { HomeProblemSection } from "@/components/sections/HomeProblemSection";
 import { ServicesShowcase } from "@/components/sections/ServicesShowcase";
 import { HomeHowItWorks } from "@/components/sections/HomeHowItWorks";
-import { HomeTestimonialsSection } from "@/components/sections/HomeTestimonialsSection";
 import { HomePricingOverview } from "@/components/sections/HomePricingOverview";
 import { HomeFAQSection } from "@/components/sections/HomeFAQSection";
 
@@ -46,9 +45,6 @@ export default function HomePage() {
 
         {/* Who Is Pink Beam For - Audience segmentation */}
         <WhoIsPinkBeamFor />
-
-        {/* Testimonials - Cross-service social proof */}
-        <HomeTestimonialsSection />
 
         {/* Pricing - Service comparison */}
         <HomePricingOverview />

@@ -1,19 +1,15 @@
 "use client";
 
-import { SolutionsHero } from "@/components/sections/SolutionsHero";
-import { SolutionsProblemSection } from "@/components/sections/SolutionsProblemSection";
-import { SolutionsServicesShowcase } from "@/components/sections/SolutionsServicesShowcase";
-import { SolutionsPricingPreview } from "@/components/sections/SolutionsPricingPreview";
-import { SolutionsProcessTimeline } from "@/components/sections/SolutionsProcessTimeline";
-import { SolutionsFAQSection } from "@/components/sections/SolutionsFAQSection";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { FadeIn } from "@/components/animations";
 import { ArrowRight } from "lucide-react";
+import { SolutionsPricingHero } from "@/components/sections/SolutionsPricingHero";
+import { SolutionsPricingModels } from "@/components/sections/SolutionsPricingModels";
+import { SolutionsROICalculator } from "@/components/sections/SolutionsROICalculator";
+import { SolutionsPricingFAQ } from "@/components/sections/SolutionsPricingFAQ";
 
-// Final CTA Section
-function SolutionsCTASection() {
+function PricingCTASection() {
   return (
     <section className="py-20 md:py-32 bg-background relative overflow-hidden">
       {/* Background */}
@@ -22,22 +18,12 @@ function SolutionsCTASection() {
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <FadeIn className="text-center max-w-3xl mx-auto">
-          <Badge
-            variant="outline"
-            className="mb-6 border-amber-500/30 text-amber-500"
-          >
-            Ready to Talk Strategy?
-          </Badge>
           <h2 className="text-h2 font-display font-bold mb-6">
-            Let&apos;s Figure Out Your{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-300">
-              Next Move
-            </span>
+            Ready to Get Started?
           </h2>
           <p className="text-lead text-muted-foreground mb-10">
-            Book a free 30-minute consultation. We&apos;ll listen to your
-            challenges, share honest recommendations, and help you decide if
-            working together makes sense.
+            Book a free 30-minute consultation. We&apos;ll discuss your
+            situation and recommend the right engagement model for your needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -60,19 +46,16 @@ function SolutionsCTASection() {
   );
 }
 
-// Main Page Component
-export function SolutionsPageClient() {
+export function SolutionsPricingPageClient() {
   return (
     <main className="min-h-screen">
-      <SolutionsHero />
-      <SolutionsProblemSection />
-      <SolutionsServicesShowcase />
-      <SolutionsPricingPreview />
-      <SolutionsProcessTimeline />
-      <SolutionsFAQSection />
-      <SolutionsCTASection />
+      <SolutionsPricingHero />
+      <SolutionsPricingModels />
+      <SolutionsROICalculator />
+      <SolutionsPricingFAQ />
+      <PricingCTASection />
     </main>
   );
 }
 
-export default SolutionsPageClient;
+export default SolutionsPricingPageClient;

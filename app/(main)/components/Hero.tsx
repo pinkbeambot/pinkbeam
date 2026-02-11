@@ -52,13 +52,23 @@ export function Hero() {
           {/* Subheadline */}
           <FadeInOnMount delay={0.2}>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-              Hire AI employees, build high-performance websites, develop custom software, 
+              Hire AI employees, build high-performance websites, develop custom software,
               or get strategic consulting. Pink Beam is your all-in-one AI partner.
             </p>
           </FadeInOnMount>
-          
+
+          {/* VALIS Quote */}
+          <FadeInOnMount delay={0.25}>
+            <div className="mx-auto max-w-2xl mb-10 p-6 rounded-xl border border-pink-500/30 bg-pink-500/5">
+              <p className="text-lg text-pink-400 italic mb-3">
+                &quot;Most companies don&apos;t fail from lack of ambition. They fail from trying to do everything themselves. Smart growth means knowing what to build, what to buy, and what to automate.&quot;
+              </p>
+              <p className="text-sm text-muted-foreground">— VALIS</p>
+            </div>
+          </FadeInOnMount>
+
           {/* CTA Buttons */}
-          <FadeInOnMount delay={0.3}>
+          <FadeInOnMount delay={0.35}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
               <Button size="lg" variant="beam" className="w-full sm:w-auto shadow-beam" asChild>
                 <Link href="/agents">
@@ -73,9 +83,9 @@ export function Hero() {
               </Link>
             </div>
           </FadeInOnMount>
-          
+
           {/* Social Proof */}
-          <FadeInOnMount delay={0.4}>
+          <FadeInOnMount delay={0.45}>
             <div className="space-y-4">
               <p className="text-small text-muted-foreground uppercase tracking-wider">
                 Trusted by founders worldwide

@@ -1,10 +1,15 @@
 "use client";
 
-import { PenTool, Repeat, Sparkles, Clock, BarChart3, Shield, Check, Twitter, Linkedin } from "lucide-react";
+import { PenTool, Repeat, Sparkles, Clock, BarChart3, Shield, Check, Twitter, Linkedin, TrendingDown, DollarSign, AlertCircle, Calculator } from "lucide-react";
+import { useState } from "react";
 import { EmployeeHero } from "../components/EmployeeHero";
 import { CapabilityCard } from "../components/CapabilityCard";
 import { PricingCard } from "../components/PricingCard";
 import { IntegrationShowcase } from "../components/IntegrationShowcase";
+import { EmployeeProblemSection } from "../components/EmployeeProblemSection";
+import { EmployeeVALISQuote } from "../components/EmployeeVALISQuote";
+import { EmployeeCostComparison } from "../components/EmployeeCostComparison";
+import { EmployeeFAQ } from "../components/EmployeeFAQ";
 import { FadeIn } from "@/components/animations";
 import { Quote } from "lucide-react";
 
@@ -73,7 +78,67 @@ const integrations = [
   { name: "Buffer", icon: "Bu" },
 ];
 
+const problems = [
+  {
+    icon: Clock,
+    title: "Content Bottleneck Slowing Growth",
+    description: "You need to publish daily but can only produce 2-3 pieces per month. Your competitors are outpacing you on every platform.",
+  },
+  {
+    icon: TrendingDown,
+    title: "Inconsistent Platform Presence",
+    description: "Your blog is active but social media is dead. Or vice versa. You can't maintain quality across all channels.",
+  },
+  {
+    icon: DollarSign,
+    title: "Agencies Cost $5K+/Month",
+    description: "Content agencies charge $5,000-$15,000/month for basic packages. Freelancers are cheaper but inconsistent.",
+  },
+  {
+    icon: AlertCircle,
+    title: "Brand Voice Gets Lost",
+    description: "Every writer sounds different. Your brand voice changes with each content creator, confusing your audience.",
+  },
+];
+
+const faqs = [
+  {
+    question: "How long does it take to set up Casey?",
+    answer: "Initial setup takes about 30 minutes. You'll provide brand guidelines, sample content, and preferred platforms. Casey starts creating content within 24 hours.",
+  },
+  {
+    question: "Can Casey write in our brand voice?",
+    answer: "Yes! Casey learns from your existing content, brand guidelines, and feedback. After 2-3 pieces, she'll consistently match your unique voice and tone.",
+  },
+  {
+    question: "What platforms does Casey support?",
+    answer: "Casey creates content for Twitter/X, LinkedIn, blogs, email newsletters, Facebook, Instagram captions, and more. She adapts format and tone for each platform automatically.",
+  },
+  {
+    question: "How does content repurposing work?",
+    answer: "Give Casey one piece of content (blog post, video transcript, etc.) and she'll create 5-10 platform-specific versions—Twitter threads, LinkedIn posts, email newsletters, and more.",
+  },
+  {
+    question: "Can Casey schedule posts automatically?",
+    answer: "Yes! Casey integrates with Buffer, Hootsuite, and native platform schedulers. She posts at optimal times based on your audience engagement data.",
+  },
+  {
+    question: "What if we need specific content types?",
+    answer: "Casey handles blogs, social posts, newsletters, landing pages, ad copy, video scripts, and more. Just specify the format and she'll deliver.",
+  },
+  {
+    question: "What's your refund policy?",
+    answer: "We offer a 30-day money-back guarantee. If Casey doesn't increase your content output in the first month, we'll refund your payment—no questions asked.",
+  },
+  {
+    question: "How is this different from ChatGPT?",
+    answer: "Casey is trained on your brand, integrates with your publishing tools, schedules automatically, and learns from performance data. ChatGPT requires manual prompting every time.",
+  },
+];
+
 export default function ContentClient() {
+  const [piecesPerMonth, setPiecesPerMonth] = useState(10);
+  const costPerMonth = 500;
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
@@ -85,6 +150,20 @@ export default function ContentClient() {
         icon={PenTool}
         iconColor="bg-accent-amber"
         ctaText="Configure Casey"
+      />
+
+      {/* Problem Section */}
+      <EmployeeProblemSection
+        title="Break Through Content Bottlenecks"
+        description="Scale your content output without sacrificing quality or brand voice"
+        problems={problems}
+        colorClass="text-amber-500"
+      />
+
+      {/* VALIS Quote */}
+      <EmployeeVALISQuote
+        quote="Great content marketing isn't about hiring more writers—it's about systematic repurposing and platform optimization. Casey multiplies your output 5x without the $60K content manager salary."
+        colorClass="border-amber-500/30 bg-amber-500/5 text-amber-400"
       />
 
       {/* Capabilities Section */}
@@ -99,9 +178,19 @@ export default function ContentClient() {
             </p>
           </FadeIn>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {capabilities.map((capability, index) => (
-              <FadeIn key={index} delay={index * 0.1}>
+          {/* Featured Capabilities - Top 2 */}
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            {capabilities.slice(0, 2).map((capability, index) => (
+              <FadeIn key={index} delay={index * 0.05}>
+                <CapabilityCard {...capability} iconColor="bg-accent-amber" />
+              </FadeIn>
+            ))}
+          </div>
+
+          {/* Other Capabilities - Bottom 3 */}
+          <div className="grid md:grid-cols-3 gap-6">
+            {capabilities.slice(2).map((capability, index) => (
+              <FadeIn key={index + 2} delay={(index + 2) * 0.05}>
                 <CapabilityCard {...capability} iconColor="bg-accent-amber" />
               </FadeIn>
             ))}
@@ -176,32 +265,82 @@ export default function ContentClient() {
         integrations={integrations}
       />
 
-      {/* Testimonial Section */}
+      {/* ROI Calculator */}
       <section className="py-20 bg-background">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <FadeIn>
-            <div className="relative bg-surface-elevated rounded-2xl p-8 md:p-12 border border-border">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-accent-amber/10 flex items-center justify-center">
-                <Quote className="w-6 h-6 text-accent-amber" />
-              </div>
-              <blockquote className="text-h4 font-display font-medium text-foreground text-center mb-8 pt-4">
-                "Casey produces more content in a week than our previous agency did in a month. 
-                The quality is consistently on-brand, and she's learned our voice so well that readers can't tell it's AI. 
-                We went from publishing twice a month to daily."
-              </blockquote>
-              <div className="flex items-center justify-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-accent-amber flex items-center justify-center">
-                  <span className="text-white font-display font-bold">DW</span>
+          <FadeIn className="text-center mb-12">
+            <h2 className="text-h2 font-display font-bold mb-4">
+              Content <span className="text-gradient-beam">Output Calculator</span>
+            </h2>
+            <p className="text-lead text-muted-foreground">
+              See how much content Casey produces
+            </p>
+          </FadeIn>
+
+          <FadeIn delay={0.1}>
+            <div className="bg-surface-elevated rounded-2xl p-8 border border-border">
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-4">
+                    Original pieces per month: <span className="text-amber-500 font-bold">{piecesPerMonth}</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="2"
+                    max="30"
+                    value={piecesPerMonth}
+                    onChange={(e) => setPiecesPerMonth(parseInt(e.target.value))}
+                    className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-amber-500"
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                    <span>2 pieces</span>
+                    <span>30 pieces</span>
+                  </div>
+
+                  <div className="mt-8 space-y-4">
+                    <div className="flex justify-between items-center p-4 bg-muted rounded-lg">
+                      <span className="text-muted-foreground">Manual Production</span>
+                      <span className="text-lg font-bold text-foreground">{piecesPerMonth} pieces</span>
+                    </div>
+                    <div className="flex justify-between items-center p-4 bg-amber-500/10 rounded-lg border border-amber-500/30">
+                      <span className="text-amber-500">With Casey (5x repurposing)</span>
+                      <span className="text-lg font-bold text-amber-500">{piecesPerMonth * 5} pieces</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <p className="font-display font-semibold text-foreground">David Wilson</p>
-                  <p className="text-small text-muted-foreground">CMO, GrowthLabs</p>
+
+                <div className="text-center md:text-left">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 text-amber-500 text-sm font-medium mb-4">
+                    <Calculator className="w-4 h-4" />
+                    Total Monthly Output
+                  </div>
+                  <div className="text-6xl font-display font-bold text-foreground mb-2">
+                    {piecesPerMonth * 5}
+                  </div>
+                  <p className="text-muted-foreground mb-6">
+                    pieces per month across all platforms
+                  </p>
+                  <div className="p-4 bg-green-500/10 rounded-lg border border-green-500/30">
+                    <p className="text-green-600 font-semibold">
+                      {piecesPerMonth * 5 * 12} pieces per year
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
           </FadeIn>
         </div>
       </section>
+
+      {/* Cost Comparison */}
+      <EmployeeCostComparison
+        roleName="Casey (AI Content)"
+        humanTitle="Content Marketing Manager"
+        humanCost={5000}
+        aiCost={500}
+        colorClass="text-amber-500"
+        savings={54000}
+      />
 
       {/* Pricing Section */}
       <section id="pricing" className="py-20 md:py-32 bg-surface-sunken">
@@ -238,6 +377,9 @@ export default function ContentClient() {
           </FadeIn>
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <EmployeeFAQ faqs={faqs} />
     </main>
   );
 }

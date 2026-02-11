@@ -82,10 +82,10 @@ function useCurrentService() {
   if (pathname?.startsWith("/labs")) return services.find(s => s.id === "labs") || null;
   if (pathname?.startsWith("/solutions")) return services.find(s => s.id === "solutions") || null;
   
-  return null; // Hub / homepage
+  return null; // Launchpad / homepage
 }
 
-// Logo component - links to hub
+// Logo component - links to launchpad
 function Logo({ className }: { className?: string }) {
   return (
     <Link href="/" className={cn("flex items-center gap-2", className)}>
@@ -106,7 +106,7 @@ function ServiceSwitcher({ currentService }: { currentService: typeof services[0
   const [open, setOpen] = useState(false);
   
   if (!currentService) {
-    // On hub - show services dropdown
+    // On launchpad - show services dropdown
     return (
       <DropdownMenu>
         <DropdownMenuTrigger className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-muted/50 hover:bg-muted transition-colors text-sm font-medium outline-none focus:ring-2 focus:ring-ring">
@@ -157,7 +157,7 @@ function ServiceSwitcher({ currentService }: { currentService: typeof services[0
               <Home className="w-4 h-4 text-white" />
             </div>
             <div className="flex-1">
-              <p className="font-medium">Hub</p>
+              <p className="font-medium">Launchpad</p>
               <p className="text-xs text-muted-foreground">Back to home</p>
             </div>
           </Link>
@@ -183,17 +183,17 @@ function ServiceSwitcher({ currentService }: { currentService: typeof services[0
   );
 }
 
-// Hub Link - shown when on service pages
-function HubLink({ currentService }: { currentService: typeof services[0] | null }) {
+// Launchpad Link - shown when on service pages
+function LaunchpadLink({ currentService }: { currentService: typeof services[0] | null }) {
   if (!currentService) return null;
-  
+
   return (
-    <Link 
+    <Link
       href="/"
       className="hidden lg:flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
     >
       <ArrowLeft className="w-3.5 h-3.5" />
-      <span>Hub</span>
+      <span>Launchpad</span>
     </Link>
   );
 }
@@ -203,7 +203,7 @@ function Breadcrumbs({ currentService }: { currentService: typeof services[0] | 
   const pathname = usePathname();
   
   if (!currentService || pathname === currentService.href) {
-    return null; // Don't show breadcrumbs on hub or service home pages
+    return null; // Don't show breadcrumbs on launchpad or service home pages
   }
   
   // Parse path segments for nested pages
@@ -211,7 +211,7 @@ function Breadcrumbs({ currentService }: { currentService: typeof services[0] | 
   
   return (
     <div className="hidden lg:flex items-center gap-2 text-sm text-muted-foreground">
-      <Link href="/" className="hover:text-foreground transition-colors">Hub</Link>
+      <Link href="/" className="hover:text-foreground transition-colors">Launchpad</Link>
       <span className="text-muted-foreground/50">/</span>
       <Link 
         href={currentService.href} 
@@ -330,7 +330,7 @@ function MobileNav({
                     <Home className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="font-medium">Hub</p>
+                    <p className="font-medium">Launchpad</p>
                     <p className="text-xs text-muted-foreground">Platform home</p>
                   </div>
                 </Link>
@@ -346,7 +346,7 @@ function MobileNav({
                     <Home className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="font-medium">Back to Hub</p>
+                    <p className="font-medium">Back to Launchpad</p>
                     <p className="text-xs text-muted-foreground">Platform home</p>
                   </div>
                 </Link>
@@ -473,7 +473,7 @@ export function Navigation() {
               <ServiceSwitcher currentService={currentService} />
             </div>
             <div className="hidden lg:block">
-              <HubLink currentService={currentService} />
+              <LaunchpadLink currentService={currentService} />
             </div>
           </div>
           

@@ -1,11 +1,15 @@
 "use client";
 
-import { Users, Search, Mail, Calendar, Database, Check, Calculator } from "lucide-react";
+import { Users, Search, Mail, Calendar, Database, Check, Calculator, Clock, TrendingDown, DollarSign, Target } from "lucide-react";
 import { useState } from "react";
 import { EmployeeHero } from "../components/EmployeeHero";
 import { CapabilityCard } from "../components/CapabilityCard";
 import { PricingCard } from "../components/PricingCard";
 import { IntegrationShowcase } from "../components/IntegrationShowcase";
+import { EmployeeProblemSection } from "../components/EmployeeProblemSection";
+import { EmployeeVALISQuote } from "../components/EmployeeVALISQuote";
+import { EmployeeCostComparison } from "../components/EmployeeCostComparison";
+import { EmployeeFAQ } from "../components/EmployeeFAQ";
 import { FadeIn } from "@/components/animations";
 import { Quote } from "lucide-react";
 
@@ -64,6 +68,64 @@ const integrations = [
   { name: "Outreach", icon: "Ou" },
 ];
 
+const problems = [
+  {
+    icon: Clock,
+    title: "Manual Outbound Takes Forever",
+    description: "Your sales team spends 20+ hours/week researching prospects and writing emails instead of closing deals.",
+  },
+  {
+    icon: TrendingDown,
+    title: "Low Response Rates",
+    description: "Generic templates and mass emails get ignored. Personalization at scale is impossible manually.",
+  },
+  {
+    icon: DollarSign,
+    title: "Expensive SDR Hiring",
+    description: "$6,000+/month for a full-time SDR, plus benefits, training, and management overhead.",
+  },
+  {
+    icon: Target,
+    title: "Inconsistent Pipeline",
+    description: "Outbound volume fluctuates based on team bandwidth. Your pipeline suffers when reps are busy closing.",
+  },
+];
+
+const faqs = [
+  {
+    question: "How long does it take to set up Mike?",
+    answer: "Initial setup takes about 30 minutes. You'll define your ideal customer profile, value proposition, and outreach strategy. Mike starts researching and reaching out within 24 hours.",
+  },
+  {
+    question: "Can Mike integrate with my CRM?",
+    answer: "Yes! Mike integrates seamlessly with HubSpot and Salesforce. All activities, emails, and meeting bookings sync automatically to keep your data clean and up-to-date.",
+  },
+  {
+    question: "How personalized are Mike's emails?",
+    answer: "Every email is uniquely crafted based on deep prospect research—LinkedIn activity, company news, recent posts, and trigger events. No templates. Prospects often reply thinking they're talking to a human.",
+  },
+  {
+    question: "What if prospects have questions Mike can't answer?",
+    answer: "Mike handles common objections and qualification questions automatically. For complex technical questions, Mike loops in your sales team with full context.",
+  },
+  {
+    question: "How many meetings can Mike book per month?",
+    answer: "Typical customers see 20-50 qualified meetings per month, depending on target market, outreach volume, and offer quality. Mike scales with your goals.",
+  },
+  {
+    question: "Can I customize Mike's outreach strategy?",
+    answer: "Absolutely. You control the messaging, cadence, follow-up sequence, and qualification criteria. Mike learns from your feedback and continuously improves.",
+  },
+  {
+    question: "What's your refund policy?",
+    answer: "We offer a 30-day money-back guarantee. If Mike doesn't meet your expectations in the first month, we'll refund your payment—no questions asked.",
+  },
+  {
+    question: "How is this different from traditional email automation?",
+    answer: "Mike doesn't send templates. He researches each prospect individually, crafts personalized messages, handles replies, answers questions, and books meetings. Traditional tools just blast templates.",
+  },
+];
+
 export default function SDRClient() {
   const [meetingsPerMonth, setMeetingsPerMonth] = useState(20);
   const costPerMonth = 600;
@@ -82,6 +144,20 @@ export default function SDRClient() {
         ctaText="Configure Mike"
       />
 
+      {/* Problem Section */}
+      <EmployeeProblemSection
+        title="Outbound That Actually Works"
+        description="Stop wasting time on manual prospecting and low-response campaigns"
+        problems={problems}
+        colorClass="text-purple-500"
+      />
+
+      {/* VALIS Quote */}
+      <EmployeeVALISQuote
+        quote="The best SDRs don't just send emails—they research, personalize, and build relationships at scale. Mike does all three, 24/7, without the $72K salary."
+        colorClass="border-purple-500/30 bg-purple-500/5 text-purple-400"
+      />
+
       {/* Capabilities Section */}
       <section className="py-20 md:py-32 bg-background">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -94,9 +170,19 @@ export default function SDRClient() {
             </p>
           </FadeIn>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {capabilities.map((capability, index) => (
-              <FadeIn key={index} delay={index * 0.1}>
+          {/* Featured Capabilities - Top 2 */}
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            {capabilities.slice(0, 2).map((capability, index) => (
+              <FadeIn key={index} delay={index * 0.05}>
+                <CapabilityCard {...capability} iconColor="bg-accent-purple" />
+              </FadeIn>
+            ))}
+          </div>
+
+          {/* Other Capabilities - Bottom 3 */}
+          <div className="grid md:grid-cols-3 gap-6">
+            {capabilities.slice(2).map((capability, index) => (
+              <FadeIn key={index + 2} delay={(index + 2) * 0.05}>
                 <CapabilityCard {...capability} iconColor="bg-accent-purple" />
               </FadeIn>
             ))}
@@ -212,31 +298,15 @@ export default function SDRClient() {
         </div>
       </section>
 
-      {/* Testimonial Section */}
-      <section className="py-20 bg-surface-sunken">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <FadeIn>
-            <div className="relative bg-surface-elevated rounded-2xl p-8 md:p-12 border border-border">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-accent-purple/10 flex items-center justify-center">
-                <Quote className="w-6 h-6 text-accent-purple" />
-              </div>
-              <blockquote className="text-h4 font-display font-medium text-foreground text-center mb-8 pt-4">
-                "Mike booked 47 qualified demos in his first month. Our cost per meeting dropped from $285 to $12. 
-                The personalization in his emails is incredible—propects actually reply thinking he's a real person."
-              </blockquote>
-              <div className="flex items-center justify-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-accent-purple flex items-center justify-center">
-                  <span className="text-white font-display font-bold">RK</span>
-                </div>
-                <div className="text-left">
-                  <p className="font-display font-semibold text-foreground">Robert Kim</p>
-                  <p className="text-small text-muted-foreground">Head of Sales, DataFlow Inc.</p>
-                </div>
-              </div>
-            </div>
-          </FadeIn>
-        </div>
-      </section>
+      {/* Cost Comparison */}
+      <EmployeeCostComparison
+        roleName="Mike (AI SDR)"
+        humanTitle="Full-Time SDR"
+        humanCost={6000}
+        aiCost={600}
+        colorClass="text-purple-500"
+        savings={64800}
+      />
 
       {/* Pricing Section */}
       <section id="pricing" className="py-20 md:py-32 bg-background">
@@ -273,6 +343,9 @@ export default function SDRClient() {
           </FadeIn>
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <EmployeeFAQ faqs={faqs} />
     </main>
   );
 }

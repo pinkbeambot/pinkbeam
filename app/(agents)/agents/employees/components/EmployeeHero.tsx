@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, ChevronDown } from "lucide-react";
 
 interface EmployeeHeroProps {
   name: string;
@@ -26,7 +26,7 @@ export function EmployeeHero({
   ctaHref = "#pricing",
 }: EmployeeHeroProps) {
   return (
-    <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-gradient-void">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-void">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-beam-glow opacity-20 pointer-events-none" />
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-pink-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -98,6 +98,12 @@ export function EmployeeHero({
             </a>
           </motion.div>
         </div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground">
+        <span className="text-xs uppercase tracking-wider">Scroll</span>
+        <ChevronDown className="w-5 h-5 text-pink-500 animate-bounce" />
       </div>
     </section>
   );

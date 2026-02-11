@@ -1,10 +1,14 @@
 "use client";
 
-import { Headphones, Zap, BookOpen, MessageSquare, Users, Check, MessageCircle } from "lucide-react";
+import { Headphones, Zap, BookOpen, MessageSquare, Users, Check, MessageCircle, Clock, TrendingDown, DollarSign, AlertCircle } from "lucide-react";
 import { EmployeeHero } from "../components/EmployeeHero";
 import { CapabilityCard } from "../components/CapabilityCard";
 import { PricingCard } from "../components/PricingCard";
 import { IntegrationShowcase } from "../components/IntegrationShowcase";
+import { EmployeeProblemSection } from "../components/EmployeeProblemSection";
+import { EmployeeVALISQuote } from "../components/EmployeeVALISQuote";
+import { EmployeeCostComparison } from "../components/EmployeeCostComparison";
+import { EmployeeFAQ } from "../components/EmployeeFAQ";
 import { FadeIn } from "@/components/animations";
 import { Quote } from "lucide-react";
 
@@ -84,6 +88,64 @@ const integrations = [
   { name: "Help Scout", icon: "HS" },
 ];
 
+const problems = [
+  {
+    icon: Clock,
+    title: "Slow Response Times",
+    description: "Customers wait hours for basic support. Every delayed response risks churn and damages your brand reputation.",
+  },
+  {
+    icon: TrendingDown,
+    title: "Support Team Burnout",
+    description: "Your team spends 80% of time on repetitive questions—password resets, billing inquiries, basic troubleshooting.",
+  },
+  {
+    icon: DollarSign,
+    title: "Expensive Support Hiring",
+    description: "Each support rep costs $50K+/year, plus benefits and training. You need 5 reps for 24/7 coverage.",
+  },
+  {
+    icon: AlertCircle,
+    title: "Inconsistent Service Quality",
+    description: "Support quality varies by rep, shift, and mood. Customers get different answers to the same questions.",
+  },
+];
+
+const faqs = [
+  {
+    question: "How long does it take to set up Alex?",
+    answer: "Initial setup takes about 45 minutes. You'll connect your knowledge base, configure response templates, and define escalation rules. Alex starts handling tickets within 2 hours.",
+  },
+  {
+    question: "Can Alex integrate with our existing support system?",
+    answer: "Yes! Alex integrates with Zendesk, Intercom, Help Scout, and most major support platforms. He also works via email, chat widget, and Slack.",
+  },
+  {
+    question: "How does Alex know what answers to give?",
+    answer: "Alex learns from your knowledge base, past tickets, and product documentation. He continuously improves based on feedback and learns from every interaction.",
+  },
+  {
+    question: "What happens when Alex can't answer a question?",
+    answer: "Alex seamlessly escalates to your human team with full context, conversation history, and suggested solutions. Your team gets involved only when needed.",
+  },
+  {
+    question: "How many tickets can Alex handle?",
+    answer: "Alex has no volume limits. He can handle 10 tickets per day or 10,000—response time stays under 2 minutes regardless of load.",
+  },
+  {
+    question: "Can we customize Alex's responses?",
+    answer: "Absolutely. You control Alex's tone, response templates, and escalation criteria. He adapts to your brand voice and support policies.",
+  },
+  {
+    question: "What's your refund policy?",
+    answer: "We offer a 30-day money-back guarantee. If Alex doesn't reduce your support workload in the first month, we'll refund your payment—no questions asked.",
+  },
+  {
+    question: "Does Alex handle phone support?",
+    answer: "Alex currently handles email, chat, and Slack. Phone support AI is coming soon. For now, he can draft responses for phone follow-ups.",
+  },
+];
+
 export default function SupportClient() {
   return (
     <main className="min-h-screen">
@@ -98,6 +160,20 @@ export default function SupportClient() {
         ctaText="Configure Alex"
       />
 
+      {/* Problem Section */}
+      <EmployeeProblemSection
+        title="Support That Never Sleeps"
+        description="Deliver instant, 24/7 support without burning out your team"
+        problems={problems}
+        colorClass="text-cyan-500"
+      />
+
+      {/* VALIS Quote */}
+      <EmployeeVALISQuote
+        quote="Great support isn't about hiring more people—it's about being available instantly, consistently, and affordably. Alex does this 24/7 without the $250K team cost."
+        colorClass="border-cyan-500/30 bg-cyan-500/5 text-cyan-400"
+      />
+
       {/* Capabilities Section */}
       <section className="py-20 md:py-32 bg-background">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -110,9 +186,19 @@ export default function SupportClient() {
             </p>
           </FadeIn>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {capabilities.map((capability, index) => (
-              <FadeIn key={index} delay={index * 0.1}>
+          {/* Featured Capabilities - Top 2 */}
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            {capabilities.slice(0, 2).map((capability, index) => (
+              <FadeIn key={index} delay={index * 0.05}>
+                <CapabilityCard {...capability} iconColor="bg-accent-cyan" />
+              </FadeIn>
+            ))}
+          </div>
+
+          {/* Other Capabilities - Bottom 3 */}
+          <div className="grid md:grid-cols-3 gap-6">
+            {capabilities.slice(2).map((capability, index) => (
+              <FadeIn key={index + 2} delay={(index + 2) * 0.05}>
                 <CapabilityCard {...capability} iconColor="bg-accent-cyan" />
               </FadeIn>
             ))}
@@ -202,32 +288,15 @@ export default function SupportClient() {
         integrations={integrations}
       />
 
-      {/* Testimonial Section */}
-      <section className="py-20 bg-background">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <FadeIn>
-            <div className="relative bg-surface-elevated rounded-2xl p-8 md:p-12 border border-border">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-accent-cyan/10 flex items-center justify-center">
-                <Quote className="w-6 h-6 text-accent-cyan" />
-              </div>
-              <blockquote className="text-h4 font-display font-medium text-foreground text-center mb-8 pt-4">
-                "Alex now handles 78% of our support tickets without any human intervention. 
-                Our response time dropped from 4 hours to under 2 minutes, and our CSAT scores actually went up. 
-                We haven't hired a support rep in 8 months."
-              </blockquote>
-              <div className="flex items-center justify-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-accent-cyan flex items-center justify-center">
-                  <span className="text-white font-display font-bold">MP</span>
-                </div>
-                <div className="text-left">
-                  <p className="font-display font-semibold text-foreground">Maria Patel</p>
-                  <p className="text-small text-muted-foreground">VP Customer Success, CloudSync</p>
-                </div>
-              </div>
-            </div>
-          </FadeIn>
-        </div>
-      </section>
+      {/* Cost Comparison */}
+      <EmployeeCostComparison
+        roleName="Alex (AI Support)"
+        humanTitle="5 Support Reps (24/7)"
+        humanCost={20000}
+        aiCost={600}
+        colorClass="text-cyan-500"
+        savings={232800}
+      />
 
       {/* Pricing Section */}
       <section id="pricing" className="py-20 md:py-32 bg-surface-sunken">
@@ -264,6 +333,9 @@ export default function SupportClient() {
           </FadeIn>
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <EmployeeFAQ faqs={faqs} />
     </main>
   );
 }

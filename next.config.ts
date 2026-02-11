@@ -61,6 +61,67 @@ const nextConfig: NextConfig = {
         destination: '/labs/pricing',
         permanent: true,
       },
+      // Redirect old Solutions routes
+      {
+        source: '/solutions/consulting',
+        destination: '/solutions',
+        permanent: true,
+      },
+      {
+        source: '/solutions/workshops',
+        destination: '/solutions/pricing',
+        permanent: true,
+      },
+      {
+        source: '/solutions/engagement',
+        destination: '/solutions/pricing',
+        permanent: true,
+      },
+      {
+        source: '/solutions/engagement/:path*',
+        destination: '/solutions/pricing',
+        permanent: true,
+      },
+      {
+        source: '/solutions/blog',
+        destination: '/solutions',
+        permanent: true,
+      },
+      {
+        source: '/solutions/blog/:path*',
+        destination: '/solutions',
+        permanent: true,
+      },
+      {
+        source: '/solutions/case-studies',
+        destination: '/solutions',
+        permanent: true,
+      },
+      {
+        source: '/solutions/case-studies/:path*',
+        destination: '/solutions',
+        permanent: true,
+      },
+      {
+        source: '/solutions/resources',
+        destination: '/solutions',
+        permanent: true,
+      },
+      {
+        source: '/solutions/resources/calculators',
+        destination: '/solutions',
+        permanent: true,
+      },
+      {
+        source: '/solutions/resources/:slug',
+        destination: '/solutions',
+        permanent: true,
+      },
+      {
+        source: '/solutions/services/process-automation',
+        destination: '/solutions/services/technology-architecture',
+        permanent: true,
+      },
     ];
   },
   async headers() {

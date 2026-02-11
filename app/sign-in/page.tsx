@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader } from '@/components/ui/card'
-import { Loader2 } from 'lucide-react'
+import { Loader2, ArrowLeft, Sparkles, Zap, Code, Lightbulb } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { getFieldErrors, signInSchema } from '@/lib/validation'
 import { useAnalyticsSafe } from '@/components/analytics'
@@ -60,114 +60,202 @@ export default function SignInPage() {
   }
 
   return (
-    <main
-      id="main-content"
-      tabIndex={-1}
-      className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12"
-    >
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <h1 className="text-2xl font-bold">Welcome back</h1>
-          <CardDescription>
-            Enter your email and password to sign in
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSignIn}>
-          <CardContent className="space-y-4">
-            {error && (
-              <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
-                {error}
-              </div>
-            )}
+    <div className="min-h-screen flex bg-background">
+      {/* Left Side - Form */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <div className="p-6 lg:p-8">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm font-display font-bold text-foreground hover:opacity-80 transition-opacity"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500">
+              Pink Beam
+            </span>
+          </Link>
+        </div>
+
+        {/* Form Container */}
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex-1 flex items-center justify-center px-4 py-12"
+        >
+          <div className="w-full max-w-md space-y-8">
+            {/* Header */}
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                Email
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value)
-                  if (fieldErrors.email) {
-                    setFieldErrors((prev) => {
-                      const next = { ...prev }
-                      delete next.email
-                      return next
-                    })
-                  }
-                }}
-                aria-invalid={Boolean(fieldErrors.email)}
-                aria-describedby={fieldErrors.email ? 'email-error' : undefined}
-                className={cn(fieldErrors.email && 'border-destructive focus-visible:ring-destructive/30')}
-                required
-              />
-              {fieldErrors.email && (
-                <p id="email-error" className="text-xs text-destructive">
-                  {fieldErrors.email}
-                </p>
-              )}
+              <h1 className="text-3xl font-display font-bold tracking-tight">
+                Welcome back
+              </h1>
+              <p className="text-muted-foreground">
+                Sign in to access your dashboard and continue building.
+              </p>
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label htmlFor="password" className="text-sm font-medium">
-                  Password
-                </label>
-                <Link 
-                  href="/reset-password" 
-                  className="text-xs text-primary underline underline-offset-2 hover:opacity-80"
-                >
-                  Forgot password?
-                </Link>
+
+            {/* Form */}
+            <form onSubmit={handleSignIn} className="space-y-6">
+              {error && (
+                <div className="text-sm text-destructive bg-destructive/10 p-4 rounded-lg border border-destructive/20">
+                  {error}
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-medium">
+                    Email
+                  </label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value)
+                      if (fieldErrors.email) {
+                        setFieldErrors((prev) => {
+                          const next = { ...prev }
+                          delete next.email
+                          return next
+                        })
+                      }
+                    }}
+                    aria-invalid={Boolean(fieldErrors.email)}
+                    aria-describedby={fieldErrors.email ? 'email-error' : undefined}
+                    className={cn(
+                      'h-11',
+                      fieldErrors.email && 'border-destructive focus-visible:ring-destructive/30'
+                    )}
+                    required
+                  />
+                  {fieldErrors.email && (
+                    <p id="email-error" className="text-xs text-destructive">
+                      {fieldErrors.email}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="password" className="text-sm font-medium">
+                      Password
+                    </label>
+                    <Link
+                      href="/reset-password"
+                      className="text-xs text-pink-500 hover:text-pink-400 underline underline-offset-2"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value)
+                      if (fieldErrors.password) {
+                        setFieldErrors((prev) => {
+                          const next = { ...prev }
+                          delete next.password
+                          return next
+                        })
+                      }
+                    }}
+                    aria-invalid={Boolean(fieldErrors.password)}
+                    aria-describedby={fieldErrors.password ? 'password-error' : undefined}
+                    className={cn(
+                      'h-11',
+                      fieldErrors.password && 'border-destructive focus-visible:ring-destructive/30'
+                    )}
+                    required
+                  />
+                  {fieldErrors.password && (
+                    <p id="password-error" className="text-xs text-destructive">
+                      {fieldErrors.password}
+                    </p>
+                  )}
+                </div>
               </div>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value)
-                  if (fieldErrors.password) {
-                    setFieldErrors((prev) => {
-                      const next = { ...prev }
-                      delete next.password
-                      return next
-                    })
-                  }
-                }}
-                aria-invalid={Boolean(fieldErrors.password)}
-                aria-describedby={fieldErrors.password ? 'password-error' : undefined}
-                className={cn(fieldErrors.password && 'border-destructive focus-visible:ring-destructive/30')}
-                required
-              />
-              {fieldErrors.password && (
-                <p id="password-error" className="text-xs text-destructive">
-                  {fieldErrors.password}
-                </p>
-              )}
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                'Sign In'
-              )}
-            </Button>
-            <p className="text-sm text-muted-foreground text-center">
+
+              <Button
+                type="submit"
+                className="w-full h-11 bg-gradient-to-r from-pink-500 to-violet-500 hover:opacity-90 shadow-lg shadow-pink-500/25"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  'Sign In'
+                )}
+              </Button>
+            </form>
+
+            {/* Footer */}
+            <p className="text-sm text-center text-muted-foreground">
               Don&apos;t have an account?{' '}
-              <Link href="/sign-up" className="text-primary underline underline-offset-2 hover:opacity-80">
-                Sign up
+              <Link
+                href="/sign-up"
+                className="text-pink-500 hover:text-pink-400 underline underline-offset-2 font-medium"
+              >
+                Sign up for free
               </Link>
             </p>
-          </CardFooter>
-        </form>
-      </Card>
-    </main>
+          </div>
+        </main>
+      </div>
+
+      {/* Right Side - Branded Visual (hidden on mobile) */}
+      <div className="hidden lg:flex lg:flex-1 relative bg-gradient-void overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-gradient-beam-glow opacity-30" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-pink-500/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-violet-500/20 rounded-full blur-3xl" />
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col justify-center px-12 xl:px-16 space-y-12">
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-500/10 border border-pink-500/20">
+              <Sparkles className="w-4 h-4 text-pink-500" />
+              <span className="text-sm font-medium text-pink-400">
+                AI-Powered Platform
+              </span>
+            </div>
+
+            <h2 className="text-4xl font-display font-bold text-white leading-tight">
+              Build faster.<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-violet-400">
+                Ship smarter.
+              </span>
+            </h2>
+
+            <p className="text-lg text-muted-foreground max-w-md">
+              Access your AI employees, manage projects, and scale your business
+              with Pink Beam&apos;s all-in-one platform.
+            </p>
+          </div>
+
+          {/* Feature Pills */}
+          <div className="flex flex-wrap gap-3">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border">
+              <Zap className="w-4 h-4 text-pink-500" />
+              <span className="text-sm text-foreground">AI Employees</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border">
+              <Code className="w-4 h-4 text-violet-500" />
+              <span className="text-sm text-foreground">Custom Software</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border">
+              <Lightbulb className="w-4 h-4 text-cyan-500" />
+              <span className="text-sm text-foreground">Strategic Consulting</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }

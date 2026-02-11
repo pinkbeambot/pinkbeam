@@ -1,9 +1,14 @@
 "use client";
 
-import { Palette, Image, FileImage, Layout, Sparkles, Check } from "lucide-react";
+import { Palette, Image, FileImage, Layout, Sparkles, Check, Clock, TrendingDown, DollarSign, AlertCircle, Quote } from "lucide-react";
 import { EmployeeHero } from "../components/EmployeeHero";
 import { CapabilityCard } from "../components/CapabilityCard";
 import { PricingCard } from "../components/PricingCard";
+import { IntegrationShowcase } from "../components/IntegrationShowcase";
+import { EmployeeProblemSection } from "../components/EmployeeProblemSection";
+import { EmployeeVALISQuote } from "../components/EmployeeVALISQuote";
+import { EmployeeCostComparison } from "../components/EmployeeCostComparison";
+import { EmployeeFAQ } from "../components/EmployeeFAQ";
 import { FadeIn } from "@/components/animations";
 
 const capabilities = [
@@ -27,6 +32,11 @@ const capabilities = [
     title: "AI-Powered Design",
     description: "Leverages cutting-edge AI to create stunning visuals from simple text descriptions and brand references.",
   },
+  {
+    icon: Clock,
+    title: "2-3 Day Turnaround",
+    description: "Submit unlimited design requests with fast turnaround times. No more waiting weeks for agency revisions.",
+  },
 ];
 
 const portfolioItems = [
@@ -49,6 +59,73 @@ const assetTypes = [
   "Brand templates",
 ];
 
+const problems = [
+  {
+    icon: Clock,
+    title: "Design Bottlenecks Kill Momentum",
+    description: "You need graphics yesterday but designers are booked for weeks. Every campaign launch gets delayed waiting for assets.",
+  },
+  {
+    icon: TrendingDown,
+    title: "Inconsistent Visual Quality",
+    description: "Freelancers deliver mixed results. Agency work is great but slow. Your brand looks different across every touchpoint.",
+  },
+  {
+    icon: DollarSign,
+    title: "Design Agencies Cost $10K+/Month",
+    description: "Agencies charge $10,000-$30,000/month for retainers. Freelancers are cheaper but unreliable and hard to manage.",
+  },
+  {
+    icon: AlertCircle,
+    title: "Revision Cycles Take Forever",
+    description: "Three rounds of feedback. Two-week turnaround. By the time you get the final file, the campaign window is closed.",
+  },
+];
+
+const integrations = [
+  { name: "Figma", icon: "Fi" },
+  { name: "Adobe CC", icon: "Ai" },
+  { name: "Canva", icon: "Ca" },
+  { name: "Slack", icon: "Sl" },
+  { name: "Notion", icon: "No" },
+  { name: "Brand Kit", icon: "BK" },
+];
+
+const faqs = [
+  {
+    question: "How long does it take to set up LUMEN?",
+    answer: "Initial setup takes about 30 minutes. You'll upload your brand kit (logos, colors, fonts) and provide style references. LUMEN starts creating designs within 24 hours.",
+  },
+  {
+    question: "What file formats does LUMEN deliver?",
+    answer: "LUMEN delivers PNG, JPG, SVG, and PDF formats. Source files (Figma, PSD) are included with every design for easy editing.",
+  },
+  {
+    question: "How does the unlimited request system work?",
+    answer: "Submit as many design requests as you want via your dashboard. LUMEN works through them in 2-3 day cycles. Most clients submit 5-10 requests per month.",
+  },
+  {
+    question: "Can LUMEN match our existing brand guidelines?",
+    answer: "Yes! LUMEN learns from your brand kit, style guide, and reference materials. After 2-3 designs, output will be consistently on-brand.",
+  },
+  {
+    question: "What if we need revisions?",
+    answer: "Unlimited revisions are included. Submit feedback and LUMEN will iterate until you're satisfied—typically 1-2 revision rounds.",
+  },
+  {
+    question: "Can LUMEN design logos or full brand identities?",
+    answer: "LUMEN focuses on marketing assets and collateral. For logo design or comprehensive brand identity work, we recommend a specialized brand agency.",
+  },
+  {
+    question: "What's your refund policy?",
+    answer: "We offer a 30-day money-back guarantee. If LUMEN doesn't deliver quality designs in the first month, we'll refund your payment—no questions asked.",
+  },
+  {
+    question: "How is this different from Canva or design templates?",
+    answer: "LUMEN creates custom, on-brand designs from scratch—not template modifications. Every asset is unique and tailored to your specific needs and brand.",
+  },
+];
+
 export default function DesignerClient() {
   return (
     <main className="min-h-screen">
@@ -63,6 +140,20 @@ export default function DesignerClient() {
         ctaText="Configure LUMEN"
       />
 
+      {/* Problem Section */}
+      <EmployeeProblemSection
+        title="Design On Demand"
+        description="Get unlimited professional design without agency fees or freelancer hassles"
+        problems={problems}
+        colorClass="text-indigo-500"
+      />
+
+      {/* VALIS Quote */}
+      <EmployeeVALISQuote
+        quote="Great design isn't about hiring expensive agencies—it's about having unlimited access to quality visuals when you need them. LUMEN delivers this for $400/month instead of $10K+ agency retainers."
+        colorClass="border-indigo-500/30 bg-indigo-500/5 text-indigo-400"
+      />
+
       {/* Capabilities Section */}
       <section className="py-20 md:py-32 bg-background">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -75,9 +166,19 @@ export default function DesignerClient() {
             </p>
           </FadeIn>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {capabilities.map((capability, index) => (
-              <FadeIn key={index} delay={index * 0.1}>
+          {/* Featured Capabilities - Top 2 */}
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            {capabilities.slice(0, 2).map((capability, index) => (
+              <FadeIn key={index} delay={index * 0.05}>
+                <CapabilityCard {...capability} iconColor="bg-accent-indigo" />
+              </FadeIn>
+            ))}
+          </div>
+
+          {/* Other Capabilities - Bottom 3 */}
+          <div className="grid md:grid-cols-3 gap-6">
+            {capabilities.slice(2).map((capability, index) => (
+              <FadeIn key={index + 2} delay={(index + 2) * 0.05}>
                 <CapabilityCard {...capability} iconColor="bg-accent-indigo" />
               </FadeIn>
             ))}
@@ -151,6 +252,23 @@ export default function DesignerClient() {
         </div>
       </section>
 
+      {/* Design Tool Integrations */}
+      <IntegrationShowcase
+        title="Design Tool Integrations"
+        description="LUMEN works with your favorite design tools"
+        integrations={integrations}
+      />
+
+      {/* Cost Comparison */}
+      <EmployeeCostComparison
+        roleName="LUMEN (AI Designer)"
+        humanTitle="Design Agency Retainer"
+        humanCost={10000}
+        aiCost={400}
+        colorClass="text-indigo-500"
+        savings={115200}
+      />
+
       {/* Pricing Section */}
       <section id="pricing" className="py-20 md:py-32 bg-surface-sunken">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
@@ -186,6 +304,9 @@ export default function DesignerClient() {
           </FadeIn>
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <EmployeeFAQ faqs={faqs} />
     </main>
   );
 }

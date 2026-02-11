@@ -82,9 +82,9 @@ export function ServiceHero({
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground animate-bounce">
-        <span className="text-sm">Scroll</span>
-        <ChevronDown className="w-5 h-5" />
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground">
+        <span className="text-xs uppercase tracking-wider">Scroll</span>
+        <ChevronDown className="w-5 h-5 text-amber-500 animate-bounce" />
       </div>
     </section>
   );
