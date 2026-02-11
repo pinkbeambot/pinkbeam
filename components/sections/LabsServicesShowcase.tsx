@@ -7,7 +7,6 @@ import {
   Plug,
   Brain,
   RefreshCw,
-  Badge as BadgeIcon,
   ArrowRight,
   Check,
 } from "lucide-react";
@@ -104,24 +103,6 @@ const services = [
     textColor: "text-indigo-500",
     borderColor: "border-indigo-500/50",
     href: "/labs/services/legacy-modernization",
-    featured: false,
-  },
-  {
-    id: "custom-consulting",
-    name: "Technical Consulting",
-    icon: BadgeIcon,
-    description: "Expert guidance for your challenges",
-    features: [
-      "System design & architecture",
-      "Tech stack selection",
-      "Performance audits",
-      "Security reviews",
-      "Roadmap planning",
-    ],
-    color: "bg-purple-500",
-    textColor: "text-purple-500",
-    borderColor: "border-purple-500/50",
-    href: "#contact",
     featured: false,
   },
 ];
