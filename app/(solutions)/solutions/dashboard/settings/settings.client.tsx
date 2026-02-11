@@ -98,7 +98,7 @@ export default function SettingsView({ user, profile }: SettingsViewProps) {
         <Tabs defaultValue="profile" className="w-full">
           <TabsList className="grid w-full grid-cols-4 lg:w-auto">
             <TabsTrigger value="profile">
-              <User className="w-4 h-4 mr-2 hidden sm:inline" />
+              <UserIconclassName="w-4 h-4 mr-2 hidden sm:inline" />
               Profile
             </TabsTrigger>
             <TabsTrigger value="company">
@@ -125,7 +125,7 @@ export default function SettingsView({ user, profile }: SettingsViewProps) {
               <CardContent className="space-y-6">
                 <div className="flex items-center gap-4">
                   <div className="w-20 h-20 rounded-full bg-amber-500/20 flex items-center justify-center">
-                    <User className="w-8 h-8 text-amber-500" />
+                    <UserIconclassName="w-8 h-8 text-amber-500" />
                   </div>
                   <div>
                     <Button variant="outline" size="sm">Change Avatar</Button>
