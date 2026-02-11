@@ -108,6 +108,9 @@ const services = [
 ];
 
 export function LabsServicesShowcase() {
+  const featuredServices = services.filter((s) => s.featured);
+  const otherServices = services.filter((s) => !s.featured);
+
   return (
     <section className="py-20 md:py-32 bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -123,29 +126,78 @@ export function LabsServicesShowcase() {
           </p>
         </FadeIn>
 
-        {/* Services Grid - All Equal */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((service, idx) => {
+        {/* Featured Services - Top Row (2 cards, bigger) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {featuredServices.map((service, idx) => {
             const Icon = service.icon;
             return (
               <FadeIn key={service.id} delay={0.05 + idx * 0.05}>
                 <Link href={service.href}>
                   <Card
                     variant="elevated"
+                    className={`group h-full border-2 ${service.borderColor} bg-gradient-to-br from-cyan-500/5 to-cyan-600/5 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 cursor-pointer`}
+                  >
+                    <CardContent className="p-8 md:p-10 flex flex-col h-full">
+                      <div className="flex items-start justify-between gap-4 mb-6">
+                        <div
+                          className={`${service.color} w-14 h-14 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}
+                        >
+                          <Icon className="w-7 h-7 text-white" />
+                        </div>
+                        <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 whitespace-nowrap">
+                          Most Popular
+                        </Badge>
+                      </div>
+
+                      <h3 className="text-h3 font-display font-bold text-foreground mb-2">
+                        {service.name}
+                      </h3>
+                      <p className={`text-body font-medium ${service.textColor} mb-6`}>
+                        {service.description}
+                      </p>
+
+                      <ul className="space-y-3 mb-8 flex-1">
+                        {service.features.slice(0, 5).map((feature, i) => (
+                          <li key={i} className="flex items-start gap-3">
+                            <Check className="w-5 h-5 text-cyan-500 shrink-0 mt-0.5" />
+                            <span className="text-body text-foreground">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <Button
+                        className="bg-gradient-to-r from-cyan-500 to-cyan-600 hover:opacity-90"
+                        asChild
+                      >
+                        <span>
+                          Learn More
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </span>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </FadeIn>
+            );
+          })}
+        </div>
+
+        {/* Secondary Services - Bottom Row (3 cards, smaller, centered) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {otherServices.map((service, idx) => {
+            const Icon = service.icon;
+            return (
+              <FadeIn key={service.id} delay={0.1 + idx * 0.05}>
+                <Link href={service.href}>
+                  <Card
+                    variant="elevated"
                     className={`group h-full border-2 ${service.borderColor} hover:shadow-lg hover:scale-[1.02] transition-all duration-300 cursor-pointer`}
                   >
                     <CardContent className="p-6 md:p-8 flex flex-col h-full">
-                      <div className="flex items-start justify-between gap-4 mb-6">
-                        <div
-                          className={`${service.color} w-12 h-12 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}
-                        >
-                          <Icon className="w-6 h-6 text-white" />
-                        </div>
-                        {service.featured && (
-                          <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 text-xs whitespace-nowrap">
-                            Most Popular
-                          </Badge>
-                        )}
+                      <div
+                        className={`${service.color} w-12 h-12 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
+                      >
+                        <Icon className="w-6 h-6 text-white" />
                       </div>
 
                       <h3 className="text-h4 font-display font-bold text-foreground mb-2">
@@ -156,7 +208,7 @@ export function LabsServicesShowcase() {
                       </p>
 
                       <ul className="space-y-2 mb-8 flex-1">
-                        {service.features.slice(0, 4).map((feature, i) => (
+                        {service.features.slice(0, 3).map((feature, i) => (
                           <li
                             key={i}
                             className="flex items-start gap-2 text-xs text-muted-foreground"
