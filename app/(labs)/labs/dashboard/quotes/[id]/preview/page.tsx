@@ -202,7 +202,7 @@ export default function QuotePreviewPage() {
     window.print()
   }
 
-  const isExpired = quote?.validUntil && new Date(quote.validUntil) < new Date()
+  const isExpired = quote?.validUntil ? new Date(quote.validUntil) < new Date() : false
 
   if (loading) {
     return (

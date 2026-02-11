@@ -14,7 +14,7 @@ import {
   ENGAGEMENT_TYPES,
   type CaseStudy,
   type CaseStudyMetric,
-} from "@/lib/case-studies";
+} from "@/lib/case-studies-types";
 import { Plus, X } from "lucide-react";
 
 interface CaseStudyFormProps {

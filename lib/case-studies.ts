@@ -1,74 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { mockCaseStudies, mockFilterOptions } from "./case-studies-mock";
 
-export interface CaseStudyMetric {
-  label: string;
-  value: string;
-}
-
-export interface CaseStudy {
-  id: string;
-  slug: string;
-  title: string;
-  clientName: string;
-  industry: string;
-  isAnonymous: boolean;
-  challenge: string;
-  solution: string;
-  results: string;
-  metrics: CaseStudyMetric[];
-  services: string[];
-  engagementType: string;
-  testimonial: string | null;
-  testimonialAuthor: string | null;
-  testimonialTitle: string | null;
-  published: boolean;
-  featured: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface CaseStudyFilters {
-  industry?: string;
-  service?: string;
-  engagementType?: string;
-  search?: string;
-  featured?: boolean;
-}
-
-const INDUSTRIES = [
-  "Healthcare",
-  "Fintech",
-  "Retail",
-  "SaaS",
-  "Manufacturing",
-  "Education",
-  "Real Estate",
-  "Logistics",
-  "Media",
-  "Other",
-];
-
-const SERVICES = [
-  "AI Strategy",
-  "Digital Transformation",
-  "Process Automation",
-  "Growth Strategy",
-  "Technology Assessment",
-  "Fractional CTO",
-  "Data Analytics",
-  "Cloud Migration",
-];
-
-const ENGAGEMENT_TYPES = [
-  "Workshop",
-  "Assessment",
-  "Project",
-  "Retainer",
-  "Advisory",
-];
-
-export { INDUSTRIES, SERVICES, ENGAGEMENT_TYPES };
+// Re-export types and constants from the shared types file (safe for client components)
+export type { CaseStudy, CaseStudyMetric, CaseStudyFilters } from "./case-studies-types";
+export { INDUSTRIES, SERVICES, ENGAGEMENT_TYPES } from "./case-studies-types";
 
 // Get all published case studies with optional filtering
 export async function getCaseStudies(filters?: CaseStudyFilters): Promise<CaseStudy[]> {

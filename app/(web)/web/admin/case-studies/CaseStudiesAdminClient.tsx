@@ -40,7 +40,7 @@ import {
   ExternalLink,
   Building2,
 } from "lucide-react";
-import type { CaseStudy } from "@/lib/case-studies";
+import type { CaseStudy } from "@/lib/case-studies-types";
 import { CaseStudyForm } from "./CaseStudyForm";
 
 interface CaseStudiesAdminClientProps {
