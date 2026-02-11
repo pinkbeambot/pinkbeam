@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { FadeInOnMount } from "@/components/animations";
 import { ArrowRight, ChevronDown, Sparkles } from "lucide-react";
@@ -93,21 +92,10 @@ export function Hero() {
       </div>
       
       {/* Scroll Indicator */}
-      <motion.div 
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 will-change-transform"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1, duration: 0.5 }}
-      >
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          className="flex flex-col items-center gap-2 text-muted-foreground will-change-transform"
-        >
-          <span className="text-xs uppercase tracking-wider">Scroll</span>
-          <ChevronDown className="w-5 h-5" />
-        </motion.div>
-      </motion.div>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground">
+        <span className="text-xs uppercase tracking-wider">Scroll</span>
+        <ChevronDown className="w-5 h-5 text-pink-500 animate-bounce" />
+      </div>
     </section>
   );
 }
