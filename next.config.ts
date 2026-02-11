@@ -43,6 +43,26 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      // Redirect old Labs routes to main Labs page
+      {
+        source: '/labs/mvp',
+        destination: '/labs/pricing',
+        permanent: true, // 301 redirect
+      },
+      {
+        source: '/labs/architecture',
+        destination: '/labs/pricing',
+        permanent: true,
+      },
+      {
+        source: '/labs/augmentation',
+        destination: '/labs/pricing',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
