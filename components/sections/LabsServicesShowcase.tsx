@@ -112,7 +112,7 @@ export function LabsServicesShowcase() {
   const otherServices = services.filter((s) => !s.featured);
 
   return (
-    <section className="py-20 md:py-32 bg-background">
+    <section id="services" className="py-20 md:py-32 bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <FadeIn className="text-center mb-16">
