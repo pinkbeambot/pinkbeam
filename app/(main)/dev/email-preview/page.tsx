@@ -24,14 +24,14 @@ const sampleQuote = {
   id: "quote-123",
   fullName: "Jamie Lee",
   email: "jamie@example.com",
-  company: "Acme Inc",
+  company: "Acme Inc" as string | null,
   projectType: "ecommerce",
   services: ["design", "development", "seo"],
   budgetRange: "$10,000 - $25,000",
   timeline: "1-3 months",
   description: "We need a full ecommerce storefront with custom checkout.",
-  leadScore: 82,
-  leadQuality: "hot",
+  leadScore: 82 as number | undefined,
+  leadQuality: "hot" as "hot" | "warm" | "cold" | "qualified" | undefined,
 };
 
 const sampleTicket = {
@@ -68,7 +68,7 @@ const templates = {
     label: "Invoice / receipt",
     render: () =>
       invoiceReceiptTemplate({
-        email: "jamie@example.com",
+        clientEmail: "jamie@example.com",
         invoiceNumber: "INV-1001",
         clientName: "Jamie Lee",
         amount: "$1,200.00",
@@ -81,7 +81,6 @@ const templates = {
     label: "Newsletter",
     render: () =>
       newsletterTemplate({
-        email: "jamie@example.com",
         title: "February Updates",
         intro: "Here is what is new at Pink Beam.",
         items: [
