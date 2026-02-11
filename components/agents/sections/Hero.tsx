@@ -63,7 +63,7 @@ export function Hero() {
             </p>
           </FadeInOnMount>
 
-          {/* Founder Quote */}
+          {/* VALIS Quote */}
           <FadeInOnMount delay={0.25}>
             <div className="mx-auto max-w-2xl mb-10 p-6 rounded-xl border border-pink-500/30 bg-pink-500/5">
               <p className="text-lg text-pink-400 italic mb-3">
@@ -71,7 +71,7 @@ export function Hero() {
                 They just get better every day."
               </p>
               <p className="text-sm text-muted-foreground">
-                — Pink Beam Founder
+                — VALIS
               </p>
             </div>
           </FadeInOnMount>

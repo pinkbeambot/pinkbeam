@@ -46,7 +46,7 @@ export function WebHero() {
             </p>
           </FadeInOnMount>
 
-          {/* Founder Quote */}
+          {/* VALIS Quote */}
           <FadeInOnMount delay={0.25}>
             <div className="mx-auto max-w-2xl mb-10 p-6 rounded-xl border border-violet-500/30 bg-violet-500/5">
               <p className="text-lg text-violet-400 italic mb-3">
@@ -54,7 +54,7 @@ export function WebHero() {
                 visitors into customers. That's what we build."
               </p>
               <p className="text-sm text-muted-foreground">
-                — Pink Beam Founder
+                — VALIS
               </p>
             </div>
           </FadeInOnMount>
