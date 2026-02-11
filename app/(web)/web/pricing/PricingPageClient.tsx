@@ -14,9 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowRight, Check, Calculator, HelpCircle } from "lucide-react";
-import { FadeIn } from "@/components/animations";
-import { WebHero } from "../components/WebHero";
+import { ArrowRight, Check, Calculator, HelpCircle, ChevronDown, DollarSign } from "lucide-react";
+import { FadeIn, FadeInOnMount } from "@/components/animations";
 
 // Calculator types
 type ProjectType = "landing" | "starter" | "business" | "ecommerce" | "custom";
@@ -212,11 +211,74 @@ export function PricingPageClient() {
 
   return (
     <main className="min-h-screen">
-      {/* Hero */}
-      <WebHero />
+      {/* Hero Section - Full screen with violet theme */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-void">
+        {/* Violet Background Effects */}
+        <div className="absolute inset-0 bg-gradient-to-b from-violet-500/10 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] bg-violet-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-violet-500/5 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Animated Grid Background */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.03)_1px,transparent_1px)] bg-[size:60px_60px] pointer-events-none" />
+
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-32 md:py-40">
+          <div className="text-center max-w-4xl mx-auto">
+            {/* Badge */}
+            <FadeInOnMount delay={0}>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 mb-8">
+                <DollarSign className="w-4 h-4 text-violet-400" />
+                <span className="text-sm font-medium text-violet-400">
+                  Transparent Pricing
+                </span>
+              </div>
+            </FadeInOnMount>
+
+            {/* Main Headline */}
+            <FadeInOnMount delay={0.1}>
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold mb-6 text-white tracking-tight">
+                Simple{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-violet-300">
+                  Pricing
+                </span>
+              </h1>
+            </FadeInOnMount>
+
+            {/* Subheadline */}
+            <FadeInOnMount delay={0.2}>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
+                Get an instant estimate with our project calculator. No hidden fees, 
+                no surprises—just transparent pricing for your web project.
+              </p>
+            </FadeInOnMount>
+
+            {/* CTA Buttons */}
+            <FadeInOnMount delay={0.3}>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-violet-500 to-violet-600 hover:opacity-90 shadow-lg shadow-violet-500/25" asChild>
+                  <Link href="#calculator">
+                    Calculate Your Project
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Link>
+                </Button>
+                <Link href="#maintenance" className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="w-full border-violet-500/30 hover:bg-violet-500/10">
+                    View Maintenance Plans
+                  </Button>
+                </Link>
+              </div>
+            </FadeInOnMount>
+          </div>
+        </div>
+
+        {/* Scroll Indicator - CSS only */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground">
+          <span className="text-xs uppercase tracking-wider">Scroll</span>
+          <ChevronDown className="w-5 h-5 text-violet-400 animate-bounce" />
+        </div>
+      </section>
 
       {/* Calculator Section */}
-      <section className="py-20 lg:py-32 bg-background">
+      <section id="calculator" className="py-20 lg:py-32 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center mb-16">
             <Badge variant="outline" className="mb-4">Project Estimator</Badge>
@@ -372,7 +434,7 @@ export function PricingPageClient() {
       </section>
 
       {/* Maintenance Plans */}
-      <section className="py-20 lg:py-32 border-t bg-muted/30">
+      <section id="maintenance" className="py-20 lg:py-32 border-t bg-muted/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">

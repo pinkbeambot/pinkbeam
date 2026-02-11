@@ -18,6 +18,12 @@ import {
 import { ArrowRight, ArrowLeft, Check, Send, Save } from "lucide-react";
 import { FadeIn } from "@/components/animations";
 import { WebHero } from "../components/WebHero";
+import {
+  getErrorMessages,
+  quoteSchema,
+  quoteStep1Schema,
+  quoteStep2Schema,
+} from "@/lib/validation";
 
 // Form data types
 interface QuoteFormData {
@@ -121,33 +127,6 @@ function ProgressBar({ currentStep, totalSteps }: { currentStep: number; totalSt
   );
 }
 
-// Validation functions
-function validateStep1(data: QuoteFormData): string[] {
-  const errors: string[] = [];
-  if (!data.fullName.trim()) errors.push("Full name is required");
-  if (!data.email.trim()) errors.push("Email is required");
-  if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    errors.push("Valid email is required");
-  }
-  return errors;
-}
-
-function validateStep2(data: QuoteFormData): string[] {
-  const errors: string[] = [];
-  if (!data.projectType) errors.push("Project type is required");
-  if (data.services.length === 0) errors.push("At least one service is required");
-  if (!data.budgetRange) errors.push("Budget range is required");
-  if (!data.timeline) errors.push("Timeline is required");
-  return errors;
-}
-
-function validateStep3(data: QuoteFormData): string[] {
-  const errors: string[] = [];
-  if (!data.description.trim()) errors.push("Project description is required");
-  if (!data.agreedToTerms) errors.push("You must agree to the terms");
-  return errors;
-}
-
 export function QuotePageClient() {
   const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState(1);
@@ -205,13 +184,13 @@ export function QuotePageClient() {
   };
 
   const handleNext = () => {
-    let validationErrors: string[] = [];
-    
-    if (currentStep === 1) validationErrors = validateStep1(formData);
-    else if (currentStep === 2) validationErrors = validateStep2(formData);
+    const validation =
+      currentStep === 1
+        ? quoteStep1Schema.safeParse(formData)
+        : quoteStep2Schema.safeParse(formData);
 
-    if (validationErrors.length > 0) {
-      setErrors(validationErrors);
+    if (!validation.success) {
+      setErrors(getErrorMessages(validation.error));
       return;
     }
 
@@ -225,9 +204,9 @@ export function QuotePageClient() {
   };
 
   const handleSubmit = async () => {
-    const validationErrors = validateStep3(formData);
-    if (validationErrors.length > 0) {
-      setErrors(validationErrors);
+    const validation = quoteSchema.safeParse(formData);
+    if (!validation.success) {
+      setErrors(getErrorMessages(validation.error));
       return;
     }
 
@@ -238,7 +217,7 @@ export function QuotePageClient() {
       const res = await fetch("/api/quotes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(validation.data),
       });
 
       const data = await res.json();
@@ -264,7 +243,7 @@ export function QuotePageClient() {
 
   if (isSuccess) {
     return (
-      <main className="min-h-screen">
+      <div className="min-h-screen">
         <WebHero />
         <section className="py-20 lg:py-32">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -284,12 +263,12 @@ export function QuotePageClient() {
             </FadeIn>
           </div>
         </section>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen">
+    <div className="min-h-screen">
       <WebHero />
       
       <section className="py-20 lg:py-32 bg-background">
@@ -626,6 +605,6 @@ export function QuotePageClient() {
           </FadeIn>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

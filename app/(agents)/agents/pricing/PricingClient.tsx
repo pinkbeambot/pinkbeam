@@ -8,6 +8,8 @@ import { PricingToggle } from "./components/PricingToggle";
 import { PricingCard } from "./components/PricingCard";
 import { FeatureComparisonTable } from "./components/FeatureComparison";
 import { PricingFAQ } from "./components/PricingFAQ";
+import { cn } from "@/lib/utils";
+import { getFieldErrors, pricingContactSchema } from "@/lib/validation";
 import {
   pricingTiers,
   featureComparisons,
@@ -23,9 +25,16 @@ export default function PricingClient() {
     company: "",
     message: "",
   });
+  const [contactErrors, setContactErrors] = useState<Record<string, string>>({});
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const validation = pricingContactSchema.safeParse(contactForm);
+    if (!validation.success) {
+      setContactErrors(getFieldErrors(validation.error));
+      return;
+    }
+    setContactErrors({});
     console.log("Contact form submitted:", contactForm);
     alert("Thanks for your interest! We'll be in touch soon.");
     setContactForm({ name: "", email: "", company: "", message: "" });
@@ -182,11 +191,28 @@ export default function PricingClient() {
                     type="text"
                     placeholder="Your name"
                     value={contactForm.name}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       setContactForm({ ...contactForm, name: e.target.value })
-                    }
+                      if (contactErrors.name) {
+                        setContactErrors((prev) => {
+                          const next = { ...prev }
+                          delete next.name
+                          return next
+                        })
+                      }
+                    }}
+                    aria-invalid={Boolean(contactErrors.name)}
+                    aria-describedby={contactErrors.name ? "pricing-name-error" : undefined}
+                    className={cn(
+                      contactErrors.name && "border-destructive focus-visible:ring-destructive/30"
+                    )}
                     required
                   />
+                  {contactErrors.name && (
+                    <p id="pricing-name-error" className="text-xs text-destructive mt-1">
+                      {contactErrors.name}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label
@@ -200,11 +226,28 @@ export default function PricingClient() {
                     type="email"
                     placeholder="you@company.com"
                     value={contactForm.email}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       setContactForm({ ...contactForm, email: e.target.value })
-                    }
+                      if (contactErrors.email) {
+                        setContactErrors((prev) => {
+                          const next = { ...prev }
+                          delete next.email
+                          return next
+                        })
+                      }
+                    }}
+                    aria-invalid={Boolean(contactErrors.email)}
+                    aria-describedby={contactErrors.email ? "pricing-email-error" : undefined}
+                    className={cn(
+                      contactErrors.email && "border-destructive focus-visible:ring-destructive/30"
+                    )}
                     required
                   />
+                  {contactErrors.email && (
+                    <p id="pricing-email-error" className="text-xs text-destructive mt-1">
+                      {contactErrors.email}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="mb-4">
@@ -219,10 +262,27 @@ export default function PricingClient() {
                   type="text"
                   placeholder="Your company name"
                   value={contactForm.company}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setContactForm({ ...contactForm, company: e.target.value })
-                  }
+                    if (contactErrors.company) {
+                      setContactErrors((prev) => {
+                        const next = { ...prev }
+                        delete next.company
+                        return next
+                      })
+                    }
+                  }}
+                  aria-invalid={Boolean(contactErrors.company)}
+                  aria-describedby={contactErrors.company ? "pricing-company-error" : undefined}
+                  className={cn(
+                    contactErrors.company && "border-destructive focus-visible:ring-destructive/30"
+                  )}
                 />
+                {contactErrors.company && (
+                  <p id="pricing-company-error" className="text-xs text-destructive mt-1">
+                    {contactErrors.company}
+                  </p>
+                )}
               </div>
               <div className="mb-6">
                 <label
@@ -237,11 +297,25 @@ export default function PricingClient() {
                   placeholder="Tell us about your needs..."
                   className="w-full px-3 py-2 rounded-md border border-input bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background resize-none"
                   value={contactForm.message}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setContactForm({ ...contactForm, message: e.target.value })
-                  }
+                    if (contactErrors.message) {
+                      setContactErrors((prev) => {
+                        const next = { ...prev }
+                        delete next.message
+                        return next
+                      })
+                    }
+                  }}
+                  aria-invalid={Boolean(contactErrors.message)}
+                  aria-describedby={contactErrors.message ? "pricing-message-error" : undefined}
                   required
                 />
+                {contactErrors.message && (
+                  <p id="pricing-message-error" className="text-xs text-destructive mt-1">
+                    {contactErrors.message}
+                  </p>
+                )}
               </div>
               <Button type="submit" variant="beam" size="lg" className="w-full">
                 Send Message

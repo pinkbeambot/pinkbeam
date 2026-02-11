@@ -10,12 +10,16 @@ import {
   Filter,
   Clock,
   AlertTriangle,
+  X,
+  ArrowRight,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { FadeIn } from '@/components/animations'
+import { useContextualSearch } from '@/components/search'
+import type { SearchResult } from '@/lib/search'
 
 // TODO: Replace with real auth context from WEB-008
 const CLIENT_ID = 'test-client'
@@ -128,7 +132,7 @@ export default function SupportPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [filter, setFilter] = useState('all')
-  const [search, setSearch] = useState('')
+  const { query, results, isSearching, ContextualSearchComponent, clearSearch } = useContextualSearch('ticket')
 
   const fetchTickets = useCallback(async () => {
     try {
@@ -153,15 +157,11 @@ export default function SupportPage() {
     fetchTickets()
   }, [fetchTickets])
 
-  const filtered = tickets.filter((t) => {
-    if (!search) return true
-    const term = search.toLowerCase()
-    return (
-      t.title.toLowerCase().includes(term) ||
-      t.id.toLowerCase().includes(term) ||
-      t.category.toLowerCase().includes(term)
-    )
-  })
+  const filtered = isSearching 
+    ? [] // Show API results instead when searching
+    : tickets.filter((t) => {
+        return filter === 'all' || t.status === filter
+      })
 
   const openCount = tickets.filter((t) => t.status === 'OPEN' || t.status === 'IN_PROGRESS' || t.status === 'WAITING_CLIENT').length
 
@@ -192,13 +192,20 @@ export default function SupportPage() {
       <FadeIn delay={0.1}>
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search tickets..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
+            <ContextualSearchComponent
+              placeholder="Search tickets by title, description..."
+              className="w-full"
             />
+            {isSearching && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <button
+                  onClick={clearSearch}
+                  className="p-1 hover:bg-muted rounded-sm"
+                >
+                  <X className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <Filter className="w-4 h-4 text-muted-foreground" />
@@ -215,6 +222,53 @@ export default function SupportPage() {
           </div>
         </div>
       </FadeIn>
+
+      {/* Search Results from API */}
+      {isSearching && results.length > 0 && (
+        <FadeIn>
+          <Card>
+            <CardHeader>
+              <CardTitle>Search Results ({results.length})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {results.map((result) => (
+                  <Link
+                    key={result.id}
+                    href={result.url}
+                    className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors block"
+                  >
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center shrink-0">
+                        <MessageSquare className="w-5 h-5 text-violet-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium truncate">{result.title}</p>
+                        {result.snippet && (
+                          <p className="text-sm text-muted-foreground truncate">
+                            {result.snippet}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-muted-foreground" />
+                  </Link>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </FadeIn>
+      )}
+
+      {isSearching && results.length === 0 && query && (
+        <FadeIn>
+          <div className="text-center py-12 border rounded-lg bg-muted/30">
+            <Search className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No tickets found</h3>
+            <p className="text-muted-foreground">Try a different search term</p>
+          </div>
+        </FadeIn>
+      )}
 
       {/* Loading */}
       {loading && (

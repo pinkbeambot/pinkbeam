@@ -7,9 +7,17 @@ export async function GET(
 ) {
   try {
     const { slug } = await params
-    
+    const { searchParams } = new URL(request.url)
+    const solutions = searchParams.get('solutions') === 'true'
+
     const post = await prisma.blogPost.findUnique({
-      where: { slug, published: true },
+      where: { 
+        slug_service: {
+          slug,
+          service: solutions ? 'SOLUTIONS' : 'WEB'
+        },
+        published: true 
+      },
     })
 
     if (!post) {

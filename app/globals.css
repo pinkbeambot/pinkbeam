@@ -239,6 +239,24 @@
   --chart-5: #818CF8;
 }
 
+@layer utilities {
+  .text-foreground {
+    color: var(--foreground) !important;
+  }
+
+  .text-muted-foreground {
+    color: var(--muted-foreground) !important;
+  }
+
+  .text-card-foreground {
+    color: var(--card-foreground) !important;
+  }
+
+  .text-popover-foreground {
+    color: var(--popover-foreground) !important;
+  }
+}
+
 /* ========================================
    BASE STYLES
    ======================================== */

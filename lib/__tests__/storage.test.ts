@@ -6,6 +6,9 @@ import {
   generateStoragePath,
   formatFileSize,
   getFileCategory,
+  getPreviewTransform,
+  isPreviewableMimeType,
+  IMAGE_PREVIEW_TRANSFORM,
   ALL_ALLOWED_MIME_TYPES,
   MAX_FILE_SIZE,
   BUCKETS,
@@ -249,6 +252,31 @@ describe('getFileCategory', () => {
 
   it('returns other for unknown types', () => {
     expect(getFileCategory('application/octet-stream')).toBe('other')
+  })
+})
+
+describe('isPreviewableMimeType', () => {
+  it('returns true for images', () => {
+    expect(isPreviewableMimeType('image/png')).toBe(true)
+  })
+
+  it('returns true for PDFs', () => {
+    expect(isPreviewableMimeType('application/pdf')).toBe(true)
+  })
+
+  it('returns false for archives', () => {
+    expect(isPreviewableMimeType('application/zip')).toBe(false)
+  })
+})
+
+describe('getPreviewTransform', () => {
+  it('returns the preview transform for images', () => {
+    expect(getPreviewTransform('image/jpeg')).toEqual(IMAGE_PREVIEW_TRANSFORM)
+  })
+
+  it('returns null for non-transformable types', () => {
+    expect(getPreviewTransform('application/pdf')).toBeNull()
+    expect(getPreviewTransform('text/plain')).toBeNull()
   })
 })
 

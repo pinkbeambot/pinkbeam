@@ -44,7 +44,11 @@ export default function AuthCallbackPage() {
 
   if (error) {
     return (
-      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4"
+      >
         <div className="text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-destructive mb-4" />
           <h1 className="text-xl font-bold mb-2">Authentication Error</h1>
@@ -53,17 +57,21 @@ export default function AuthCallbackPage() {
             <Button>Try Again</Button>
           </Link>
         </div>
-      </div>
+      </main>
     )
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4"
+    >
       <div className="text-center">
         <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary mb-4" />
         <h1 className="text-xl font-bold">Completing sign in...</h1>
         <p className="text-muted-foreground mt-2">Please wait while we verify your account.</p>
       </div>
-    </div>
+    </main>
   )
 }

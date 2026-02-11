@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Play, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui";
 import { FadeIn, FadeInOnMount } from "@/components/animations";
+import { DemoModal } from "@/app/(agents)/agents/components/DemoModal";
 import Link from "next/link";
 
 // Logo placeholder component
@@ -18,6 +20,8 @@ function LogoPlaceholder({ name }: { name: string }) {
 }
 
 export function Hero() {
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-void">
       {/* Background Effects */}
@@ -67,12 +71,15 @@ export function Hero() {
                 Start Free Trial
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
-              <Link href="#demo" className="w-full sm:w-auto">
-                <Button size="lg" variant="outline" className="w-full">
-                  <Play className="w-4 h-4 mr-2" />
-                  Watch Demo
-                </Button>
-              </Link>
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full sm:w-auto"
+                onClick={() => setIsDemoModalOpen(true)}
+              >
+                <Play className="w-4 h-4 mr-2" />
+                Watch Demo
+              </Button>
             </div>
           </FadeInOnMount>
           
@@ -110,6 +117,9 @@ export function Hero() {
           <ChevronDown className="w-5 h-5" />
         </motion.div>
       </motion.div>
+
+      {/* Demo Modal */}
+      <DemoModal isOpen={isDemoModalOpen} onClose={() => setIsDemoModalOpen(false)} />
     </section>
   );
 }

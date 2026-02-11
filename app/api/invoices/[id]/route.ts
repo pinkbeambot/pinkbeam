@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 import { z } from 'zod'
 
 // GET /api/invoices/[id] - Get invoice detail
@@ -13,11 +14,12 @@ export async function GET(
     const invoice = await prisma.invoice.findUnique({
       where: { id },
       include: {
-        client: {
-          select: { id: true, name: true, email: true, company: true }
-        },
         project: {
-          select: { id: true, name: true }
+          select: {
+            id: true,
+            title: true,
+            client: { select: { id: true, name: true, email: true, company: true } },
+          }
         }
       }
     })
@@ -29,7 +31,14 @@ export async function GET(
       )
     }
 
-    return NextResponse.json({ success: true, data: invoice })
+    return NextResponse.json({
+      success: true,
+      data: {
+        ...invoice,
+        project: { id: invoice.project.id, title: invoice.project.title },
+        client: invoice.project.client,
+      },
+    })
   } catch (error) {
     console.error('Error fetching invoice:', error)
     return NextResponse.json(
@@ -41,7 +50,7 @@ export async function GET(
 
 // PUT /api/invoices/[id] - Update invoice
 const updateInvoiceSchema = z.object({
-  status: z.enum(['pending', 'paid', 'overdue', 'cancelled']).optional(),
+  status: z.string().optional(),
   amount: z.number().min(0).optional(),
   description: z.string().optional(),
   dueDate: z.string().datetime().optional(),
@@ -64,21 +73,36 @@ export async function PUT(
       )
     }
 
-    const updateData: any = { ...result.data }
-    if (result.data.dueDate) updateData.dueDate = new Date(result.data.dueDate)
-    if (result.data.paidAt) updateData.paidAt = new Date(result.data.paidAt)
+    const updateData: Prisma.InvoiceUpdateInput = {
+      amount: result.data.amount,
+      description: result.data.description,
+      paidAt: result.data.paidAt ? new Date(result.data.paidAt) : result.data.paidAt,
+      dueAt: result.data.dueDate ? new Date(result.data.dueDate) : undefined,
+      status: result.data.status ? result.data.status.toUpperCase() : undefined,
+    }
 
     const invoice = await prisma.invoice.update({
       where: { id },
       data: updateData,
       include: {
-        client: {
-          select: { id: true, name: true, email: true }
-        }
+        project: {
+          select: {
+            id: true,
+            title: true,
+            client: { select: { id: true, name: true, email: true } },
+          },
+        },
       }
     })
 
-    return NextResponse.json({ success: true, data: invoice })
+    return NextResponse.json({
+      success: true,
+      data: {
+        ...invoice,
+        project: { id: invoice.project.id, title: invoice.project.title },
+        client: invoice.project.client,
+      },
+    })
   } catch (error) {
     console.error('Error updating invoice:', error)
     return NextResponse.json(

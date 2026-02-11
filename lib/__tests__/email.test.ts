@@ -5,7 +5,11 @@ import {
   followUpDay1Template,
   followUpDay3Template,
   followUpDay7Template,
+  invoiceReceiptTemplate,
+  newsletterTemplate,
+  passwordResetTemplate,
   statusUpdateTemplate,
+  welcomeTemplate,
 } from '@/lib/email-templates'
 
 const baseQuote = {
@@ -124,4 +128,70 @@ describe('statusUpdateTemplate', () => {
       expect(result.html).toContain('Hi Jane')
     })
   }
+})
+
+describe('welcomeTemplate', () => {
+  it('greets the user and includes the login url', () => {
+    const { subject, html } = welcomeTemplate({
+      fullName: 'Jane Doe',
+      loginUrl: 'https://pinkbeam.io/dashboard',
+    })
+
+    expect(subject).toContain('Welcome')
+    expect(html).toContain('Hi Jane')
+    expect(html).toContain('https://pinkbeam.io/dashboard')
+  })
+})
+
+describe('passwordResetTemplate', () => {
+  it('includes the reset link and expiry info when provided', () => {
+    const { subject, html } = passwordResetTemplate({
+      fullName: 'Jane Doe',
+      resetUrl: 'https://pinkbeam.io/reset?token=abc',
+      expiresInMinutes: 30,
+    })
+
+    expect(subject).toContain('Reset')
+    expect(html).toContain('reset?token=abc')
+    expect(html).toContain('30 minutes')
+  })
+})
+
+describe('invoiceReceiptTemplate', () => {
+  it('renders invoice details and status', () => {
+    const { subject, html } = invoiceReceiptTemplate({
+      invoiceNumber: 'INV-1001',
+      clientName: 'Jane Doe',
+      amount: '$1,200.00',
+      status: 'due',
+      dueDate: 'March 1, 2026',
+      invoiceUrl: 'https://pinkbeam.io/invoices/INV-1001',
+    })
+
+    expect(subject).toContain('INV-1001')
+    expect(html).toContain('$1,200.00')
+    expect(html).toContain('March 1, 2026')
+  })
+})
+
+describe('newsletterTemplate', () => {
+  it('includes newsletter content and CTA when provided', () => {
+    const { subject, html } = newsletterTemplate({
+      title: 'February Updates',
+      intro: 'Here is what is new at Pink Beam.',
+      items: [
+        {
+          title: 'New onboarding flow',
+          description: 'A faster start for new clients.',
+          url: 'https://pinkbeam.io/blog/onboarding',
+        },
+      ],
+      ctaText: 'Read the full update',
+      ctaUrl: 'https://pinkbeam.io/blog',
+    })
+
+    expect(subject).toContain('February Updates')
+    expect(html).toContain('New onboarding flow')
+    expect(html).toContain('Read the full update')
+  })
 })

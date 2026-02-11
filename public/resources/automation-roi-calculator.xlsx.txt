@@ -1,0 +1,41 @@
+Process Automation ROI Calculator
+==================================
+
+INSTRUCTIONS FOR USE:
+
+This Excel-based calculator helps you estimate the return on investment 
+for process automation initiatives.
+
+INPUTS REQUIRED:
+
+1. Process Details
+   - Process name and description
+   - Current frequency (times per day/week/month)
+   - Average handling time (minutes)
+
+2. Labor Costs
+   - Average hourly rate of staff performing process
+   - Number of FTEs currently assigned
+   - Benefits burden percentage
+
+3. Automation Parameters
+   - Expected automation rate (%)
+   - Implementation timeline
+   - Initial investment cost
+   - Ongoing maintenance costs
+
+OUTPUTS PROVIDED:
+
+- Monthly labor cost savings
+- Error reduction value
+- Productivity gain estimates
+- Payback period
+- 3-year NPV
+- IRR calculation
+
+DISCLAIMER:
+This calculator provides estimates for planning purposes only. 
+Actual results may vary based on implementation quality and 
+organizational factors.
+
+For a detailed automation assessment, contact Pink Beam Solutions.

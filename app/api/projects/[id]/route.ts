@@ -38,12 +38,26 @@ export async function GET(
 
 // PUT /api/projects/[id] - Update project
 const updateProjectSchema = z.object({
-  name: z.string().min(1).optional(),
+  title: z.string().min(1).optional(),
   description: z.string().optional(),
-  status: z.enum(['planning', 'in_progress', 'review', 'completed']).optional(),
+  status: z
+    .enum([
+      'LEAD',
+      'QUOTED',
+      'ACCEPTED',
+      'IN_PROGRESS',
+      'REVIEW',
+      'COMPLETED',
+      'ON_HOLD',
+      'CANCELLED',
+    ])
+    .optional(),
+  services: z
+    .array(z.enum(['DESIGN', 'DEVELOPMENT', 'SEO', 'MAINTENANCE', 'CONSULTING']))
+    .min(1, 'At least one service is required')
+    .optional(),
   budget: z.number().optional(),
-  progress: z.number().min(0).max(100).optional(),
-  dueDate: z.string().datetime().optional().nullable(),
+  deadline: z.string().datetime().optional().nullable(),
 })
 
 export async function PUT(
@@ -66,7 +80,9 @@ export async function PUT(
       where: { id },
       data: {
         ...result.data,
-        dueDate: result.data.dueDate ? new Date(result.data.dueDate) : result.data.dueDate,
+        deadline: result.data.deadline
+          ? new Date(result.data.deadline)
+          : result.data.deadline,
       },
       include: {
         client: {

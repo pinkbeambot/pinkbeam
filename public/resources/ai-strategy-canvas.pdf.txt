@@ -1,0 +1,38 @@
+AI Strategy Canvas
+==================
+
+This is a placeholder for the AI Strategy Canvas PDF template.
+
+In production, this would be a professionally designed PDF including:
+
+1. Executive Summary Template
+   - Vision statement
+   - Strategic objectives
+   - Success metrics
+
+2. Use Case Identification Framework
+   - Problem statement canvas
+   - Impact vs. Feasibility matrix
+   - Prioritization scoring
+
+3. Capability Assessment
+   - Technical readiness checklist
+   - Data maturity evaluation
+   - Team skills assessment
+
+4. Implementation Roadmap
+   - Phase breakdown
+   - Milestone planning
+   - Resource requirements
+
+5. Risk Assessment
+   - Technical risks
+   - Organizational risks
+   - Mitigation strategies
+
+To use this resource:
+1. Print or use digitally
+2. Work through each section with your team
+3. Use as a living document throughout your AI journey
+
+For support implementing your AI strategy, contact Pink Beam Solutions.

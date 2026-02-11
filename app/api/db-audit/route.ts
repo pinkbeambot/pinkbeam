@@ -4,14 +4,14 @@ import { prisma } from '@/lib/prisma'
 export async function GET() {
   try {
     // Get all tables with simple query
-    const tablesResult = await prisma.$queryRaw`
+    const tablesResult = await prisma.$queryRaw<Array<{ tablename: string }>>`
       SELECT tablename
       FROM pg_tables
       WHERE schemaname = 'public'
       ORDER BY tablename
     `
     
-    const tables = (tablesResult as any[]).map(t => t.tablename)
+    const tables = tablesResult.map((table) => table.tablename)
 
     // Get row counts for our tables
     const counts: Record<string, number> = {}

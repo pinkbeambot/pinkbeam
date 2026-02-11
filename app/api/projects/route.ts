@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { Prisma, ProjectStatus } from '@prisma/client'
 import { z } from 'zod'
 
 // GET /api/projects - List projects
@@ -9,8 +10,8 @@ export async function GET(request: Request) {
     const status = searchParams.get('status')
     const clientId = searchParams.get('clientId')
 
-    const where: any = {}
-    if (status) where.status = status
+    const where: Prisma.ProjectWhereInput = {}
+    if (status) where.status = status.toUpperCase() as ProjectStatus
     if (clientId) where.clientId = clientId
 
     const projects = await prisma.project.findMany({
@@ -35,12 +36,26 @@ export async function GET(request: Request) {
 
 // POST /api/projects - Create project
 const createProjectSchema = z.object({
-  name: z.string().min(1, 'Project name is required'),
+  title: z.string().min(1, 'Project title is required'),
   description: z.string().optional(),
   clientId: z.string().min(1, 'Client ID is required'),
+  services: z
+    .array(z.enum(['DESIGN', 'DEVELOPMENT', 'SEO', 'MAINTENANCE', 'CONSULTING']))
+    .min(1, 'At least one service is required'),
   budget: z.number().optional(),
-  status: z.enum(['planning', 'in_progress', 'review', 'completed']).default('planning'),
-  dueDate: z.string().datetime().optional(),
+  status: z
+    .enum([
+      'LEAD',
+      'QUOTED',
+      'ACCEPTED',
+      'IN_PROGRESS',
+      'REVIEW',
+      'COMPLETED',
+      'ON_HOLD',
+      'CANCELLED',
+    ])
+    .default('LEAD'),
+  deadline: z.string().datetime().optional().nullable(),
 })
 
 export async function POST(request: Request) {
@@ -57,12 +72,13 @@ export async function POST(request: Request) {
 
     const project = await prisma.project.create({
       data: {
-        name: result.data.name,
-        description: result.data.description,
+        title: result.data.title,
+        description: result.data.description ?? null,
         clientId: result.data.clientId,
+        services: result.data.services,
         budget: result.data.budget,
         status: result.data.status,
-        dueDate: result.data.dueDate ? new Date(result.data.dueDate) : null,
+        deadline: result.data.deadline ? new Date(result.data.deadline) : null,
       },
       include: {
         client: {

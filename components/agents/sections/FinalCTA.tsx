@@ -4,6 +4,8 @@ import { useState } from "react";
 import { ArrowRight, CreditCard, Calendar, CheckCircle, Quote } from "lucide-react";
 import { Button, Input } from "@/components/ui";
 import { FadeIn, FadeInOnMount } from "@/components/animations";
+import { getFieldErrors, finalCtaSchema } from "@/lib/validation";
+import { cn } from "@/lib/utils";
 
 const trustBadges = [
   { icon: CreditCard, text: "No credit card required" },
@@ -14,13 +16,19 @@ const trustBadges = [
 export function FinalCTA() {
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      setIsSubmitted(true);
-      // In a real app, you'd handle the signup here
+    const validation = finalCtaSchema.safeParse({ email });
+    if (!validation.success) {
+      const fieldErrors = getFieldErrors(validation.error);
+      setEmailError(fieldErrors.email ?? "Please enter a valid email");
+      return;
     }
+    setEmailError(null);
+    setIsSubmitted(true);
+    // In a real app, you'd handle the signup here
   };
 
   return (
@@ -56,9 +64,17 @@ export function FinalCTA() {
                     type="email"
                     placeholder="Enter your work email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (emailError) setEmailError(null);
+                    }}
                     required
-                    className="h-12 bg-surface-elevated border-border"
+                    aria-invalid={Boolean(emailError)}
+                    aria-describedby={emailError ? "final-cta-email-error" : undefined}
+                    className={cn(
+                      "h-12 bg-surface-elevated border-border",
+                      emailError && "border-destructive focus-visible:ring-destructive/30"
+                    )}
                   />
                   <Button 
                     type="submit" 
@@ -79,6 +95,12 @@ export function FinalCTA() {
               </div>
             )}
           </FadeInOnMount>
+
+          {emailError && (
+            <p id="final-cta-email-error" className="text-xs text-destructive mt-2">
+              {emailError}
+            </p>
+          )}
 
           {/* Trust Badges */}
           <FadeInOnMount delay={0.3}>

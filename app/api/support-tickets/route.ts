@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { Prisma, TicketStatus } from '@prisma/client'
 import { z } from 'zod'
 
 // GET /api/support-tickets - List support tickets
@@ -9,8 +10,8 @@ export async function GET(request: Request) {
     const status = searchParams.get('status')
     const clientId = searchParams.get('clientId')
 
-    const where: any = {}
-    if (status) where.status = status
+    const where: Prisma.SupportTicketWhereInput = {}
+    if (status) where.status = status.toUpperCase() as TicketStatus
     if (clientId) where.clientId = clientId
 
     const tickets = await prisma.supportTicket.findMany({
@@ -34,11 +35,22 @@ export async function GET(request: Request) {
 }
 
 // POST /api/support-tickets - Create support ticket
+const prioritySchema = z.preprocess(
+  (value) => (typeof value === 'string' ? value.toUpperCase() : value),
+  z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT'])
+)
+
+const categorySchema = z.preprocess(
+  (value) => (typeof value === 'string' ? value.toUpperCase() : value),
+  z.enum(['GENERAL', 'BUG', 'FEATURE_REQUEST', 'BILLING', 'TECHNICAL'])
+)
+
 const createTicketSchema = z.object({
   clientId: z.string().min(1, 'Client ID is required'),
-  subject: z.string().min(1, 'Subject is required'),
+  title: z.string().min(1, 'Title is required'),
   description: z.string().min(10, 'Please provide more details'),
-  priority: z.enum(['low', 'medium', 'high']).default('medium'),
+  priority: prioritySchema.optional().default('MEDIUM'),
+  category: categorySchema.optional().default('GENERAL'),
 })
 
 export async function POST(request: Request) {
@@ -56,10 +68,10 @@ export async function POST(request: Request) {
     const ticket = await prisma.supportTicket.create({
       data: {
         clientId: result.data.clientId,
-        subject: result.data.subject,
+        title: result.data.title,
         description: result.data.description,
         priority: result.data.priority,
-        status: 'open',
+        category: result.data.category,
       },
       include: {
         client: {

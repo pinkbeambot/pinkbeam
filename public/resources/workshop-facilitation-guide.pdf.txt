@@ -1,0 +1,54 @@
+Workshop Facilitation Guide
+============================
+
+Complete guide for facilitating effective strategy and discovery workshops.
+
+WORKSHOP TYPES:
+
+1. Strategy Alignment Workshop (1/2 day)
+   - Objective: Align leadership on strategic priorities
+   - Participants: Executive team
+   - Output: Prioritized initiative list
+
+2. Discovery Workshop (1-2 days)
+   - Objective: Understand current state and challenges
+   - Participants: Cross-functional team
+   - Output: Process maps, pain points, opportunities
+
+3. Design Workshop (2-3 days)
+   - Objective: Design future state solutions
+   - Participants: Subject matter experts
+   - Output: Solution concepts, requirements
+
+FACILITATION TECHNIQUES:
+
+Opening (15 mins)
+□ Welcome and introductions
+□ Agenda review
+□ Ground rules establishment
+□ Ice breaker activity
+
+Divergent Thinking (30-45 mins)
+□ Brainstorming sessions
+□ Individual reflection time
+□ Sticky note exercises
+□ Round-robin sharing
+
+Convergent Thinking (30-45 mins)
+□ Affinity mapping
+□ Prioritization matrices
+□ Dot voting
+□ Concept clustering
+
+Closing (15 mins)
+□ Summary of outcomes
+□ Next steps review
+□ Action item assignment
+□ Feedback collection
+
+TEMPLATES INCLUDED:
+- Agenda templates
+- Activity instructions
+- Flip chart layouts
+- Documentation formats
+- Follow-up email templates

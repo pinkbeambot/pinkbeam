@@ -1,178 +1,101 @@
-'use client'
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { createMetadata, structuredData } from "@/lib/metadata";
+import BlogPostClient from "./BlogPostClient";
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { ArrowLeft, Calendar, Clock, User } from 'lucide-react'
-import { FadeIn } from '@/components/animations'
-
-interface BlogPost {
-  id: string
-  title: string
-  slug: string
-  content: string
-  excerpt: string | null
-  metaTitle: string | null
-  metaDesc: string | null
-  publishedAt: string
-  createdAt: string
+interface BlogPostPageProps {
+  params: Promise<{ slug: string }>;
 }
 
-export default function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
-  const [post, setPost] = useState<BlogPost | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [slug, setSlug] = useState<string>('')
+async function getBlogPost(slug: string) {
+  try {
+    const post = await prisma.blogPost.findUnique({
+      where: { slug, published: true, service: 'WEB' },
+      select: {
+        id: true,
+        title: true,
+        excerpt: true,
+        content: true,
+        metaTitle: true,
+        metaDesc: true,
+        publishedAt: true,
+        createdAt: true,
+        updatedAt: true,
+        author: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+    return post;
+  } catch {
+    return null;
+  }
+}
 
-  useEffect(() => {
-    async function getSlug() {
-      const { slug } = await params
-      setSlug(slug)
-    }
-    getSlug()
-  }, [params])
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getBlogPost(slug);
 
-  useEffect(() => {
-    if (!slug) return
-
-    async function fetchPost() {
-      try {
-        const response = await fetch(`/api/blog/${slug}`)
-        if (!response.ok) {
-          if (response.status === 404) {
-            setError('Blog post not found')
-          } else {
-            throw new Error('Failed to fetch post')
-          }
-          return
-        }
-        const data = await response.json()
-        setPost(data.post)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchPost()
-  }, [slug])
-
-  function formatDate(dateString: string) {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    })
+  if (!post) {
+    return createMetadata({
+      title: "Blog Post Not Found",
+      path: "/web/blog",
+    });
   }
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="text-center">
-            <div className="animate-spin w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full mx-auto mb-4" />
-            <p className="text-muted-foreground">Loading post...</p>
-          </div>
-        </div>
-      </main>
-    )
+  const title = post.metaTitle || post.title;
+  const description = post.metaDesc || post.excerpt || post.content.slice(0, 160);
+
+  return createMetadata({
+    title: `${title} | Pink Beam Web`,
+    description: description || "Read insights on web design, development, and digital strategy.",
+    path: `/web/blog/${slug}`,
+  });
+}
+
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const { slug } = await params;
+  const post = await getBlogPost(slug);
+
+  if (!post) {
+    notFound();
   }
 
-  if (error || !post) {
-    return (
-      <main className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <FadeIn className="text-center max-w-2xl mx-auto">
-            <h1 className="text-3xl font-bold mb-4">Post Not Found</h1>
-            <p className="text-muted-foreground mb-8">
-              {error || "The blog post you're looking for doesn't exist."}
-            </p>
-            <Button asChild>
-              <Link href="/web/blog">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Blog
-              </Link>
-            </Button>
-          </FadeIn>
-        </div>
-      </main>
-    )
-  }
+  // JSON-LD structured data for blog post
+  const blogPostJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt || post.content.slice(0, 160),
+    url: `https://pinkbeam.io/web/blog/${slug}`,
+    datePublished: post.publishedAt?.toISOString() || post.createdAt.toISOString(),
+    dateModified: post.updatedAt.toISOString(),
+    author: {
+      "@type": "Organization",
+      name: post.author?.name || "Pink Beam",
+      url: "https://pinkbeam.io",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Pink Beam",
+      url: "https://pinkbeam.io",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://pinkbeam.io/logo.png",
+      },
+    },
+  };
 
   return (
-    <main className="min-h-screen bg-background">
-      {/* Header */}
-      <section className="py-20 lg:py-32 border-b">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <FadeIn>
-            <div className="max-w-3xl mx-auto">
-              {/* Back Link */}
-              <Link
-                href="/web/blog"
-                className="inline-flex items-center text-sm text-muted-foreground hover:text-violet-500 transition-colors mb-8"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Blog
-              </Link>
-
-              {/* Title */}
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
-                {post.title}
-              </h1>
-
-              {/* Meta */}
-              <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  {formatDate(post.publishedAt || post.createdAt)}
-                </div>
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  Pink Beam Team
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4" />
-                  {Math.ceil(post.content.split(' ').length / 200)} min read
-                </div>
-              </div>
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* Content */}
-      <section className="py-12 lg:py-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <FadeIn>
-            <article className="max-w-3xl mx-auto prose prose-lg dark:prose-invert prose-violet">
-              {/* Simple text rendering - in production use a markdown renderer */}
-              <div className="whitespace-pre-wrap text-foreground leading-relaxed">
-                {post.content}
-              </div>
-            </article>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-12 lg:py-20 border-t bg-muted/30">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <FadeIn className="text-center max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-4">
-              Need help with your project?
-            </h2>
-            <p className="text-muted-foreground mb-6">
-              Let&apos;s discuss how we can help you achieve your goals.
-            </p>
-            <Button className="bg-gradient-to-r from-violet-500 to-violet-600" asChild>
-              <Link href="/contact">
-                Get in Touch
-              </Link>
-            </Button>
-          </FadeIn>
-        </div>
-      </section>
-    </main>
-  )
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostJsonLd) }}
+      />
+      <BlogPostClient params={params} />
+    </>
+  );
 }

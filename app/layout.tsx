@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AnalyticsProvider } from "@/components/analytics";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -98,6 +99,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased min-h-screen bg-background text-foreground`}
+        style={{ color: "var(--foreground)", backgroundColor: "var(--background)" }}
       >
         <ThemeProvider
           attribute="class"
@@ -105,14 +107,26 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange={false}
         >
-          {/* Skip to main content link for accessibility */}
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          <AnalyticsProvider
+            config={{
+              enablePlausible: process.env.NODE_ENV === "production",
+              enableCustomTracking: true,
+              plausible: {
+                domain: "pinkbeam.io",
+                apiHost: process.env.NEXT_PUBLIC_PLAUSIBLE_HOST || "https://plausible.io",
+                trackLocalhost: false,
+              },
+            }}
           >
-            Skip to main content
-          </a>
-          {children}
+            {/* Skip to main content link for accessibility */}
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            >
+              Skip to main content
+            </a>
+            {children}
+          </AnalyticsProvider>
         </ThemeProvider>
       </body>
     </html>

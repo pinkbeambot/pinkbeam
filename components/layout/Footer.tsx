@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FadeIn } from "@/components/animations/FadeIn";
+import { getFieldErrors, newsletterSchema } from "@/lib/validation";
 
 // Footer link data
 const footerLinks = {
@@ -81,12 +82,19 @@ function NewsletterForm() {
   const [email, setEmail] = React.useState("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const [emailError, setEmailError] = React.useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    const validation = newsletterSchema.safeParse({ email });
+    if (!validation.success) {
+      const fieldErrors = getFieldErrors(validation.error);
+      setEmailError(fieldErrors.email ?? "Please enter a valid email");
+      return;
+    }
 
     setIsSubmitting(true);
+    setEmailError(null);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     setIsSubmitting(false);
@@ -96,9 +104,9 @@ function NewsletterForm() {
 
   return (
     <div className="space-y-3">
-      <h4 className="font-display font-semibold text-sm text-foreground">
+      <h2 className="font-display font-semibold text-sm text-foreground">
         Subscribe to our newsletter
-      </h4>
+      </h2>
       <p className="text-sm text-muted-foreground">
         Get the latest updates on AI employees and automation tips.
       </p>
@@ -109,28 +117,43 @@ function NewsletterForm() {
           </p>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <Input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="flex-1"
-            required
-          />
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="shrink-0"
-          >
-            {isSubmitting ? (
-              <span className="animate-spin">⟳</span>
-            ) : (
-              <ArrowRight className="w-4 h-4" />
-            )}
-            <span className="sr-only">Subscribe</span>
-          </Button>
-        </form>
+        <>
+          <form onSubmit={handleSubmit} className="flex gap-2">
+            <Input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (emailError) setEmailError(null);
+              }}
+              aria-invalid={Boolean(emailError)}
+              aria-describedby={emailError ? "newsletter-email-error" : undefined}
+              className={cn(
+                "flex-1",
+                emailError && "border-destructive focus-visible:ring-destructive/30"
+              )}
+              required
+            />
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="shrink-0"
+            >
+              {isSubmitting ? (
+                <span className="animate-spin">⟳</span>
+              ) : (
+                <ArrowRight className="w-4 h-4" />
+              )}
+              <span className="sr-only">Subscribe</span>
+            </Button>
+          </form>
+          {emailError && (
+            <p id="newsletter-email-error" className="text-xs text-destructive">
+              {emailError}
+            </p>
+          )}
+        </>
       )}
     </div>
   );
@@ -146,9 +169,9 @@ function FooterColumn({
 }) {
   return (
     <div className="space-y-3">
-      <h4 className="font-display font-semibold text-sm text-foreground">
+      <h2 className="font-display font-semibold text-sm text-foreground">
         {title}
-      </h4>
+      </h2>
       <ul className="space-y-2">
         {links.map((link) => (
           <li key={link.label}>

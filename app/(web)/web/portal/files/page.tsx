@@ -15,19 +15,11 @@ import {
 import { FadeIn } from '@/components/animations'
 import { FileUpload } from '@/components/file-upload'
 import { FileList } from '@/components/file-list'
+import { formatFileSize } from '@/lib/storage'
+import type { FileRecord } from '@/types/file'
 
 // TODO: Replace with real auth context from WEB-008
 const CLIENT_ID = 'test-client'
-
-interface FileRecord {
-  id: string
-  name: string
-  mimeType: string
-  size: number
-  bucket: string
-  createdAt: string
-  uploadedBy?: { id: string; name: string | null; email: string }
-}
 
 const bucketFilters = [
   { value: '', label: 'All Files' },
@@ -40,6 +32,11 @@ export default function FilesPage() {
   const [loading, setLoading] = useState(true)
   const [uploadOpen, setUploadOpen] = useState(false)
   const [bucketFilter, setBucketFilter] = useState('')
+  const [usage, setUsage] = useState<{
+    totalBytes: number
+    totalFiles: number
+    byBucket: { bucket: string; totalBytes: number; totalFiles: number }[]
+  } | null>(null)
 
   const fetchFiles = useCallback(async () => {
     try {
@@ -55,16 +52,36 @@ export default function FilesPage() {
     }
   }, [bucketFilter])
 
+  const fetchUsage = useCallback(async () => {
+    try {
+      const params = new URLSearchParams({ uploadedById: CLIENT_ID, latest: 'true' })
+      if (bucketFilter) params.set('bucket', bucketFilter)
+      const res = await fetch(`/api/files/usage?${params}`)
+      const data = await res.json()
+      if (data.success) setUsage(data.data)
+    } catch {
+      // silent
+    }
+  }, [bucketFilter])
+
   useEffect(() => {
     fetchFiles()
-  }, [fetchFiles])
+    fetchUsage()
+  }, [fetchFiles, fetchUsage])
 
   const handleUploadComplete = (file: FileRecord) => {
     setFiles((prev) => [file, ...prev])
+    fetchUsage()
   }
 
   const handleDelete = (fileId: string) => {
     setFiles((prev) => prev.filter((f) => f.id !== fileId))
+    fetchUsage()
+  }
+
+  const handleVersionUploaded = (file: FileRecord, replacedFileId: string) => {
+    setFiles((prev) => [file, ...prev.filter((f) => f.id !== replacedFileId)])
+    fetchUsage()
   }
 
   return (
@@ -76,6 +93,11 @@ export default function FilesPage() {
             <p className="text-muted-foreground mt-1">
               Access all your project files and deliverables
             </p>
+            {usage && (
+              <p className="text-xs text-muted-foreground mt-2">
+                Storage used: {formatFileSize(usage.totalBytes)} across {usage.totalFiles} files
+              </p>
+            )}
           </div>
           <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
             <DialogTrigger asChild>
@@ -142,6 +164,10 @@ export default function FilesPage() {
                 files={files}
                 canDelete
                 onDelete={handleDelete}
+                canPreview
+                enableVersioning
+                uploadedById={CLIENT_ID}
+                onVersionUploaded={handleVersionUploaded}
                 emptyMessage="No files yet. Upload your first file to get started."
               />
             )}

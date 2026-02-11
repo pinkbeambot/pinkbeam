@@ -18,10 +18,11 @@ export async function GET() {
       const { prisma } = await import('@/lib/prisma')
       await prisma.$queryRaw`SELECT 1`
       checks.checks.database = 'connected'
-    } catch (error: any) {
+    } catch (error: unknown) {
       checks.checks.database = 'disconnected'
       checks.status = 'unhealthy'
-      console.error('Database health check failed:', error?.message || error)
+      const message = error instanceof Error ? error.message : String(error)
+      console.error('Database health check failed:', message)
     }
   } else {
     checks.checks.database = 'not_configured'

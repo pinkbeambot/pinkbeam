@@ -18,8 +18,45 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { FadeIn } from '@/components/animations'
 
+type ProjectStatus = 'in-progress' | 'planning' | 'review' | 'completed'
+type PhaseStatus = 'completed' | 'in-progress' | 'pending'
+type DeliverableStatus = 'approved' | 'in-review' | 'pending'
+type DeliverableType = 'figma' | 'pdf' | 'link'
+
+interface TeamMember {
+  name: string
+  role: string
+}
+
+interface Phase {
+  name: string
+  status: PhaseStatus
+  date: string
+}
+
+interface Deliverable {
+  name: string
+  type: DeliverableType
+  status: DeliverableStatus
+  date: string
+}
+
+interface Project {
+  id: string
+  name: string
+  status: ProjectStatus
+  progress: number
+  startDate: string
+  dueDate: string
+  phase: string
+  description: string
+  team: TeamMember[]
+  phases: Phase[]
+  deliverables: Deliverable[]
+}
+
 // Mock project data
-const projectData: Record<string, any> = {
+const projectData: Record<string, Project> = {
   '1': {
     id: '1',
     name: 'Acme Corp Website Redesign',
@@ -237,7 +274,7 @@ export default function ProjectDetailPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {project.team.map((member: any) => (
+                    {project.team.map((member) => (
                       <div key={member.name} className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-violet-500/10 flex items-center justify-center">
                           <span className="text-sm font-medium text-violet-500">
@@ -263,7 +300,7 @@ export default function ProjectDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-0">
-                  {project.phases.map((phase: any, index: number) => (
+                  {project.phases.map((phase, index) => (
                     <div key={phase.name} className="flex gap-4">
                       <div className="flex flex-col items-center">
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
@@ -299,7 +336,7 @@ export default function ProjectDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {project.deliverables.map((item: any) => (
+                  {project.deliverables.map((item) => (
                     <div key={item.name} className="flex items-center justify-between p-3 rounded-lg border">
                       <div className="flex items-center gap-3">
                         <FileText className="w-5 h-5 text-violet-500" />

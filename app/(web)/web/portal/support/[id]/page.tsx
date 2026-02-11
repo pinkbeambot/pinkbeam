@@ -18,6 +18,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { FadeIn } from '@/components/animations'
 import { FileUpload } from '@/components/file-upload'
 import { FileList } from '@/components/file-list'
+import { getErrorMessages, ticketCommentSchema } from '@/lib/validation'
 
 // TODO: Replace with real auth context from WEB-008
 const CLIENT_ID = 'test-client'
@@ -198,6 +199,7 @@ export default function TicketDetailPage({ params }: { params: Promise<{ id: str
   const [error, setError] = useState<string | null>(null)
   const [newComment, setNewComment] = useState('')
   const [submittingComment, setSubmittingComment] = useState(false)
+  const [commentError, setCommentError] = useState<string | null>(null)
   const [files, setFiles] = useState<Array<{ id: string; name: string; mimeType: string; size: number; bucket: string; createdAt: string; uploadedBy?: { id: string; name: string | null; email: string } }>>([])
   const [commentFileIds, setCommentFileIds] = useState<string[]>([])
 
@@ -231,7 +233,12 @@ export default function TicketDetailPage({ params }: { params: Promise<{ id: str
 
   const submitComment = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newComment.trim()) return
+    const validation = ticketCommentSchema.safeParse({ body: newComment })
+    if (!validation.success) {
+      setCommentError(getErrorMessages(validation.error)[0] ?? 'Comment is required')
+      return
+    }
+    setCommentError(null)
     setSubmittingComment(true)
     try {
       const res = await fetch(`/api/tickets/${id}/comments`, {
@@ -239,7 +246,7 @@ export default function TicketDetailPage({ params }: { params: Promise<{ id: str
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           authorId: CLIENT_ID,
-          body: newComment.trim(),
+          body: validation.data.body,
           isInternal: false,
         }),
       })
@@ -431,9 +438,19 @@ export default function TicketDetailPage({ params }: { params: Promise<{ id: str
                 <Textarea
                   placeholder="Type your reply..."
                   value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
+                  onChange={(e) => {
+                    setNewComment(e.target.value)
+                    if (commentError) setCommentError(null)
+                  }}
                   rows={3}
+                  aria-invalid={Boolean(commentError)}
+                  aria-describedby={commentError ? 'comment-error' : undefined}
                 />
+                {commentError && (
+                  <p id="comment-error" className="text-xs text-destructive">
+                    {commentError}
+                  </p>
+                )}
                 <FileUpload
                   bucket="attachments"
                   uploadedById={CLIENT_ID}

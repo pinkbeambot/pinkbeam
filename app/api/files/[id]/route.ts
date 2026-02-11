@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getSignedUrl, getPublicUrl, deleteFile, type BucketName } from '@/lib/storage'
+import {
+  getSignedUrl,
+  getPublicUrl,
+  deleteFile,
+  getPreviewUrl,
+  isPreviewableMimeType,
+  type BucketName,
+} from '@/lib/storage'
 
 export async function GET(
   request: Request,
@@ -20,6 +27,7 @@ export async function GET(
     }
 
     let downloadUrl: string | null = null
+    let previewUrl: string | null = null
     if (file.bucket === 'public-assets') {
       downloadUrl = getPublicUrl(file.storagePath)
     } else {
@@ -33,7 +41,27 @@ export async function GET(
       downloadUrl = result.url
     }
 
-    return NextResponse.json({ success: true, data: { ...file, downloadUrl } })
+    if (isPreviewableMimeType(file.mimeType)) {
+      const previewResult = await getPreviewUrl(
+        file.bucket as BucketName,
+        file.storagePath,
+        file.mimeType,
+        3600
+      )
+      if (!previewResult.error) {
+        previewUrl = previewResult.url
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        ...file,
+        downloadUrl,
+        previewUrl,
+        isPreviewable: isPreviewableMimeType(file.mimeType),
+      },
+    })
   } catch (error) {
     console.error('Error fetching file:', error)
     return NextResponse.json({ success: false, error: 'Failed to fetch file' }, { status: 500 })

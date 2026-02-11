@@ -50,6 +50,35 @@ interface QuoteData {
   leadQuality?: string | null
 }
 
+interface WelcomeData {
+  fullName: string
+  loginUrl: string
+}
+
+interface PasswordResetData {
+  fullName?: string
+  resetUrl: string
+  expiresInMinutes?: number
+}
+
+interface InvoiceReceiptData {
+  invoiceNumber: string
+  clientName: string
+  amount: string
+  status?: 'paid' | 'due' | 'overdue'
+  dueDate?: string
+  paymentDate?: string
+  invoiceUrl: string
+}
+
+interface NewsletterData {
+  title: string
+  intro: string
+  items: Array<{ title: string; description: string; url?: string }>
+  ctaText?: string
+  ctaUrl?: string
+}
+
 /** E2: Admin notification — new quote received */
 export function adminNotificationTemplate(quote: QuoteData): { subject: string; html: string } {
   const qualityBadge = quote.leadQuality
@@ -199,7 +228,296 @@ export function followUpDay7Template(quote: QuoteData): { subject: string; html:
   }
 }
 
-// --- Ticket email templates ---
+/** Welcome email template */
+export function welcomeTemplate(data: WelcomeData): { subject: string; html: string } {
+  const firstName = data.fullName.split(' ')[0]
+
+  const html = layout(
+    header('Welcome to Pink Beam', 'Your account is ready to go') +
+    `<p style="font-size: 16px; line-height: 1.6;">Hi ${firstName},</p>` +
+    `<p style="font-size: 15px; line-height: 1.6; color: #444;">
+      We're excited to have you here. Your Pink Beam account is ready, and you can start exploring services
+      or jump straight into your dashboard.
+    </p>` +
+    button('Go to your dashboard', data.loginUrl) +
+    `<p style="font-size: 15px; line-height: 1.6; color: #444;">
+      If you have any questions, just reply to this email — we're happy to help.
+    </p>` +
+    `<p style="font-size: 15px; color: #444;">— The Pink Beam Team</p>`
+  )
+
+  return {
+    subject: 'Welcome to Pink Beam',
+    html,
+  }
+}
+
+/** Password reset template */
+export function passwordResetTemplate(data: PasswordResetData): { subject: string; html: string } {
+  const firstName = data.fullName ? data.fullName.split(' ')[0] : 'there'
+  const expiryNote = data.expiresInMinutes
+    ? `<p style="font-size: 14px; color: #666; margin: 16px 0 0;">This link expires in ${data.expiresInMinutes} minutes.</p>`
+    : ''
+
+  const html = layout(
+    header('Reset your password') +
+    `<p style="font-size: 16px; line-height: 1.6;">Hi ${firstName},</p>` +
+    `<p style="font-size: 15px; line-height: 1.6; color: #444;">
+      We received a request to reset your Pink Beam password. Use the button below to set a new password.
+      If you didn't request this, you can safely ignore this email.
+    </p>` +
+    button('Reset password', data.resetUrl) +
+    expiryNote +
+    `<p style="font-size: 14px; line-height: 1.6; color: #666; margin-top: 16px;">
+      Having trouble? Copy and paste this link into your browser:<br/>
+      <span style="word-break: break-all;">${data.resetUrl}</span>
+    </p>`
+  )
+
+  return {
+    subject: 'Reset your Pink Beam password',
+    html,
+  }
+}
+
+/** Invoice / receipt template */
+export function invoiceReceiptTemplate(data: InvoiceReceiptData): { subject: string; html: string } {
+  const status = data.status || 'due'
+  const statusLabel =
+    status === 'paid'
+      ? 'Payment received'
+      : status === 'overdue'
+        ? 'Payment overdue'
+        : 'Payment due'
+
+  const html = layout(
+    header('Invoice update', statusLabel) +
+    `<p style="font-size: 16px; line-height: 1.6;">Hi ${data.clientName.split(' ')[0]},</p>` +
+    `<p style="font-size: 15px; line-height: 1.6; color: #444;">
+      Here's the latest update on invoice <strong>${data.invoiceNumber}</strong>.
+    </p>` +
+    card(`
+      <p style="margin: 0 0 8px; font-size: 14px;"><strong>Invoice:</strong> ${data.invoiceNumber}</p>
+      <p style="margin: 0 0 8px; font-size: 14px;"><strong>Amount:</strong> ${data.amount}</p>
+      ${data.dueDate ? `<p style="margin: 0 0 8px; font-size: 14px;"><strong>Due date:</strong> ${data.dueDate}</p>` : ''}
+      ${data.paymentDate ? `<p style="margin: 0; font-size: 14px;"><strong>Payment date:</strong> ${data.paymentDate}</p>` : ''}
+    `) +
+    button(status === 'paid' ? 'View receipt' : 'View invoice', data.invoiceUrl) +
+    `<p style="font-size: 14px; line-height: 1.6; color: #666;">
+      If you have questions about this invoice, reply to this email and we&apos;ll help right away.
+    </p>`
+  )
+
+  return {
+    subject: `Invoice ${data.invoiceNumber} — ${statusLabel}`,
+    html,
+  }
+}
+
+/** Newsletter template */
+export function newsletterTemplate(data: NewsletterData): { subject: string; html: string } {
+  const items = data.items
+    .map((item) => {
+      const title = item.url
+        ? `<a href="${item.url}" style="color: #FF006E; text-decoration: none; font-weight: 600;">${item.title}</a>`
+        : `<span style="font-weight: 600;">${item.title}</span>`
+      return `
+        <div style="margin-bottom: 16px;">
+          ${title}
+          <p style="margin: 6px 0 0; color: #444; font-size: 14px; line-height: 1.6;">${item.description}</p>
+        </div>
+      `
+    })
+    .join('')
+
+  const ctaSection = data.ctaUrl && data.ctaText ? button(data.ctaText, data.ctaUrl) : ''
+
+  const html = layout(
+    header(data.title, 'Pink Beam Newsletter') +
+    `<p style="font-size: 15px; line-height: 1.6; color: #444;">${data.intro}</p>` +
+    card(items) +
+    ctaSection +
+    `<p style="font-size: 13px; line-height: 1.6; color: #666;">
+      You&apos;re receiving this email because you opted in for Pink Beam updates.
+    </p>`
+  )
+
+  return {
+    subject: `${data.title} — Pink Beam`,
+    html,
+  }
+}
+
+// --- Onboarding Email Templates ---
+
+interface OnboardingWelcomeData {
+  fullName: string
+  portalUrl: string
+}
+
+interface OnboardingGettingStartedData {
+  fullName: string
+  portalUrl: string
+  projectName?: string
+}
+
+interface OnboardingFeatureHighlightData {
+  fullName: string
+  portalUrl: string
+  featureName: string
+  featureDescription: string
+}
+
+interface OnboardingTipsData {
+  fullName: string
+  portalUrl: string
+}
+
+/** Onboarding: Welcome email (immediate on signup) */
+export function onboardingWelcomeTemplate(data: OnboardingWelcomeData): { subject: string; html: string } {
+  const firstName = data.fullName.split(' ')[0]
+
+  const html = layout(
+    header('Welcome to Pink Beam!', 'Your client portal is ready') +
+    `<p style="font-size: 16px; line-height: 1.6;">Hi ${firstName},</p>` +
+    `<p style="font-size: 15px; line-height: 1.6; color: #444;">
+      Welcome to the Pink Beam family! We&apos;re excited to work with you and help bring your project to life.
+    </p>` +
+    card(`
+      <p style="margin: 0 0 12px; font-weight: 600;">What you can do in your portal:</p>
+      <ul style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.8; color: #444;">
+        <li>Track project progress in real-time</li>
+        <li>View and pay invoices</li>
+        <li>Upload files and share documents</li>
+        <li>Submit support tickets anytime</li>
+        <li>Communicate directly with your team</li>
+      </ul>
+    `) +
+    button('Go to Your Portal', data.portalUrl) +
+    `<p style="font-size: 15px; line-height: 1.6; color: #444;">
+      <strong>Next step:</strong> Complete your onboarding to help us understand your needs better.
+    </p>` +
+    `<p style="font-size: 15px; color: #444;">We&apos;re here to help you succeed!</p>` +
+    `<p style="font-size: 15px; color: #444;">— The Pink Beam Team</p>`
+  )
+
+  return {
+    subject: 'Welcome to Pink Beam! Your portal is ready',
+    html,
+  }
+}
+
+/** Onboarding: Day 1 - Getting started guide */
+export function onboardingDay1Template(data: OnboardingGettingStartedData): { subject: string; html: string } {
+  const firstName = data.fullName.split(' ')[0]
+
+  const html = layout(
+    header('Getting Started Guide', 'Everything you need to know') +
+    `<p style="font-size: 16px; line-height: 1.6;">Hi ${firstName},</p>` +
+    `<p style="font-size: 15px; line-height: 1.6; color: #444;">
+      Now that you&apos;re set up, here&apos;s a quick guide to help you get the most out of your client portal.
+    </p>` +
+    card(`
+      <p style="margin: 0 0 16px; font-weight: 600; color: #FF006E;">📊 Your Dashboard</p>
+      <p style="margin: 0 0 16px; font-size: 14px; line-height: 1.6; color: #444;">
+        Your dashboard gives you a bird&apos;s-eye view of everything: active projects, invoices, and recent activity. 
+        Bookmark your portal for quick access!
+      </p>
+      
+      <p style="margin: 0 0 16px; font-weight: 600; color: #FF006E;">📁 Projects</p>
+      <p style="margin: 0 0 16px; font-size: 14px; line-height: 1.6; color: #444;">
+        ${data.projectName 
+          ? `Your project "${data.projectName}" is now being reviewed. You'll see updates here as we progress.` 
+          : 'Track all your projects in one place. View milestones, leave comments, and upload files directly to each project.'}
+      </p>
+      
+      <p style="margin: 0 0 16px; font-weight: 600; color: #FF006E;">💬 Support</p>
+      <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #444;">
+        Have a question? Submit a support ticket anytime. We typically respond within 24 hours during business days.
+      </p>
+    `) +
+    button('Explore Your Portal', data.portalUrl) +
+    `<p style="font-size: 15px; line-height: 1.6; color: #444;">
+      Need help? Just reply to this email — we&apos;re always happy to assist.
+    </p>` +
+    `<p style="font-size: 15px; color: #444;">Best,<br/>The Pink Beam Team</p>`
+  )
+
+  return {
+    subject: 'Your Pink Beam getting started guide',
+    html,
+  }
+}
+
+/** Onboarding: Day 3 - Feature highlight */
+export function onboardingDay3Template(data: OnboardingFeatureHighlightData): { subject: string; html: string } {
+  const firstName = data.fullName.split(' ')[0]
+
+  const html = layout(
+    header(`Feature Spotlight: ${data.featureName}`) +
+    `<p style="font-size: 16px; line-height: 1.6;">Hi ${firstName},</p>` +
+    `<p style="font-size: 15px; line-height: 1.6; color: #444;">
+      We wanted to highlight one of our most popular features that clients love.
+    </p>` +
+    card(`
+      <p style="margin: 0 0 12px; font-size: 18px; font-weight: 600; color: #FF006E;">${data.featureName}</p>
+      <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #444;">
+        ${data.featureDescription}
+      </p>
+    `) +
+    `<p style="font-size: 15px; line-height: 1.6; color: #444;">
+      Give it a try next time you&apos;re in the portal. We think you&apos;ll find it super useful!
+    </p>` +
+    button('Try It Now', data.portalUrl) +
+    `<p style="font-size: 15px; color: #444;">Best,<br/>The Pink Beam Team</p>`
+  )
+
+  return {
+    subject: `Quick tip: ${data.featureName}`,
+    html,
+  }
+}
+
+/** Onboarding: Day 7 - Tips & best practices */
+export function onboardingDay7Template(data: OnboardingTipsData): { subject: string; html: string } {
+  const firstName = data.fullName.split(' ')[0]
+
+  const html = layout(
+    header('Tips for Success', 'Best practices from our team') +
+    `<p style="font-size: 16px; line-height: 1.6;">Hi ${firstName},</p>` +
+    `<p style="font-size: 15px; line-height: 1.6; color: #444;">
+      You&apos;ve been with us for a week now! Here are some tips to make your project journey smooth and successful.
+    </p>` +
+    card(`
+      <p style="margin: 0 0 16px; font-weight: 600;">💡 Best Practices</p>
+      <ul style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.8; color: #444;">
+        <li><strong>Regular check-ins:</strong> Visit your portal weekly for updates</li>
+        <li><strong>Clear communication:</strong> Use project comments for specific feedback</li>
+        <li><strong>Timely feedback:</strong> Respond to review requests within 48 hours when possible</li>
+        <li><strong>File organization:</strong> Name files clearly and upload to the right project</li>
+        <li><strong>Ask questions:</strong> No question is too small — we&apos;re here to help</li>
+      </ul>
+    `) +
+    card(`
+      <p style="margin: 0 0 12px; font-weight: 600;">📞 Need to Talk?</p>
+      <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #444;">
+        Sometimes a quick call is better than a long email. Reply to this email if you&apos;d like to schedule 
+        a check-in call with your project manager.
+      </p>
+    `) +
+    button('View Your Portal', data.portalUrl) +
+    `<p style="font-size: 15px; line-height: 1.6; color: #444;">
+      Thanks for choosing Pink Beam. We&apos;re excited to build something amazing together!
+    </p>` +
+    `<p style="font-size: 15px; color: #444;">Cheers,<br/>The Pink Beam Team</p>`
+  )
+
+  return {
+    subject: 'Tips for a successful project journey',
+    html,
+  }
+}
+
 
 interface TicketData {
   id: string
@@ -375,6 +693,62 @@ export function statusUpdateTemplate(
 
   return {
     subject: `${msg.heading} — Pink Beam`,
+    html,
+  }
+}
+
+// --- Demo email templates ---
+
+interface DemoWelcomeData {
+  email: string
+  employeeType: string
+  competitors: string[]
+  viewBriefUrl: string
+}
+
+/** Send welcome email to demo users with their brief */
+export function demoWelcomeTemplate(data: DemoWelcomeData): { subject: string; html: string } {
+  const employeeTitles: Record<string, string> = {
+    researcher: "AI Researcher",
+    analyst: "AI Analyst",
+    strategist: "AI Strategist",
+  }
+  const employeeTitle = employeeTitles[data.employeeType] || "AI Employee"
+
+  const html = layout(
+    header('Your AI Employee Brief is Ready!', `Generated by ${employeeTitle}`) +
+    `<p style="font-size: 16px; line-height: 1.6;">Hi there,</p>` +
+    `<p style="font-size: 15px; line-height: 1.6; color: #444;">
+      Thanks for trying out Pink Beam's AI employees! Your personalized intelligence brief 
+      is ready, featuring insights on ${data.competitors.join(", ")}.
+    </p>` +
+    card(`
+      <p style="margin: 0 0 12px; font-size: 14px; color: #666;"><strong>Your Demo Brief Includes:</strong></p>
+      <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #444;">
+        <li>Executive Summary with strategic insights</li>
+        <li>Competitor intelligence & market analysis</li>
+        <li>Industry trends affecting your space</li>
+        <li>Actionable strategic opportunities</li>
+        <li>Curated reading recommendations</li>
+      </ul>
+    `) +
+    button('View Your Brief', data.viewBriefUrl) +
+    `<p style="font-size: 15px; line-height: 1.6; color: #444;">
+      <strong>Want briefs like this every week?</strong> Hire your own AI employee 
+      starting at just $500/month and get personalized intelligence delivered to your inbox.
+    </p>` +
+    `<p style="font-size: 15px; line-height: 1.6; color: #444;">
+      Questions? Just reply to this email — we're always happy to help.
+    </p>` +
+    `<p style="font-size: 15px; color: #444;">— The Pink Beam Team</p>`,
+    `<p style="color: #999; font-size: 12px;">
+      You received this because you requested a demo brief on pinkbeam.io.
+      <a href="${data.viewBriefUrl}" style="color: #FF006E;">View your brief again</a>
+    </p>`
+  )
+
+  return {
+    subject: `Your AI Employee Demo Brief is Ready! — Pink Beam`,
     html,
   }
 }

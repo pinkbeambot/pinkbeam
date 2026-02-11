@@ -1,13 +1,8 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { z } from 'zod'
 import { sendTicketCommentEmail } from '@/lib/email'
-
-const createCommentSchema = z.object({
-  authorId: z.string().min(1, 'Author ID is required'),
-  body: z.string().min(1, 'Comment body is required'),
-  isInternal: z.boolean().optional().default(false),
-})
+import { ticketCommentCreateSchema } from '@/lib/validation'
+import { createNotification } from '@/lib/notifications'
 
 // GET /api/tickets/[id]/comments — List comments for a ticket
 export async function GET(
@@ -50,7 +45,7 @@ export async function POST(
   try {
     const { id } = await params
     const body = await request.json()
-    const result = createCommentSchema.safeParse(body)
+    const result = ticketCommentCreateSchema.safeParse(body)
 
     if (!result.success) {
       return NextResponse.json(
@@ -100,7 +95,7 @@ export async function POST(
     if (!result.data.isInternal && comment.author?.role !== 'CLIENT') {
       const ticketWithClient = await prisma.supportTicket.findUnique({
         where: { id },
-        include: { client: { select: { name: true, email: true } } },
+        include: { client: { select: { id: true, name: true, email: true } } },
       })
       if (ticketWithClient?.client) {
         sendTicketCommentEmail(
@@ -113,6 +108,21 @@ export async function POST(
           result.data.body,
           comment.author?.name || 'Support Team'
         ).catch((err) => console.error('[email] ticket comment notification failed:', err))
+
+        // Create in-app notification for the client
+        createNotification({
+          userId: ticketWithClient.client.id,
+          type: 'TICKET_REPLY',
+          title: `New reply on "${ticketWithClient.title}"`,
+          message: `${comment.author?.name || 'Support Team'} replied to your support ticket.`,
+          data: {
+            ticketId: id,
+            ticketTitle: ticketWithClient.title,
+            commentId: comment.id,
+            authorName: comment.author?.name || 'Support Team',
+            link: `/dashboard/tickets/${id}`,
+          },
+        }).catch((err) => console.error('[notifications] Failed to create ticket notification:', err))
       }
     }
 

@@ -8,76 +8,215 @@ datasource db {
 }
 
 model User {
-  id              String          @id @default(cuid())
-  email           String          @unique
-  name            String?
-  role            UserRole        @default(CLIENT)
-  phone           String?
-  company         String?
-  website         String?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  lastLoginAt     DateTime?
-  projects        Project[]
-  quotes          Quote[]
-  tickets         SupportTicket[] @relation("TicketClient")
-  assignedTickets SupportTicket[] @relation("TicketAssignee")
-  ticketComments  TicketComment[]
-  files           File[]
+  id                  String          @id @default(cuid())
+  email               String          @unique
+  name                String?
+  role                UserRole        @default(CLIENT)
+  phone               String?
+  company             String?
+  website             String?
+  companySize         String?
+  industry            String?
+  servicesNeeded      String[]
+  onboardingCompleted Boolean         @default(false)
+  onboardingStep      String          @default("profile")
+  onboardingStartedAt DateTime?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  lastLoginAt         DateTime?
+  projects            Project[]
+  quotes              Quote[]
+  invoices            Invoice[]
+  tickets             SupportTicket[] @relation("TicketClient")
+  assignedTickets     SupportTicket[] @relation("TicketAssignee")
+  ticketComments      TicketComment[]
+  files               File[]
+  projectMemberships  ProjectMember[]
+  assignedTasks       Task[]          @relation("AssignedTasks")
+  createdTasks        Task[]          @relation("CreatedTasks")
+  timeEntries         TimeEntry[]
+  workloadEntries     WorkloadEntry[]
+  capacityConfig      UserCapacity?
+  searchVector        String?         @map("search_vector")
 
+  @@index([searchVector(ops: raw("gin_trgm_ops"))], type: Gin)
   @@map("users")
 }
 
 model Project {
-  id          String        @id @default(cuid())
+  id           String        @id @default(cuid())
+  title        String
+  description  String?
+  status       ProjectStatus @default(LEAD)
+  clientId     String
+  services     ServiceType[]
+  budget       Decimal?      @db.Decimal(10, 2)
+  deadline     DateTime?
+  startDate    DateTime?
+  targetEndDate DateTime?
+  completedAt  DateTime?
+  progress     Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  invoices     Invoice[]
+  client       User          @relation(fields: [clientId], references: [id])
+  quotes       Quote[]
+  files        File[]
+  members      ProjectMember[]
+  milestones   ProjectMilestone[]
+  tasks        Task[]
+  timeEntries  TimeEntry[]
+  sprints      Sprint[]
+  workloadEntries WorkloadEntry[]
+  searchVector String?       @map("search_vector")
+
+  @@index([searchVector(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@map("projects")
+}
+
+model ProjectMember {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  role      String   @default("MEMBER")
+  joinedAt  DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+  @@map("project_members")
+}
+
+model ProjectMilestone {
+  id          String    @id @default(cuid())
+  projectId   String
   title       String
   description String?
-  status      ProjectStatus @default(LEAD)
-  clientId    String
-  services    ServiceType[]
-  budget      Decimal?      @db.Decimal(10, 2)
-  deadline    DateTime?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  invoices    Invoice[]
-  client      User          @relation(fields: [clientId], references: [id])
-  quotes      Quote[]
-  files       File[]
+  dueDate     DateTime?
+  completedAt DateTime?
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  @@map("projects")
+  @@index([projectId])
+  @@index([projectId, order])
+  @@map("project_milestones")
 }
 
 model Quote {
   id          String      @id @default(cuid())
-  projectId   String
+  quoteNumber String      @unique
+  projectId   String?
   clientId    String
-  status      QuoteStatus @default(DRAFT)
-  amount      Decimal     @db.Decimal(10, 2)
+  title       String
   description String?
+  status      QuoteStatus @default(DRAFT)
+  subtotal    Decimal     @db.Decimal(10, 2)
+  taxRate     Decimal?    @db.Decimal(5, 2)
+  taxAmount   Decimal?    @db.Decimal(10, 2)
+  total       Decimal     @db.Decimal(10, 2)
   validUntil  DateTime?
+  notes       String?
+  terms       String?
+  createdById String
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  sentAt      DateTime?
+  acceptedAt  DateTime?
+  declinedAt  DateTime?
+  declinedReason String?
+
+  project     Project?    @relation(fields: [projectId], references: [id])
   client      User        @relation(fields: [clientId], references: [id])
-  project     Project     @relation(fields: [projectId], references: [id])
+  lineItems   QuoteLineItem[]
 
   @@map("quotes")
 }
 
+model QuoteLineItem {
+  id          String  @id @default(cuid())
+  quoteId     String
+  description String
+  quantity    Int     @default(1)
+  unitPrice   Decimal @db.Decimal(10, 2)
+  total       Decimal @db.Decimal(10, 2)
+
+  quote       Quote   @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@map("quote_line_items")
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  VIEWED
+  PARTIAL
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
 model Invoice {
-  id          String    @id @default(cuid())
-  projectId   String
-  amount      Decimal   @db.Decimal(10, 2)
-  description String?
-  status      String    @default("PENDING")
-  issuedAt    DateTime  @default(now())
-  dueAt       DateTime?
-  paidAt      DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  project     Project   @relation(fields: [projectId], references: [id])
-  files       File[]
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  projectId     String?
+  clientId      String
+  status        InvoiceStatus @default(DRAFT)
+  issueDate     DateTime      @default(now())
+  dueDate       DateTime
+  paidAt        DateTime?
+  subtotal      Decimal       @db.Decimal(10, 2)
+  taxRate       Decimal?      @db.Decimal(5, 2)
+  taxAmount     Decimal?      @db.Decimal(10, 2)
+  total         Decimal       @db.Decimal(10, 2)
+  amountPaid    Decimal       @default(0) @db.Decimal(10, 2)
+  amountDue     Decimal       @db.Decimal(10, 2)
+  notes         String?
+  terms         String        @default("Net 30")
+  sentAt        DateTime?
+  createdById   String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  project       Project?      @relation(fields: [projectId], references: [id])
+  client        User          @relation(fields: [clientId], references: [id])
+  lineItems     InvoiceLineItem[]
+  payments      Payment[]
+  files         File[]
 
   @@map("invoices")
+}
+
+model InvoiceLineItem {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  description String
+  quantity    Decimal @db.Decimal(10, 2)
+  unitPrice   Decimal @db.Decimal(10, 2)
+  total       Decimal @db.Decimal(10, 2)
+  timeEntryId String?
+
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("invoice_line_items")
+}
+
+model Payment {
+  id            String   @id @default(cuid())
+  invoiceId     String
+  amount        Decimal  @db.Decimal(10, 2)
+  method        String   // cash, check, transfer
+  reference     String?
+  notes         String?
+  paidAt        DateTime @default(now())
+  recordedById  String
+
+  invoice       Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
 }
 
 enum TicketStatus {
@@ -124,6 +263,7 @@ model SupportTicket {
   assignee      User?           @relation("TicketAssignee", fields: [assigneeId], references: [id])
   comments      TicketComment[]
   files         File[]
+  searchVector  String?         @map("search_vector")
 
   @@index([clientId])
   @@index([assigneeId])
@@ -131,6 +271,7 @@ model SupportTicket {
   @@index([priority])
   @@index([status, priority])
   @@index([slaDeadline])
+  @@index([searchVector(ops: raw("gin_trgm_ops"))], type: Gin)
   @@map("support_tickets")
 }
 
@@ -150,19 +291,54 @@ model TicketComment {
   @@map("ticket_comments")
 }
 
-model BlogPost {
-  id          String    @id @default(cuid())
-  title       String
-  slug        String    @unique
-  excerpt     String?
-  content     String
-  metaTitle   String?
-  metaDesc    String?
-  published   Boolean   @default(false)
-  publishedAt DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+enum BlogCategory {
+  AI_STRATEGY
+  DIGITAL_TRANSFORMATION
+  PROCESS_AUTOMATION
+  TECHNOLOGY_ARCHITECTURE
+  LEADERSHIP
+  CASE_STUDY
+  INDUSTRY_INSIGHTS
+}
 
+enum BlogService {
+  WEB
+  LABS
+  SOLUTIONS
+  AGENTS
+}
+
+model BlogPost {
+  id           String        @id @default(cuid())
+  title        String
+  slug         String
+  excerpt      String?
+  content      String
+  metaTitle    String?
+  metaDesc     String?
+  published    Boolean       @default(false)
+  publishedAt  DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  searchVector String?       @map("search_vector")
+
+  // Solutions-specific fields
+  category     BlogCategory?
+  service      BlogService   @default(WEB)
+  featured     Boolean       @default(false)
+  readingTime  Int?          // in minutes
+  authorName   String        @default("Pink Beam Team")
+  authorTitle  String?
+  authorAvatar String?
+  featuredImage String?
+  tags         String[]      @default([])
+
+  @@unique([slug, service])
+  @@index([searchVector(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@index([service, published])
+  @@index([service, category])
+  @@index([service, featured])
+  @@index([publishedAt])
   @@map("blog_posts")
 }
 
@@ -181,6 +357,9 @@ model File {
   width        Int?
   height       Int?
   alt          String?
+  versionGroupId String?
+  version      Int           @default(1)
+  isLatest     Boolean       @default(true)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 
@@ -193,6 +372,9 @@ model File {
   @@index([uploadedById])
   @@index([projectId])
   @@index([ticketId])
+  @@index([versionGroupId])
+  @@index([versionGroupId, isLatest])
+  @@unique([versionGroupId, version])
   @@map("files")
 }
 
@@ -206,6 +388,31 @@ model ActivityLog {
   createdAt  DateTime @default(now())
 
   @@map("activity_logs")
+}
+
+enum NotificationType {
+  PROJECT_UPDATE
+  QUOTE_STATUS
+  TICKET_REPLY
+  INVOICE_CREATED
+  FILE_SHARED
+  SYSTEM
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?            // Additional context
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  @@index([userId])
+  @@index([userId, isRead])
+  @@map("notifications")
 }
 
 enum UserRole {
@@ -236,8 +443,9 @@ enum ServiceType {
 enum QuoteStatus {
   DRAFT
   SENT
+  VIEWED
   ACCEPTED
-  REJECTED
+  DECLINED
   EXPIRED
 }
 
@@ -248,6 +456,159 @@ enum QuoteRequestStatus {
   PROPOSAL
   ACCEPTED
   DECLINED
+}
+
+// Task/Issue Tracking Models
+model Task {
+  id          String       @id @default(cuid())
+  projectId   String
+  sprintId    String?
+  title       String
+  description String?
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(MEDIUM)
+  type        TaskType     @default(FEATURE)
+  assigneeId  String?
+  createdById String
+  dueDate     DateTime?
+  estimate    Int?         // Hours
+  storyPoints Int?         // Story points for sprint planning
+  order       Int          @default(0) // Backlog order
+  completedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sprint      Sprint?      @relation(fields: [sprintId], references: [id], onDelete: SetNull)
+  assignee    User?        @relation(fields: [assigneeId], references: [id], name: "AssignedTasks")
+  createdBy   User         @relation(fields: [createdById], references: [id], name: "CreatedTasks")
+  labels      TaskLabel[]
+  timeEntries TimeEntry[]
+  workloadEntries WorkloadEntry[]
+
+  @@index([projectId])
+  @@index([sprintId])
+  @@index([assigneeId])
+  @@index([status])
+  @@index([priority])
+  @@index([projectId, status])
+  @@index([projectId, sprintId])
+  @@index([dueDate])
+  @@index([order])
+  @@map("tasks")
+}
+
+model TaskLabel {
+  id        String   @id @default(cuid())
+  name      String
+  color     String   // Hex color code
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tasks     Task[]
+
+  @@unique([name])
+  @@map("task_labels")
+}
+
+model TimeEntry {
+  id          String   @id @default(cuid())
+  projectId   String
+  taskId      String?
+  userId      String
+  description String?
+  startTime   DateTime
+  endTime     DateTime?
+  duration    Int      // Minutes
+  billable    Boolean  @default(true)
+  invoiced    Boolean  @default(false)
+  invoiceId   String?
+  hourlyRate  Decimal? @db.Decimal(10, 2)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  task        Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([taskId])
+  @@index([startTime])
+  @@index([userId, startTime])
+  @@index([projectId, startTime])
+  @@index([invoiced])
+  @@index([invoiceId])
+  @@map("time_entries")
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskType {
+  FEATURE
+  BUG
+  CHORE
+  DOCUMENTATION
+}
+
+// Sprint/Iteration Planning Models
+enum SprintStatus {
+  PLANNING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+model Sprint {
+  id              String       @id @default(cuid())
+  projectId       String
+  name            String
+  goal            String?
+  startDate       DateTime
+  endDate         DateTime
+  status          SprintStatus @default(PLANNING)
+  totalPoints     Int          @default(0)
+  completedPoints Int          @default(0)
+  reviewNotes     String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks   Task[]
+  burndownData SprintBurndownData[]
+
+  @@index([projectId])
+  @@index([status])
+  @@index([projectId, status])
+  @@map("sprints")
+}
+
+model SprintBurndownData {
+  id        String   @id @default(cuid())
+  sprintId  String
+  date      DateTime
+  remainingPoints Int
+  completedPoints Int
+  createdAt DateTime @default(now())
+
+  sprint Sprint @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+
+  @@unique([sprintId, date])
+  @@index([sprintId])
+  @@index([sprintId, date])
+  @@map("sprint_burndown_data")
 }
 
 model QuoteRequest {
@@ -282,4 +643,159 @@ model QuoteRequest {
   @@index([status, createdAt])
   @@index([leadScore])
   @@map("quote_requests")
+}
+
+model DemoRequest {
+  id            String   @id @default(cuid())
+  email         String
+  employeeType  String
+  competitors   String[]
+  focusAreas    String[]
+  briefData     Json?
+  emailSent     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([email])
+  @@index([createdAt])
+  @@index([email, createdAt])
+  @@map("demo_requests")
+}
+
+model WebhookEvent {
+  id          String   @id
+  source      String   // 'stripe', 'github', etc.
+  eventType   String
+  payload     Json
+  processed   Boolean  @default(false)
+  processedAt DateTime?
+  error       String?
+  createdAt   DateTime @default(now())
+
+  @@index([source, eventType])
+  @@index([processed])
+  @@index([createdAt])
+  @@map("webhook_events")
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  type      String   // 'pageview', 'event'
+  name      String   // event name or page URL
+  path      String?  // page path
+  referrer  String?
+  userAgent String?
+  ipHash    String?  // hashed IP for privacy
+  userId    String?  // if authenticated
+  metadata  Json?    // additional properties
+  createdAt DateTime @default(now())
+
+  @@index([type, name])
+  @@index([createdAt])
+  @@map("analytics_events")
+}
+
+model CaseStudy {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  title             String
+  clientName        String
+  industry          String
+  isAnonymous       Boolean  @default(false)
+  challenge         String
+  solution          String
+  results           String
+  metrics           Json     // { label: string, value: string }[]
+  services          String[]
+  engagementType    String
+  testimonial       String?
+  testimonialAuthor String?
+  testimonialTitle  String?
+  published         Boolean  @default(false)
+  featured          Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("case_studies")
+}
+
+enum ResourceType {
+  TEMPLATE
+  FRAMEWORK
+  CHECKLIST
+  CALCULATOR
+  REPORT
+  TOOL
+}
+
+model Resource {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  type        ResourceType
+  category    String
+  topics      String[]
+  fileUrl     String
+  fileFormat  String
+  fileSize    String
+  isGated     Boolean  @default(true)
+  downloadCount Int    @default(0)
+  published   Boolean  @default(false)
+  featured    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  downloads   ResourceDownload[]
+
+  @@map("resources")
+}
+
+model ResourceDownload {
+  id           String   @id @default(cuid())
+  resourceId   String
+  email        String
+  name         String
+  company      String?
+  role         String?
+  downloadedAt DateTime @default(now())
+
+  resource     Resource @relation(fields: [resourceId], references: [id])
+
+  @@index([resourceId])
+  @@map("resource_downloads")
+}
+
+// Workload Management Models
+model WorkloadEntry {
+  id             String   @id @default(cuid())
+  userId         String
+  projectId      String
+  taskId         String?
+  date           DateTime
+  allocatedHours Float
+  actualHours    Float?
+  
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  task           Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  
+  @@index([userId, date])
+  @@index([projectId])
+  @@index([taskId])
+  @@map("workload_entries")
+}
+
+model UserCapacity {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  defaultCapacity Float    @default(8.0)  // Default daily hours
+  workDays        String[] @default(["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"])
+  effectiveFrom   DateTime @default(now())
+  effectiveTo     DateTime?
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@map("user_capacities")
 }

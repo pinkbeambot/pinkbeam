@@ -13,6 +13,7 @@ import { FadeIn } from '@/components/animations'
 import { ticketTemplates } from '@/lib/ticket-templates'
 import { getSuggestedArticles, type KBArticle } from '@/lib/knowledge-base'
 import { FileUpload } from '@/components/file-upload'
+import { getErrorMessages, ticketClientSchema } from '@/lib/validation'
 
 // TODO: Replace with real auth context from WEB-008
 const CLIENT_ID = 'test-client'
@@ -36,6 +37,7 @@ export default function NewTicketPage() {
   const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [validationErrors, setValidationErrors] = useState<string[]>([])
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -47,17 +49,26 @@ export default function NewTicketPage() {
     e.preventDefault()
     setSubmitting(true)
     setError(null)
+    setValidationErrors([])
 
     try {
+      const validation = ticketClientSchema.safeParse({
+        title,
+        description,
+        category,
+        priority,
+      })
+      if (!validation.success) {
+        setValidationErrors(getErrorMessages(validation.error))
+        setSubmitting(false)
+        return
+      }
       const res = await fetch('/api/tickets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           clientId: CLIENT_ID,
-          title,
-          description,
-          category,
-          priority,
+          ...validation.data,
         }),
       })
       const data = await res.json()
@@ -136,6 +147,16 @@ export default function NewTicketPage() {
               {error && (
                 <div className="text-sm text-destructive bg-destructive/10 px-4 py-3 rounded-md">
                   {error}
+                </div>
+              )}
+              {validationErrors.length > 0 && (
+                <div className="text-sm text-destructive bg-destructive/10 px-4 py-3 rounded-md">
+                  <p className="font-medium mb-1">Please fix the following:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {validationErrors.map((err) => (
+                      <li key={err}>{err}</li>
+                    ))}
+                  </ul>
                 </div>
               )}
 

@@ -1,20 +1,9 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { z } from 'zod'
 import { calculateSlaDeadline } from '@/lib/sla'
 import { sendTicketCreatedEmail, sendTicketAdminNotification } from '@/lib/email'
-
-const createTicketSchema = z.object({
-  clientId: z.string().min(1, 'Client ID is required'),
-  title: z.string().min(1, 'Title is required'),
-  description: z.string().min(10, 'Please provide more details'),
-  priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).optional().default('MEDIUM'),
-  category: z
-    .enum(['GENERAL', 'BUG', 'FEATURE_REQUEST', 'BILLING', 'TECHNICAL'])
-    .optional()
-    .default('GENERAL'),
-  projectId: z.string().optional(),
-})
+import { ticketCreateSchema } from '@/lib/validation'
+import { createNotification } from '@/lib/notifications'
 
 // GET /api/tickets — List tickets with filters
 export async function GET(request: Request) {
@@ -57,7 +46,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const result = createTicketSchema.safeParse(body)
+    const result = ticketCreateSchema.safeParse(body)
 
     if (!result.success) {
       return NextResponse.json(
@@ -111,6 +100,21 @@ export async function POST(request: Request) {
     sendTicketAdminNotification(emailData).catch((err) =>
       console.error('[email] ticket admin notification failed:', err)
     )
+
+    // Create in-app notification for client
+    createNotification({
+      userId: data.clientId,
+      type: 'TICKET_REPLY',
+      title: `Ticket created: "${data.title}"`,
+      message: `Your support ticket has been created. We'll respond within our SLA timeframe.`,
+      data: {
+        ticketId: ticket.id,
+        ticketTitle: data.title,
+        priority: data.priority,
+        category: data.category,
+        link: `/dashboard/tickets/${ticket.id}`,
+      },
+    }).catch((err) => console.error('[notifications] Failed to create ticket notification:', err))
 
     return NextResponse.json({ success: true, data: ticket }, { status: 201 })
   } catch (error) {

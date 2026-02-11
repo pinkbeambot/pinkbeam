@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 
 export default function TestConnectionPage() {
   const [result, setResult] = useState<string>('')
@@ -46,10 +46,14 @@ export default function TestConnectionPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12"
+    >
       <Card className="w-full max-w-lg">
         <CardHeader>
-          <CardTitle>Supabase Connection Test</CardTitle>
+          <h1 className="text-2xl font-bold">Supabase Connection Test</h1>
           <CardDescription>Debug the auth connection</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -69,6 +73,6 @@ export default function TestConnectionPage() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </main>
   )
 }

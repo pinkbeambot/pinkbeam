@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from 'react'
 import { Upload, X, Loader2, CheckCircle, AlertCircle, Paperclip } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ALL_ALLOWED_MIME_TYPES, MAX_FILE_SIZE, formatFileSize } from '@/lib/storage'
+import type { FileRecord } from '@/types/file'
 
 interface FileUploadProps {
   bucket: string
@@ -12,20 +13,11 @@ interface FileUploadProps {
   ticketId?: string
   commentId?: string
   invoiceId?: string
+  versionGroupId?: string
+  replaceFileId?: string
   onUploadComplete?: (file: FileRecord) => void
   maxFiles?: number
   compact?: boolean
-}
-
-interface FileRecord {
-  id: string
-  name: string
-  mimeType: string
-  size: number
-  bucket: string
-  storagePath: string
-  createdAt: string
-  uploadedBy: { id: string; name: string; email: string }
 }
 
 interface QueuedFile {
@@ -44,6 +36,8 @@ export function FileUpload({
   ticketId,
   commentId,
   invoiceId,
+  versionGroupId,
+  replaceFileId,
   onUploadComplete,
   maxFiles = 10,
   compact = false,
@@ -51,6 +45,66 @@ export function FileUpload({
   const [queue, setQueue] = useState<QueuedFile[]>([])
   const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const uploadSingleFile = useCallback(async (qf: QueuedFile) => {
+    setQueue((prev) =>
+      prev.map((f) => (f.clientId === qf.clientId ? { ...f, status: 'uploading' as const } : f))
+    )
+
+    const formData = new FormData()
+    formData.append('file', qf.file)
+    formData.append('uploadedById', uploadedById)
+    formData.append('bucket', bucket)
+    if (projectId) formData.append('projectId', projectId)
+    if (ticketId) formData.append('ticketId', ticketId)
+    if (commentId) formData.append('commentId', commentId)
+    if (invoiceId) formData.append('invoiceId', invoiceId)
+    if (versionGroupId) formData.append('versionGroupId', versionGroupId)
+    if (replaceFileId) formData.append('replaceFileId', replaceFileId)
+
+    try {
+      const res = await fetch('/api/files/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+
+      if (!res.ok || !data.success) {
+        setQueue((prev) =>
+          prev.map((f) =>
+            f.clientId === qf.clientId
+              ? { ...f, status: 'error' as const, error: data.error || 'Upload failed' }
+              : f
+          )
+        )
+        return
+      }
+
+      setQueue((prev) =>
+        prev.map((f) =>
+          f.clientId === qf.clientId
+            ? { ...f, status: 'complete' as const, progress: 100, serverRecord: data.data }
+            : f
+        )
+      )
+      onUploadComplete?.(data.data)
+    } catch {
+      setQueue((prev) =>
+        prev.map((f) =>
+          f.clientId === qf.clientId
+            ? { ...f, status: 'error' as const, error: 'Network error' }
+            : f
+        )
+      )
+    }
+  }, [
+    bucket,
+    uploadedById,
+    projectId,
+    ticketId,
+    commentId,
+    invoiceId,
+    versionGroupId,
+    replaceFileId,
+    onUploadComplete,
+  ])
 
   const addFiles = useCallback(
     (files: FileList | File[]) => {
@@ -98,56 +152,8 @@ export function FileUpload({
         }
       }
     },
-    [queue.length, maxFiles]
+    [queue.length, maxFiles, uploadSingleFile]
   )
-
-  const uploadSingleFile = async (qf: QueuedFile) => {
-    setQueue((prev) =>
-      prev.map((f) => (f.clientId === qf.clientId ? { ...f, status: 'uploading' as const } : f))
-    )
-
-    const formData = new FormData()
-    formData.append('file', qf.file)
-    formData.append('uploadedById', uploadedById)
-    formData.append('bucket', bucket)
-    if (projectId) formData.append('projectId', projectId)
-    if (ticketId) formData.append('ticketId', ticketId)
-    if (commentId) formData.append('commentId', commentId)
-    if (invoiceId) formData.append('invoiceId', invoiceId)
-
-    try {
-      const res = await fetch('/api/files/upload', { method: 'POST', body: formData })
-      const data = await res.json()
-
-      if (!res.ok || !data.success) {
-        setQueue((prev) =>
-          prev.map((f) =>
-            f.clientId === qf.clientId
-              ? { ...f, status: 'error' as const, error: data.error || 'Upload failed' }
-              : f
-          )
-        )
-        return
-      }
-
-      setQueue((prev) =>
-        prev.map((f) =>
-          f.clientId === qf.clientId
-            ? { ...f, status: 'complete' as const, progress: 100, serverRecord: data.data }
-            : f
-        )
-      )
-      onUploadComplete?.(data.data)
-    } catch {
-      setQueue((prev) =>
-        prev.map((f) =>
-          f.clientId === qf.clientId
-            ? { ...f, status: 'error' as const, error: 'Network error' }
-            : f
-        )
-      )
-    }
-  }
 
   const removeFromQueue = (clientId: string) => {
     setQueue((prev) => prev.filter((f) => f.clientId !== clientId))
@@ -189,6 +195,7 @@ export function FileUpload({
           type="file"
           multiple
           className="hidden"
+          data-testid="file-upload-input"
           accept={ALL_ALLOWED_MIME_TYPES.join(',')}
           onChange={handleInputChange}
         />
@@ -233,6 +240,7 @@ export function FileUpload({
         type="file"
         multiple
         className="hidden"
+        data-testid="file-upload-input"
         accept={ALL_ALLOWED_MIME_TYPES.join(',')}
         onChange={handleInputChange}
       />

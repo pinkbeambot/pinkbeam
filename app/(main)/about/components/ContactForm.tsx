@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { Button, Input } from "@/components/ui";
 import { Send, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { aboutContactSchema, getFieldErrors } from "@/lib/validation";
+import { useAnalyticsSafe } from "@/components/analytics";
 
 interface FormData {
   name: string;
@@ -16,6 +18,8 @@ interface FormData {
 interface FormErrors {
   name?: string;
   email?: string;
+  company?: string;
+  department?: string;
   message?: string;
 }
 
@@ -31,34 +35,27 @@ export function ContactForm() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { trackFormSubmission } = useAnalyticsSafe();
 
   const validate = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
+    const result = aboutContactSchema.safeParse(formData);
+    if (!result.success) {
+      setErrors(getFieldErrors(result.error) as FormErrors);
+      return false;
     }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email";
-    }
-
-    if (!formData.message.trim()) {
-      newErrors.message = "Message is required";
-    } else if (formData.message.length < 10) {
-      newErrors.message = "Message must be at least 10 characters";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setErrors({});
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validate()) return;
+    if (!validate()) {
+      if (trackFormSubmission) {
+        trackFormSubmission('contact_form', false, { reason: 'validation_error' });
+      }
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -67,6 +64,14 @@ export function ContactForm() {
 
     // Log to console as per requirements
     console.log("Contact Form Submission:", formData);
+
+    // Track successful submission
+    if (trackFormSubmission) {
+      trackFormSubmission('contact_form', true, {
+        department: formData.department,
+        has_company: !!formData.company,
+      });
+    }
 
     setIsSubmitting(false);
     setIsSubmitted(true);
@@ -152,6 +157,9 @@ export function ContactForm() {
           value={formData.company}
           onChange={handleChange}
         />
+        {errors.company && (
+          <p className="text-sm text-error-500">{errors.company}</p>
+        )}
       </div>
 
       {/* Department Select */}
@@ -170,6 +178,9 @@ export function ContactForm() {
           <option value="sales">Sales</option>
           <option value="support">Support</option>
         </select>
+        {errors.department && (
+          <p className="text-sm text-error-500">{errors.department}</p>
+        )}
       </div>
 
       {/* Message Field */}

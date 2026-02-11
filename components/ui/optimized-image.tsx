@@ -55,7 +55,9 @@ export function OptimizedImage({
     imageSrc = getPublicObjectUrl(storagePath, bucket)
   }
 
-  const resolvedPreset = preset ? IMAGE_PRESETS[preset] : undefined
+  const resolvedPreset: ImageTransformOptions | undefined = preset
+    ? IMAGE_PRESETS[preset]
+    : undefined
   const resolvedWidth = width ?? transform?.width ?? resolvedPreset?.width
   const resolvedHeight = height ?? transform?.height ?? resolvedPreset?.height
   const resolvedSizes =

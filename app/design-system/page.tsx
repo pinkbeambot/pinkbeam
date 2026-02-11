@@ -11,7 +11,7 @@ import { Zap, Star, Code, Sparkles, Menu } from "lucide-react";
 
 export default function DesignSystemPage() {
   return (
-    <main className="min-h-screen bg-background">
+    <main id="main-content" tabIndex={-1} className="min-h-screen bg-background">
       {/* Hero Section */}
       <SectionContainer 
         background="void" 

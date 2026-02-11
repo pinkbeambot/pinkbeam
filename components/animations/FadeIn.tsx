@@ -51,7 +51,11 @@ export function FadeIn({
 
   // Respect user's reduced motion preference
   if (prefersReducedMotion) {
-    return <div className={cn(className)}>{children}</div>;
+    return (
+      <div suppressHydrationWarning className={cn(className)}>
+        {children}
+      </div>
+    );
   }
 
   const variants = directionVariants[direction as keyof typeof directionVariants];
@@ -67,6 +71,7 @@ export function FadeIn({
         delay,
         ease: [0.4, 0, 0.2, 1],
       }}
+      suppressHydrationWarning
       className={cn("will-change-transform", className)}
     >
       {children}
@@ -92,7 +97,11 @@ export function FadeInOnMount({
 
   // Respect user's reduced motion preference
   if (prefersReducedMotion) {
-    return <div className={cn(className)}>{children}</div>;
+    return (
+      <div suppressHydrationWarning className={cn(className)}>
+        {children}
+      </div>
+    );
   }
 
   return (
@@ -104,6 +113,7 @@ export function FadeInOnMount({
         delay,
         ease: [0.4, 0, 0.2, 1],
       }}
+      suppressHydrationWarning
       className={cn("will-change-transform", className)}
     >
       {children}

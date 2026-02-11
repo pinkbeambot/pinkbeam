@@ -1,0 +1,248 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - navigation [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e7]:
+            - link "PB Pink Beam" [ref=e8] [cursor=pointer]:
+              - /url: /
+              - generic [ref=e9]: PB
+              - generic [ref=e10]: Pink Beam
+            - button "Services" [ref=e12]:
+              - text: Services
+              - img [ref=e13]
+          - generic [ref=e15]:
+            - button "Toggle theme" [ref=e16]:
+              - img [ref=e17]
+              - img [ref=e23]
+              - text: Toggle theme
+            - generic [ref=e25]:
+              - link "Sign in" [ref=e26] [cursor=pointer]:
+                - /url: /sign-in
+              - link "Get Started" [ref=e27] [cursor=pointer]:
+                - /url: /sign-up
+            - button "Open menu" [ref=e28]:
+              - img [ref=e29]
+              - text: Open menu
+    - main [ref=e30]:
+      - main [ref=e31]:
+        - generic [ref=e34]:
+          - generic [ref=e36]:
+            - img [ref=e37]
+            - text: We're Here to Help
+          - heading "Get in Touch" [level=1] [ref=e41]
+          - paragraph [ref=e43]: Have a question about Pink Beam? Whether you're interested in learning more, need support, or just want to say hello, we'd love to hear from you.
+        - generic [ref=e46]:
+          - generic [ref=e49]:
+            - heading "Send Us a Message" [level=2] [ref=e50]
+            - generic [ref=e51]:
+              - generic [ref=e52]:
+                - generic [ref=e53]: Name *
+                - textbox "Name *" [ref=e55]:
+                  - /placeholder: Your full name
+              - generic [ref=e56]:
+                - generic [ref=e57]: Email *
+                - textbox "Email *" [ref=e59]:
+                  - /placeholder: you@company.com
+              - generic [ref=e60]:
+                - generic [ref=e61]: Company (optional)
+                - textbox "Company (optional)" [ref=e63]:
+                  - /placeholder: Your company name
+              - generic [ref=e64]:
+                - text: Department
+                - combobox "Department" [ref=e65]:
+                  - option "General Inquiry" [selected]
+                  - option "Sales"
+                  - option "Support"
+              - generic [ref=e66]:
+                - generic [ref=e67]: Message *
+                - textbox "Message *" [ref=e68]:
+                  - /placeholder: Tell us how we can help...
+              - button "Send Message" [ref=e69]:
+                - text: Send Message
+                - img [ref=e70]
+              - paragraph [ref=e73]: We typically respond within 24 hours
+          - generic [ref=e74]:
+            - generic [ref=e76]:
+              - heading "Contact Information" [level=3] [ref=e77]
+              - generic [ref=e78]:
+                - generic [ref=e79]:
+                  - img [ref=e81]
+                  - generic [ref=e83]:
+                    - heading "Support" [level=4] [ref=e84]
+                    - link "support@pinkbeam.ai" [ref=e85] [cursor=pointer]:
+                      - /url: mailto:support@pinkbeam.ai
+                    - paragraph [ref=e86]: Technical issues, account questions, or help getting started.
+                - generic [ref=e87]:
+                  - img [ref=e89]
+                  - generic [ref=e92]:
+                    - heading "Sales" [level=4] [ref=e93]
+                    - link "sales@pinkbeam.ai" [ref=e94] [cursor=pointer]:
+                      - /url: mailto:sales@pinkbeam.ai
+                    - paragraph [ref=e95]: Questions about pricing, enterprise plans, or custom solutions.
+            - generic [ref=e97]:
+              - generic [ref=e98]:
+                - img [ref=e99]
+                - heading "Response Time" [level=4] [ref=e102]
+              - paragraph [ref=e103]: We typically respond within 24 hours during business days. Support inquiries are often answered within a few hours.
+            - generic [ref=e105]:
+              - heading "Frequently Asked Questions" [level=3] [ref=e106]
+              - generic [ref=e107]:
+                - generic [ref=e108]:
+                  - heading "How quickly will I get a response?" [level=4] [ref=e109]
+                  - paragraph [ref=e110]: We typically respond to all inquiries within 24 hours during business days. Support requests are often answered much faster—usually within a few hours.
+                - generic [ref=e111]:
+                  - heading "Do you offer custom enterprise solutions?" [level=4] [ref=e112]
+                  - paragraph [ref=e113]: Yes! For teams with unique needs, we offer custom AI employee configurations, dedicated support, and tailored pricing. Reach out to our sales team to discuss.
+                - generic [ref=e114]:
+                  - heading "How do I get started with Pink Beam?" [level=4] [ref=e115]
+                  - paragraph [ref=e116]: Getting started is easy. Sign up for a free 14-day trial, no credit card required. Our AI employees are ready to start working with you immediately.
+        - generic [ref=e118]:
+          - generic [ref=e120]:
+            - heading "Other Ways to Connect" [level=2] [ref=e121]
+            - paragraph [ref=e122]: Explore more resources or get started today.
+          - generic [ref=e123]:
+            - link "Pricing View our plans and find the right fit for your team. View pricing" [ref=e125] [cursor=pointer]:
+              - /url: /agents/pricing
+              - generic [ref=e126]:
+                - img [ref=e128]
+                - heading "Pricing" [level=3] [ref=e130]
+                - paragraph [ref=e131]: View our plans and find the right fit for your team.
+                - generic [ref=e132]:
+                  - text: View pricing
+                  - img [ref=e133]
+            - link "About Us Learn more about our mission and the team behind Pink Beam. Learn more" [ref=e136] [cursor=pointer]:
+              - /url: /about
+              - generic [ref=e137]:
+                - img [ref=e139]
+                - heading "About Us" [level=3] [ref=e144]
+                - paragraph [ref=e145]: Learn more about our mission and the team behind Pink Beam.
+                - generic [ref=e146]:
+                  - text: Learn more
+                  - img [ref=e147]
+            - link "Security Learn how we keep your data safe and secure. Security overview" [ref=e150] [cursor=pointer]:
+              - /url: /security
+              - generic [ref=e151]:
+                - img [ref=e153]
+                - heading "Security" [level=3] [ref=e155]
+                - paragraph [ref=e156]: Learn how we keep your data safe and secure.
+                - generic [ref=e157]:
+                  - text: Security overview
+                  - img [ref=e158]
+    - contentinfo [ref=e160]:
+      - generic [ref=e163]:
+        - generic [ref=e164]:
+          - link "PB Pink Beam" [ref=e165] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e166]: PB
+            - generic [ref=e167]: Pink Beam
+          - paragraph [ref=e168]: Build your AI workforce with autonomous employees that handle research, sales, support, and creative work—without the $12K/month price tag.
+          - generic [ref=e169]:
+            - link "Twitter" [ref=e170] [cursor=pointer]:
+              - /url: https://twitter.com/pinkbeam
+              - img [ref=e171]
+            - link "LinkedIn" [ref=e173] [cursor=pointer]:
+              - /url: https://linkedin.com/company/pinkbeam
+              - img [ref=e174]
+            - link "GitHub" [ref=e178] [cursor=pointer]:
+              - /url: https://github.com/pinkbeam
+              - img [ref=e179]
+            - link "YouTube" [ref=e182] [cursor=pointer]:
+              - /url: https://youtube.com/pinkbeam
+              - img [ref=e183]
+        - generic [ref=e186]:
+          - generic [ref=e187]:
+            - heading "Services" [level=2] [ref=e188]
+            - list [ref=e189]:
+              - listitem [ref=e190]:
+                - link "AI Employees" [ref=e191] [cursor=pointer]:
+                  - /url: /agents
+              - listitem [ref=e192]:
+                - link "Web Services" [ref=e193] [cursor=pointer]:
+                  - /url: /web
+              - listitem [ref=e194]:
+                - link "Custom Development" [ref=e195] [cursor=pointer]:
+                  - /url: /labs
+              - listitem [ref=e196]:
+                - link "Consulting" [ref=e197] [cursor=pointer]:
+                  - /url: /solutions
+              - listitem [ref=e198]:
+                - link "Pricing" [ref=e199] [cursor=pointer]:
+                  - /url: /agents/pricing
+          - generic [ref=e200]:
+            - heading "Resources" [level=2] [ref=e201]
+            - list [ref=e202]:
+              - listitem [ref=e203]:
+                - link "Documentation" [ref=e204] [cursor=pointer]:
+                  - /url: /docs
+              - listitem [ref=e205]:
+                - link "Blog" [ref=e206] [cursor=pointer]:
+                  - /url: /blog
+              - listitem [ref=e207]:
+                - link "Case Studies" [ref=e208] [cursor=pointer]:
+                  - /url: /case-studies
+              - listitem [ref=e209]:
+                - link "Help Center" [ref=e210] [cursor=pointer]:
+                  - /url: /help
+              - listitem [ref=e211]:
+                - link "Webinars" [ref=e212] [cursor=pointer]:
+                  - /url: /webinars
+          - generic [ref=e213]:
+            - heading "Company" [level=2] [ref=e214]
+            - list [ref=e215]:
+              - listitem [ref=e216]:
+                - link "About" [ref=e217] [cursor=pointer]:
+                  - /url: /about
+              - listitem [ref=e218]:
+                - link "Careers" [ref=e219] [cursor=pointer]:
+                  - /url: /careers
+              - listitem [ref=e220]:
+                - link "Press" [ref=e221] [cursor=pointer]:
+                  - /url: /press
+              - listitem [ref=e222]:
+                - link "Partners" [ref=e223] [cursor=pointer]:
+                  - /url: /partners
+              - listitem [ref=e224]:
+                - link "Contact" [ref=e225] [cursor=pointer]:
+                  - /url: /contact
+          - generic [ref=e226]:
+            - heading "Legal" [level=2] [ref=e227]
+            - list [ref=e228]:
+              - listitem [ref=e229]:
+                - link "Privacy" [ref=e230] [cursor=pointer]:
+                  - /url: /privacy
+              - listitem [ref=e231]:
+                - link "Terms" [ref=e232] [cursor=pointer]:
+                  - /url: /terms
+              - listitem [ref=e233]:
+                - link "Cookie Policy" [ref=e234] [cursor=pointer]:
+                  - /url: /cookies
+              - listitem [ref=e235]:
+                - link "GDPR" [ref=e236] [cursor=pointer]:
+                  - /url: /gdpr
+              - listitem [ref=e237]:
+                - link "Security" [ref=e238] [cursor=pointer]:
+                  - /url: /security
+        - generic [ref=e240]:
+          - heading "Subscribe to our newsletter" [level=2] [ref=e241]
+          - paragraph [ref=e242]: Get the latest updates on AI employees and automation tips.
+          - generic [ref=e243]:
+            - textbox "Enter your email" [ref=e245]
+            - button "Subscribe" [ref=e246]:
+              - img [ref=e247]
+              - text: Subscribe
+      - generic [ref=e251]:
+        - paragraph [ref=e252]: © 2026 Pink Beam, Inc. All rights reserved.
+        - generic [ref=e253]:
+          - link "Privacy Policy" [ref=e254] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms of Service" [ref=e255] [cursor=pointer]:
+            - /url: /terms
+          - link "Cookies" [ref=e256] [cursor=pointer]:
+            - /url: /cookies
+```

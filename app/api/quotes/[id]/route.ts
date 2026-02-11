@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import { sendStatusUpdateEmail } from '@/lib/email'
+import { createNotification } from '@/lib/notifications'
 
 // Valid status transitions: from → allowed destinations
 const ALLOWED_TRANSITIONS: Record<string, string[]> = {
@@ -121,6 +122,55 @@ export async function PUT(
       sendStatusUpdateEmail(quote, newStatus).catch((err) =>
         console.error('Status update email failed:', err)
       )
+
+      // Find the user by email to create notification
+      const user = await prisma.user.findUnique({
+        where: { email: existing.email },
+        select: { id: true },
+      })
+
+      if (user) {
+        // Create in-app notification
+        const statusMessages: Record<string, { title: string; message: string }> = {
+          CONTACTED: {
+            title: 'Quote Request Update',
+            message: `We've reviewed your quote request and will be in touch shortly.`,
+          },
+          QUALIFIED: {
+            title: 'Quote Request Qualified',
+            message: `Your project has been qualified. We're preparing your proposal.`,
+          },
+          PROPOSAL: {
+            title: 'Proposal Ready',
+            message: `A proposal has been prepared for your project. Check your email for details.`,
+          },
+          ACCEPTED: {
+            title: 'Quote Accepted!',
+            message: `Great news! Your quote has been accepted. Welcome aboard!`,
+          },
+          DECLINED: {
+            title: 'Quote Update',
+            message: `Unfortunately, we won't be able to move forward with this project at this time.`,
+          },
+        }
+
+        const statusMessage = statusMessages[newStatus]
+        if (statusMessage) {
+          createNotification({
+            userId: user.id,
+            type: 'QUOTE_STATUS',
+            title: statusMessage.title,
+            message: statusMessage.message,
+            data: {
+              quoteId: id,
+              quoteEmail: existing.email,
+              previousStatus: existing.status,
+              newStatus,
+              link: `/dashboard/quotes`,
+            },
+          }).catch((err) => console.error('[notifications] Failed to create quote notification:', err))
+        }
+      }
     }
 
     // Log activity for notes update

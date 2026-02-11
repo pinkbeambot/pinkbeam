@@ -37,10 +37,20 @@ export async function GET(
 }
 
 // PUT /api/support-tickets/[id] - Update ticket
+const statusSchema = z.preprocess(
+  (value) => (typeof value === 'string' ? value.toUpperCase() : value),
+  z.enum(['OPEN', 'IN_PROGRESS', 'WAITING_CLIENT', 'RESOLVED', 'CLOSED'])
+)
+
+const prioritySchema = z.preprocess(
+  (value) => (typeof value === 'string' ? value.toUpperCase() : value),
+  z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT'])
+)
+
 const updateTicketSchema = z.object({
-  status: z.enum(['open', 'in_progress', 'resolved', 'closed']).optional(),
-  priority: z.enum(['low', 'medium', 'high']).optional(),
-  assignedToId: z.string().optional().nullable(),
+  status: statusSchema.optional(),
+  priority: prioritySchema.optional(),
+  assigneeId: z.string().optional().nullable(),
 })
 
 export async function PUT(

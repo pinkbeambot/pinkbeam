@@ -20,19 +20,10 @@ export async function GET(
           orderBy: { createdAt: 'desc' },
           select: {
             id: true,
-            name: true,
+            title: true,
             status: true,
             budget: true,
             createdAt: true,
-          }
-        },
-        invoices: {
-          orderBy: { createdAt: 'desc' },
-          select: {
-            id: true,
-            amount: true,
-            status: true,
-            dueDate: true,
           }
         }
       }
@@ -45,7 +36,22 @@ export async function GET(
       )
     }
 
-    return NextResponse.json({ success: true, data: client })
+    const invoices = await prisma.invoice.findMany({
+      where: { project: { clientId: id } },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        amount: true,
+        status: true,
+        dueAt: true,
+        createdAt: true,
+        project: {
+          select: { id: true, title: true },
+        },
+      },
+    })
+
+    return NextResponse.json({ success: true, data: { ...client, invoices } })
   } catch (error) {
     console.error('Error fetching client:', error)
     return NextResponse.json(
@@ -61,7 +67,6 @@ const updateClientSchema = z.object({
   email: z.string().email().optional(),
   phone: z.string().optional(),
   company: z.string().optional().nullable(),
-  status: z.enum(['active', 'inactive', 'lead']).optional(),
 })
 
 export async function PUT(
@@ -89,7 +94,6 @@ export async function PUT(
         email: true,
         company: true,
         phone: true,
-        status: true,
       }
     })
 

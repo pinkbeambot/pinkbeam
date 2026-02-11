@@ -1,0 +1,239 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - navigation [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e7]:
+            - link "PB Pink Beam" [ref=e8] [cursor=pointer]:
+              - /url: /
+              - generic [ref=e9]: PB
+              - generic [ref=e10]: Pink Beam
+            - button "Services" [ref=e12]:
+              - text: Services
+              - img [ref=e13]
+          - generic [ref=e15]:
+            - button "Toggle theme" [ref=e16]:
+              - img [ref=e17]
+              - img [ref=e23]
+              - text: Toggle theme
+            - generic [ref=e25]:
+              - link "Sign in" [ref=e26] [cursor=pointer]:
+                - /url: /sign-in
+              - link "Get Started" [ref=e27] [cursor=pointer]:
+                - /url: /sign-up
+            - button "Open menu" [ref=e28]:
+              - img [ref=e29]
+              - text: Open menu
+    - main [ref=e30]:
+      - main [ref=e31]:
+        - generic [ref=e32]:
+          - generic [ref=e34]:
+            - generic [ref=e36]:
+              - img [ref=e37]
+              - text: AI-Powered Business Solutions
+            - heading "One Platform. Infinite Possibilities." [level=1] [ref=e41]:
+              - text: One Platform.
+              - text: Infinite Possibilities.
+            - paragraph [ref=e43]: Hire AI employees, build high-performance websites, develop custom software, or get strategic consulting. Pink Beam is your all-in-one AI partner.
+            - generic [ref=e45]:
+              - link "Explore AI Employees" [ref=e46] [cursor=pointer]:
+                - /url: /agents
+                - text: Explore AI Employees
+                - img [ref=e47]
+              - link "View All Services" [ref=e49] [cursor=pointer]:
+                - /url: "#services"
+                - button "View All Services" [ref=e50]
+            - generic [ref=e52]:
+              - paragraph [ref=e53]: Trusted by founders worldwide
+              - generic [ref=e54]:
+                - generic [ref=e55]: STARTUPS
+                - generic [ref=e56]: ENTERPRISE
+                - generic [ref=e57]: AGENCIES
+                - generic [ref=e58]: CONSULTANTS
+          - generic [ref=e60]:
+            - text: Scroll
+            - img [ref=e61]
+        - generic [ref=e64]:
+          - generic [ref=e65]:
+            - heading "Choose Your Path" [level=2] [ref=e66]
+            - paragraph [ref=e67]: Each Pink Beam service is designed to help you scale faster and work smarter.
+          - generic [ref=e68]:
+            - link "Most Popular Agents AI employees for your business — research, sales, support, content, and design. Sarah (Research) Mike (Sales) Alex (Support) Casey (Content) Lumen (Design) Explore Agents" [ref=e70] [cursor=pointer]:
+              - /url: /agents
+              - text: Most Popular
+              - img [ref=e72]
+              - heading "Agents" [level=3] [ref=e77]
+              - paragraph [ref=e78]: AI employees for your business — research, sales, support, content, and design.
+              - list [ref=e79]:
+                - listitem [ref=e80]: Sarah (Research)
+                - listitem [ref=e81]: Mike (Sales)
+                - listitem [ref=e82]: Alex (Support)
+                - listitem [ref=e83]: Casey (Content)
+                - listitem [ref=e84]: Lumen (Design)
+              - generic [ref=e85]:
+                - text: Explore Agents
+                - img [ref=e86]
+            - link "Web High-performance websites, SEO optimization, and ongoing maintenance. Custom Design SEO Optimization Performance Tuning Analytics Setup Explore Web" [ref=e89] [cursor=pointer]:
+              - /url: /web
+              - img [ref=e91]
+              - heading "Web" [level=3] [ref=e94]
+              - paragraph [ref=e95]: High-performance websites, SEO optimization, and ongoing maintenance.
+              - list [ref=e96]:
+                - listitem [ref=e97]: Custom Design
+                - listitem [ref=e98]: SEO Optimization
+                - listitem [ref=e99]: Performance Tuning
+                - listitem [ref=e100]: Analytics Setup
+              - generic [ref=e101]:
+                - text: Explore Web
+                - img [ref=e102]
+            - link "Labs Custom software development for startups and enterprises. Web Applications Mobile Apps APIs & Integrations AI Solutions Explore Labs" [ref=e105] [cursor=pointer]:
+              - /url: /labs
+              - img [ref=e107]
+              - heading "Labs" [level=3] [ref=e111]
+              - paragraph [ref=e112]: Custom software development for startups and enterprises.
+              - list [ref=e113]:
+                - listitem [ref=e114]: Web Applications
+                - listitem [ref=e115]: Mobile Apps
+                - listitem [ref=e116]: APIs & Integrations
+                - listitem [ref=e117]: AI Solutions
+              - generic [ref=e118]:
+                - text: Explore Labs
+                - img [ref=e119]
+            - link "Solutions Strategic consulting for digital transformation and AI adoption. Digital Strategy AI Consulting Process Automation Growth Planning Explore Solutions" [ref=e122] [cursor=pointer]:
+              - /url: /solutions
+              - img [ref=e124]
+              - heading "Solutions" [level=3] [ref=e126]
+              - paragraph [ref=e127]: Strategic consulting for digital transformation and AI adoption.
+              - list [ref=e128]:
+                - listitem [ref=e129]: Digital Strategy
+                - listitem [ref=e130]: AI Consulting
+                - listitem [ref=e131]: Process Automation
+                - listitem [ref=e132]: Growth Planning
+              - generic [ref=e133]:
+                - text: Explore Solutions
+                - img [ref=e134]
+        - generic [ref=e138]:
+          - heading "Ready to get started?" [level=2] [ref=e139]
+          - paragraph [ref=e140]: Join thousands of businesses using Pink Beam to scale their operations.
+          - generic [ref=e141]:
+            - link "Explore AI Employees" [ref=e142] [cursor=pointer]:
+              - /url: /agents
+            - link "Contact Sales" [ref=e143] [cursor=pointer]:
+              - /url: /contact
+    - contentinfo [ref=e144]:
+      - generic [ref=e147]:
+        - generic [ref=e148]:
+          - link "PB Pink Beam" [ref=e149] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e150]: PB
+            - generic [ref=e151]: Pink Beam
+          - paragraph [ref=e152]: Build your AI workforce with autonomous employees that handle research, sales, support, and creative work—without the $12K/month price tag.
+          - generic [ref=e153]:
+            - link "Twitter" [ref=e154] [cursor=pointer]:
+              - /url: https://twitter.com/pinkbeam
+              - img [ref=e155]
+            - link "LinkedIn" [ref=e157] [cursor=pointer]:
+              - /url: https://linkedin.com/company/pinkbeam
+              - img [ref=e158]
+            - link "GitHub" [ref=e162] [cursor=pointer]:
+              - /url: https://github.com/pinkbeam
+              - img [ref=e163]
+            - link "YouTube" [ref=e166] [cursor=pointer]:
+              - /url: https://youtube.com/pinkbeam
+              - img [ref=e167]
+        - generic [ref=e170]:
+          - generic [ref=e171]:
+            - heading "Services" [level=2] [ref=e172]
+            - list [ref=e173]:
+              - listitem [ref=e174]:
+                - link "AI Employees" [ref=e175] [cursor=pointer]:
+                  - /url: /agents
+              - listitem [ref=e176]:
+                - link "Web Services" [ref=e177] [cursor=pointer]:
+                  - /url: /web
+              - listitem [ref=e178]:
+                - link "Custom Development" [ref=e179] [cursor=pointer]:
+                  - /url: /labs
+              - listitem [ref=e180]:
+                - link "Consulting" [ref=e181] [cursor=pointer]:
+                  - /url: /solutions
+              - listitem [ref=e182]:
+                - link "Pricing" [ref=e183] [cursor=pointer]:
+                  - /url: /agents/pricing
+          - generic [ref=e184]:
+            - heading "Resources" [level=2] [ref=e185]
+            - list [ref=e186]:
+              - listitem [ref=e187]:
+                - link "Documentation" [ref=e188] [cursor=pointer]:
+                  - /url: /docs
+              - listitem [ref=e189]:
+                - link "Blog" [ref=e190] [cursor=pointer]:
+                  - /url: /blog
+              - listitem [ref=e191]:
+                - link "Case Studies" [ref=e192] [cursor=pointer]:
+                  - /url: /case-studies
+              - listitem [ref=e193]:
+                - link "Help Center" [ref=e194] [cursor=pointer]:
+                  - /url: /help
+              - listitem [ref=e195]:
+                - link "Webinars" [ref=e196] [cursor=pointer]:
+                  - /url: /webinars
+          - generic [ref=e197]:
+            - heading "Company" [level=2] [ref=e198]
+            - list [ref=e199]:
+              - listitem [ref=e200]:
+                - link "About" [ref=e201] [cursor=pointer]:
+                  - /url: /about
+              - listitem [ref=e202]:
+                - link "Careers" [ref=e203] [cursor=pointer]:
+                  - /url: /careers
+              - listitem [ref=e204]:
+                - link "Press" [ref=e205] [cursor=pointer]:
+                  - /url: /press
+              - listitem [ref=e206]:
+                - link "Partners" [ref=e207] [cursor=pointer]:
+                  - /url: /partners
+              - listitem [ref=e208]:
+                - link "Contact" [ref=e209] [cursor=pointer]:
+                  - /url: /contact
+          - generic [ref=e210]:
+            - heading "Legal" [level=2] [ref=e211]
+            - list [ref=e212]:
+              - listitem [ref=e213]:
+                - link "Privacy" [ref=e214] [cursor=pointer]:
+                  - /url: /privacy
+              - listitem [ref=e215]:
+                - link "Terms" [ref=e216] [cursor=pointer]:
+                  - /url: /terms
+              - listitem [ref=e217]:
+                - link "Cookie Policy" [ref=e218] [cursor=pointer]:
+                  - /url: /cookies
+              - listitem [ref=e219]:
+                - link "GDPR" [ref=e220] [cursor=pointer]:
+                  - /url: /gdpr
+              - listitem [ref=e221]:
+                - link "Security" [ref=e222] [cursor=pointer]:
+                  - /url: /security
+        - generic [ref=e224]:
+          - heading "Subscribe to our newsletter" [level=2] [ref=e225]
+          - paragraph [ref=e226]: Get the latest updates on AI employees and automation tips.
+          - generic [ref=e227]:
+            - textbox "Enter your email" [ref=e229]
+            - button "Subscribe" [ref=e230]:
+              - img [ref=e231]
+              - text: Subscribe
+      - generic [ref=e235]:
+        - paragraph [ref=e236]: © 2026 Pink Beam, Inc. All rights reserved.
+        - generic [ref=e237]:
+          - link "Privacy Policy" [ref=e238] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms of Service" [ref=e239] [cursor=pointer]:
+            - /url: /terms
+          - link "Cookies" [ref=e240] [cursor=pointer]:
+            - /url: /cookies
+```

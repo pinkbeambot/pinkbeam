@@ -1,0 +1,54 @@
+Vendor Evaluation Scorecard
+===========================
+
+INSTRUCTIONS FOR USE:
+
+This Excel-based scorecard helps you objectively compare and select vendors.
+
+SETUP:
+1. List your evaluation criteria in the first column
+2. Assign weights to each criterion (must total 100%)
+3. Add vendor names across the top
+
+SCORING:
+Score each vendor 1-5 on each criterion:
+1 = Poor / Does not meet requirements
+2 = Below Average / Significant gaps
+3 = Average / Meets basic requirements
+4 = Good / Exceeds requirements
+5 = Excellent / Significantly exceeds
+
+WEIGHTED SCORES:
+The spreadsheet automatically calculates weighted scores:
+Weight (%) × Score (1-5) = Weighted Score
+
+EVALUATION CRITERIA CATEGORIES:
+
+Technical (40% weight suggested)
+- Functionality match
+- Integration capabilities
+- Scalability
+- Performance
+- Security features
+
+Vendor Viability (25% weight suggested)
+- Financial stability
+- Market presence
+- Customer references
+- Product roadmap
+- Support quality
+
+Commercial (20% weight suggested)
+- Total cost of ownership
+- Pricing flexibility
+- Contract terms
+- Implementation costs
+
+Implementation (15% weight suggested)
+- Implementation approach
+- Timeline feasibility
+- Resource requirements
+- Risk mitigation
+
+DECISION MATRIX:
+Use the summary tab to compare vendors side-by-side and document your final recommendation.

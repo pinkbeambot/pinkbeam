@@ -19,6 +19,7 @@ import {
 import { ThemeToggle } from "@/components/theme-toggle";
 import { createClient } from "@/lib/supabase/client";
 import { User as SupabaseUser } from "@supabase/supabase-js";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 // Service configuration
 const services = [
@@ -42,7 +43,7 @@ const services = [
     href: "/web",
     color: "#8B5CF6",
     bgColor: "bg-violet-500",
-    textColor: "text-violet-500",
+    textColor: "text-violet-400",
     borderColor: "border-violet-500/30",
     bgHover: "hover:bg-violet-500/10",
   },
@@ -486,7 +487,10 @@ export function Navigation() {
             <ThemeToggle />
             
             {user ? (
-              <UserDropdown user={user} onSignOut={handleSignOut} />
+              <>
+                <NotificationBell />
+                <UserDropdown user={user} onSignOut={handleSignOut} />
+              </>
             ) : (
               <div className="hidden sm:flex items-center gap-2">
                 <Button variant="ghost" size="sm" asChild>

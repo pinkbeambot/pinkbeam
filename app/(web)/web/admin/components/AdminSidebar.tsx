@@ -15,11 +15,17 @@ import {
   Settings,
   Menu,
   X,
-  LogOut
+  LogOut,
+  BarChart3,
+  Search,
+  Webhook,
+  Mail,
+  Briefcase,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
+import { useGlobalSearch } from '@/components/search'
 
 const navItems = [
   { href: '/web/admin', icon: LayoutDashboard, label: 'Dashboard' },
@@ -31,12 +37,17 @@ const navItems = [
   { href: '/web/admin/invoices', icon: Receipt, label: 'Invoices' },
   { href: '/web/admin/support', icon: MessageSquare, label: 'Support' },
   { href: '/web/admin/content', icon: PenTool, label: 'Content' },
+  { href: '/web/admin/case-studies', icon: Briefcase, label: 'Case Studies' },
+  { href: '/web/admin/emails', icon: Mail, label: 'Emails' },
+  { href: '/web/admin/reports', icon: BarChart3, label: 'Reports' },
+  { href: '/web/admin/webhooks', icon: Webhook, label: 'Webhooks' },
   { href: '/web/admin/settings', icon: Settings, label: 'Settings' },
 ]
 
 export function AdminSidebar() {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { open, setOpen, GlobalSearchComponent } = useGlobalSearch()
 
   return (
     <>
@@ -76,6 +87,26 @@ export function AdminSidebar() {
             </div>
           </Link>
         </div>
+
+        {/* Search Button */}
+        <div className="p-4 pb-2">
+          <Button 
+            variant="outline" 
+            className="w-full justify-between text-muted-foreground"
+            onClick={() => setOpen(true)}
+          >
+            <span className="flex items-center">
+              <Search className="w-4 h-4 mr-2" />
+              Search...
+            </span>
+            <kbd className="hidden sm:inline-block text-xs bg-muted px-1.5 py-0.5 rounded">
+              Cmd K
+            </kbd>
+          </Button>
+        </div>
+
+        {/* Global Search Dialog */}
+        <GlobalSearchComponent />
 
         {/* Navigation */}
         <nav className="p-4 space-y-1">

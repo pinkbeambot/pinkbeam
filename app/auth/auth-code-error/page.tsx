@@ -1,16 +1,20 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader } from '@/components/ui/card'
 import { AlertCircle } from 'lucide-react'
 
 export default function AuthCodeErrorPage() {
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12"
+    >
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <div className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-destructive" />
-            <CardTitle className="text-xl">Authentication Error</CardTitle>
+            <h1 className="text-xl font-semibold">Authentication Error</h1>
           </div>
           <CardDescription>
             There was a problem with the authentication process.
@@ -39,6 +43,6 @@ export default function AuthCodeErrorPage() {
           </Link>
         </CardFooter>
       </Card>
-    </div>
+    </main>
   )
 }

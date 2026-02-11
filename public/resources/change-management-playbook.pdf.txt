@@ -1,0 +1,73 @@
+Change Management Playbook
+==========================
+
+Practical guidance for managing organizational change during digital initiatives.
+
+SECTION 1: STAKEHOLDER MANAGEMENT
+
+Stakeholder Mapping
+□ Identify all affected groups
+□ Assess impact level (High/Medium/Low)
+□ Determine influence level
+□ Map to engagement strategy
+
+Engagement Strategies:
+- Champions: Empower and leverage
+- Supporters: Keep informed and engaged
+- Neutral: Educate and convert
+- Resistors: Address concerns directly
+
+SECTION 2: COMMUNICATION PLANNING
+
+Key Messages:
+□ Why change is necessary
+□ What's changing and what's not
+□ Timeline and milestones
+□ Benefits for each audience
+
+Communication Channels:
+- Executive town halls
+- Department meetings
+- Email newsletters
+- Intranet updates
+- One-on-one conversations
+
+SECTION 3: TRAINING DESIGN
+
+Training Needs Analysis
+□ Skills gap assessment
+□ Learning style preferences
+□ Training modality selection
+□ Schedule coordination
+
+Training Delivery:
+- Instructor-led sessions
+- E-learning modules
+- Hands-on workshops
+- Job aids and guides
+- Peer mentoring
+
+SECTION 4: RESISTANCE MANAGEMENT
+
+Common Resistance Sources:
+□ Fear of job loss
+□ Comfort with current state
+□ Lack of trust
+□ Past negative experiences
+□ Unclear benefits
+
+Response Strategies:
+- Active listening
+- Addressing concerns directly
+- Providing evidence
+- Offering support
+- Celebrating early wins
+
+SECTION 5: MEASURING SUCCESS
+
+Metrics to Track:
+□ Adoption rate
+□ Proficiency scores
+□ Engagement levels
+□ Productivity measures
+□ Employee sentiment

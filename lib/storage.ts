@@ -1,4 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/admin'
+import { isTransformableImage, type ImageTransformOptions } from '@/lib/images'
 
 // --- Buckets ---
 export const BUCKETS = ['attachments', 'deliverables', 'public-assets'] as const
@@ -22,6 +23,23 @@ export const ALLOWED_MIME_TYPES: Record<string, string[]> = {
 }
 
 export const ALL_ALLOWED_MIME_TYPES = Object.values(ALLOWED_MIME_TYPES).flat()
+
+// --- Image transforms ---
+
+export const IMAGE_PREVIEW_TRANSFORM: ImageTransformOptions = {
+  width: 1200,
+  quality: 80,
+  resize: 'contain',
+  format: 'webp',
+}
+
+export const IMAGE_THUMBNAIL_TRANSFORM: ImageTransformOptions = {
+  width: 320,
+  height: 240,
+  quality: 70,
+  resize: 'cover',
+  format: 'webp',
+}
 
 // --- Validation ---
 
@@ -83,12 +101,13 @@ export async function uploadFile(
   bucket: BucketName,
   storagePath: string,
   fileBuffer: Buffer,
-  mimeType: string
+  mimeType: string,
+  metadata?: Record<string, string>
 ): Promise<{ data: { path: string } | null; error: string | null }> {
   const supabase = createAdminClient()
   const { data, error } = await supabase.storage
     .from(bucket)
-    .upload(storagePath, fileBuffer, { contentType: mimeType, upsert: false })
+    .upload(storagePath, fileBuffer, { contentType: mimeType, upsert: false, metadata })
   if (error) return { data: null, error: error.message }
   return { data: { path: data.path }, error: null }
 }
@@ -98,21 +117,33 @@ export async function uploadFile(
 export async function getSignedUrl(
   bucket: BucketName,
   storagePath: string,
-  expiresIn: number = 3600
+  expiresIn: number = 3600,
+  options?: { download?: string | boolean; transform?: ImageTransformOptions }
 ): Promise<{ url: string | null; error: string | null }> {
   const supabase = createAdminClient()
   const { data, error } = await supabase.storage
     .from(bucket)
-    .createSignedUrl(storagePath, expiresIn)
+    .createSignedUrl(storagePath, expiresIn, options as {
+      download?: string | boolean
+      transform?: Record<string, unknown>
+    })
   if (error) return { url: null, error: error.message }
   return { url: data.signedUrl, error: null }
 }
 
 // --- Public URL (for public-assets bucket) ---
 
-export function getPublicUrl(storagePath: string): string {
+export function getPublicUrl(
+  storagePath: string,
+  options?: { download?: string | boolean; transform?: ImageTransformOptions }
+): string {
   const supabase = createAdminClient()
-  const { data } = supabase.storage.from('public-assets').getPublicUrl(storagePath)
+  const { data } = supabase.storage
+    .from('public-assets')
+    .getPublicUrl(storagePath, options as {
+      download?: string | boolean
+      transform?: Record<string, unknown>
+    })
   return data.publicUrl
 }
 
@@ -145,4 +176,49 @@ export function getFileCategory(mimeType: string): string {
   if (ALLOWED_MIME_TYPES.archive.includes(mimeType)) return 'archive'
   if (ALLOWED_MIME_TYPES.text.includes(mimeType)) return 'text'
   return 'other'
+}
+
+// --- Preview helpers ---
+
+export function isPreviewableMimeType(mimeType: string): boolean {
+  return isTransformableImage(mimeType) || mimeType === 'application/pdf'
+}
+
+export function getPreviewTransform(mimeType: string): ImageTransformOptions | null {
+  if (!isTransformableImage(mimeType)) return null
+  return IMAGE_PREVIEW_TRANSFORM
+}
+
+export async function getTransformedUrl(
+  bucket: BucketName,
+  storagePath: string,
+  transform: ImageTransformOptions,
+  expiresIn: number = 3600
+): Promise<{ url: string | null; error: string | null }> {
+  if (bucket === 'public-assets') {
+    const supabase = createAdminClient()
+    const { data } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(storagePath, { transform } as { transform?: Record<string, unknown> })
+    return { url: data.publicUrl, error: null }
+  }
+  return getSignedUrl(bucket, storagePath, expiresIn, { transform })
+}
+
+export async function getPreviewUrl(
+  bucket: BucketName,
+  storagePath: string,
+  mimeType: string,
+  expiresIn: number = 3600
+): Promise<{ url: string | null; error: string | null }> {
+  if (isTransformableImage(mimeType)) {
+    return getTransformedUrl(bucket, storagePath, IMAGE_PREVIEW_TRANSFORM, expiresIn)
+  }
+  if (mimeType === 'application/pdf') {
+    if (bucket === 'public-assets') {
+      return { url: getPublicUrl(storagePath), error: null }
+    }
+    return getSignedUrl(bucket, storagePath, expiresIn)
+  }
+  return { url: null, error: null }
 }

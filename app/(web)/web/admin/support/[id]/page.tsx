@@ -23,6 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { FadeIn } from '@/components/animations'
 import { FileUpload } from '@/components/file-upload'
 import { FileList } from '@/components/file-list'
+import { getErrorMessages, ticketCommentSchema } from '@/lib/validation'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -202,6 +203,7 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
   const [newComment, setNewComment] = useState('')
   const [isInternal, setIsInternal] = useState(false)
   const [submittingComment, setSubmittingComment] = useState(false)
+  const [commentError, setCommentError] = useState<string | null>(null)
 
   // Admin controls state
   const [assigneeId, setAssigneeId] = useState('')
@@ -259,7 +261,12 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
 
   const submitComment = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newComment.trim()) return
+    const validation = ticketCommentSchema.safeParse({ body: newComment })
+    if (!validation.success) {
+      setCommentError(getErrorMessages(validation.error)[0] ?? 'Comment is required')
+      return
+    }
+    setCommentError(null)
     setSubmittingComment(true)
     try {
       const res = await fetch(`/api/tickets/${id}/comments`, {
@@ -267,7 +274,7 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           authorId: ADMIN_ID,
-          body: newComment.trim(),
+          body: validation.data.body,
           isInternal,
         }),
       })
@@ -446,10 +453,20 @@ export default function AdminTicketDetailPage({ params }: { params: Promise<{ id
                       <Textarea
                         placeholder={isInternal ? 'Add internal note (client will NOT see this)...' : 'Type your reply to the client...'}
                         value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
+                        onChange={(e) => {
+                          setNewComment(e.target.value)
+                          if (commentError) setCommentError(null)
+                        }}
                         rows={3}
                         className={isInternal ? 'border-amber-500/30' : ''}
+                        aria-invalid={Boolean(commentError)}
+                        aria-describedby={commentError ? 'admin-comment-error' : undefined}
                       />
+                      {commentError && (
+                        <p id="admin-comment-error" className="text-xs text-destructive">
+                          {commentError}
+                        </p>
+                      )}
                       <FileUpload
                         bucket="attachments"
                         uploadedById={ADMIN_ID}

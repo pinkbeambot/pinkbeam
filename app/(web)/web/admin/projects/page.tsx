@@ -7,16 +7,18 @@ import {
   Search, 
   Filter, 
   Plus,
-  MoreHorizontal,
   Calendar,
   Users,
-  ArrowRight
+  ArrowRight,
+  X
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { FadeIn } from '@/components/animations'
+import { useContextualSearch } from '@/components/search'
+import type { SearchResult } from '@/lib/search'
 
 const allProjects = [
   { 
@@ -95,14 +97,13 @@ function getPriorityColor(priority: string) {
 }
 
 export default function AdminProjectsPage() {
-  const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
+  const { query, results, isSearching, ContextualSearchComponent, clearSearch } = useContextualSearch('project')
 
+  // Filter local projects based on current filter
   const filteredProjects = allProjects.filter(project => {
-    const matchesSearch = project.name.toLowerCase().includes(search.toLowerCase()) ||
-                         project.client.toLowerCase().includes(search.toLowerCase())
     const matchesFilter = filter === 'all' || project.status === filter
-    return matchesSearch && matchesFilter
+    return matchesFilter
   })
 
   return (
@@ -127,13 +128,20 @@ export default function AdminProjectsPage() {
       <FadeIn delay={0.1}>
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search projects..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
+            <ContextualSearchComponent
+              placeholder="Search projects by name, client..."
+              className="w-full"
             />
+            {isSearching && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <button
+                  onClick={clearSearch}
+                  className="p-1 hover:bg-muted rounded-sm"
+                >
+                  <X className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <Filter className="w-4 h-4 text-muted-foreground" />
@@ -151,9 +159,62 @@ export default function AdminProjectsPage() {
         </div>
       </FadeIn>
 
+      {/* Search Results from API */}
+      {isSearching && results.length > 0 && (
+        <FadeIn>
+          <div className="mb-6">
+            <h2 className="text-sm font-medium text-muted-foreground mb-3">
+              Search Results ({results.length})
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {results.map((result) => {
+                const clientName = result.meta?.client;
+                const hasClientName = Boolean(clientName);
+                return (
+                  <Link key={result.id} href={result.url}>
+                    <Card className="h-full hover:border-violet-500/30 transition-colors cursor-pointer">
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center shrink-0">
+                            <FolderKanban className="w-5 h-5 text-violet-500" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold truncate">{result.title}</h3>
+                            {result.snippet && (
+                              <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                                {result.snippet}
+                              </p>
+                            )}
+                            {hasClientName && (
+                              <p className="text-xs text-muted-foreground mt-2">
+                                Client: {String(clientName)}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </FadeIn>
+      )}
+
+      {isSearching && results.length === 0 && query && (
+        <FadeIn>
+          <div className="text-center py-12 border rounded-lg bg-muted/30">
+            <Search className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No projects found</h3>
+            <p className="text-muted-foreground">Try a different search term</p>
+          </div>
+        </FadeIn>
+      )}
+
       {/* Projects Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filteredProjects.map((project, index) => (
+        {!isSearching && filteredProjects.map((project, index) => (
           <FadeIn key={project.id} delay={0.1 + index * 0.05}>
             <Card className="h-full">
               <CardContent className="p-6">
@@ -218,12 +279,12 @@ export default function AdminProjectsPage() {
         ))}
       </div>
 
-      {filteredProjects.length === 0 && (
+      {!isSearching && filteredProjects.length === 0 && (
         <FadeIn>
           <div className="text-center py-12">
             <FolderKanban className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">No projects found</h3>
-            <p className="text-muted-foreground">Try adjusting your search or filters</p>
+            <p className="text-muted-foreground">Try adjusting your filters</p>
           </div>
         </FadeIn>
       )}
