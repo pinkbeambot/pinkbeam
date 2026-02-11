@@ -50,6 +50,7 @@ const templates = {
     render: () =>
       welcomeTemplate({
         fullName: "Jamie Lee",
+        email: "jamie@example.com",
         loginUrl: "https://pinkbeam.io/dashboard",
       }),
   },
