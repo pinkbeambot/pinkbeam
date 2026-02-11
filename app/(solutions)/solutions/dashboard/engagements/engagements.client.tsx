@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { 
-  Briefcase, 
-  Calendar, 
-  User, 
-  Clock, 
+import {
+  Briefcase,
+  Calendar,
+  User as UserIcon,
+  Clock,
   CheckCircle,
   ArrowLeft,
   FileText,

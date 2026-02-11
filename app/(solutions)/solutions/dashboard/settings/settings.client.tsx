@@ -2,11 +2,11 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { 
-  ArrowLeft, 
-  User, 
-  Building2, 
-  Bell, 
+import {
+  ArrowLeft,
+  User as UserIcon,
+  Building2,
+  Bell,
   Palette,
   Save,
   Loader2,

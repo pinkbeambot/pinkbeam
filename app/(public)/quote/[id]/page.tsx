@@ -450,10 +450,10 @@ export default function PublicQuotePage() {
             </div>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction 
+              <AlertDialogAction
                 onClick={handleAccept}
                 className="bg-green-600 hover:bg-green-700"
-                disabled={processing || (quote.terms && !agreedToTerms)}
+                disabled={processing || (!!quote.terms && !agreedToTerms)}
               >
                 {processing ? (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
