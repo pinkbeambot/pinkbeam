@@ -57,12 +57,25 @@ export function Hero() {
           {/* Subheadline */}
           <FadeInOnMount delay={0.2}>
             <p className="text-lead text-muted-foreground max-w-2xl mx-auto mb-10">
-              Meet your AI employees: fully autonomous team members that handle 
-              research, sales, support, and creative work—without the $12K/month 
+              Meet your AI employees: fully autonomous team members that handle
+              research, sales, support, and creative work—without the $12K/month
               price tag. One platform. One price. Infinite output.
             </p>
           </FadeInOnMount>
-          
+
+          {/* Founder Quote */}
+          <FadeInOnMount delay={0.25}>
+            <div className="mx-auto max-w-2xl mb-10 p-6 rounded-xl border border-pink-500/30 bg-pink-500/5">
+              <p className="text-lg text-pink-400 italic mb-3">
+                "AI employees don't call in sick, don't need benefits, and scale infinitely.
+                They just get better every day."
+              </p>
+              <p className="text-sm text-muted-foreground">
+                — Pink Beam Founder
+              </p>
+            </div>
+          </FadeInOnMount>
+
           {/* CTA Buttons */}
           <FadeInOnMount delay={0.3}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">

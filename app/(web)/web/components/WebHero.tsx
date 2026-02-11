@@ -46,6 +46,19 @@ export function WebHero() {
             </p>
           </FadeInOnMount>
 
+          {/* Founder Quote */}
+          <FadeInOnMount delay={0.25}>
+            <div className="mx-auto max-w-2xl mb-10 p-6 rounded-xl border border-violet-500/30 bg-violet-500/5">
+              <p className="text-lg text-violet-400 italic mb-3">
+                "A great website isn't just pretty—it's a business tool that converts
+                visitors into customers. That's what we build."
+              </p>
+              <p className="text-sm text-muted-foreground">
+                — Pink Beam Founder
+              </p>
+            </div>
+          </FadeInOnMount>
+
           {/* CTA Buttons */}
           <FadeInOnMount delay={0.3}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
