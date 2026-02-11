@@ -3,6 +3,7 @@
 import { LabsHero } from "@/components/sections/LabsHero";
 import { LabsProblemSection } from "@/components/sections/LabsProblemSection";
 import { LabsServicesShowcase } from "@/components/sections/LabsServicesShowcase";
+import { LabsPricingPreview } from "@/components/sections/LabsPricingPreview";
 import { LabsProcessTimeline } from "@/components/sections/LabsProcessTimeline";
 import { LabsTechnologyStack } from "@/components/sections/LabsTechnologyStack";
 import { LabsFAQSection } from "@/components/sections/LabsFAQSection";
@@ -63,6 +64,7 @@ export function LabsPageClient() {
       <LabsHero />
       <LabsProblemSection />
       <LabsServicesShowcase />
+      <LabsPricingPreview />
       <LabsProcessTimeline />
       <LabsTechnologyStack />
       <LabsFAQSection />
