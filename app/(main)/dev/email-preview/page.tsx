@@ -39,9 +39,9 @@ const sampleTicket = {
   title: "Unable to access dashboard",
   clientName: "Jamie Lee",
   clientEmail: "jamie@example.com",
-  status: "IN_PROGRESS",
-  priority: "High",
-  category: "Access",
+  status: "IN_PROGRESS" as string | undefined,
+  priority: "HIGH" as "LOW" | "MEDIUM" | "HIGH" | "URGENT" | undefined,
+  category: "Access" as string | undefined,
 };
 
 const templates = {
