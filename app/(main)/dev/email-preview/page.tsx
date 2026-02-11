@@ -58,6 +58,7 @@ const templates = {
     label: "Password reset",
     render: () =>
       passwordResetTemplate({
+        email: "jamie@example.com",
         fullName: "Jamie Lee",
         resetUrl: "https://pinkbeam.io/reset-password?token=abc123",
         expiresInMinutes: 30,
@@ -67,6 +68,7 @@ const templates = {
     label: "Invoice / receipt",
     render: () =>
       invoiceReceiptTemplate({
+        email: "jamie@example.com",
         invoiceNumber: "INV-1001",
         clientName: "Jamie Lee",
         amount: "$1,200.00",
@@ -79,6 +81,7 @@ const templates = {
     label: "Newsletter",
     render: () =>
       newsletterTemplate({
+        email: "jamie@example.com",
         title: "February Updates",
         intro: "Here is what is new at Pink Beam.",
         items: [
