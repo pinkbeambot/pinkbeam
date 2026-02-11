@@ -310,7 +310,7 @@ export function CaseStudyForm({
               <Label htmlFor="testimonial">Testimonial (Optional)</Label>
               <Textarea
                 id="testimonial"
-                value={formData.testimonial}
+                value={formData.testimonial || ''}
                 onChange={(e) => handleChange("testimonial", e.target.value)}
                 placeholder="Client testimonial quote..."
                 rows={3}
@@ -322,7 +322,7 @@ export function CaseStudyForm({
                 <Label htmlFor="testimonialAuthor">Author Name</Label>
                 <Input
                   id="testimonialAuthor"
-                  value={formData.testimonialAuthor}
+                  value={formData.testimonialAuthor || ''}
                   onChange={(e) =>
                     handleChange("testimonialAuthor", e.target.value)
                   }
@@ -333,7 +333,7 @@ export function CaseStudyForm({
                 <Label htmlFor="testimonialTitle">Author Title</Label>
                 <Input
                   id="testimonialTitle"
-                  value={formData.testimonialTitle}
+                  value={formData.testimonialTitle || ''}
                   onChange={(e) =>
                     handleChange("testimonialTitle", e.target.value)
                   }
