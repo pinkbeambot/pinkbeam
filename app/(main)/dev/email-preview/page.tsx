@@ -31,7 +31,7 @@ const sampleQuote = {
   timeline: "1-3 months",
   description: "We need a full ecommerce storefront with custom checkout.",
   leadScore: 82 as number | undefined,
-  leadQuality: "hot" as "hot" | "warm" | "cold" | "qualified" | undefined,
+  leadQuality: "hot" as "hot" | "warm" | "cold" | null | undefined,
 };
 
 const sampleTicket = {
