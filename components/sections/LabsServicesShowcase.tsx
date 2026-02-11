@@ -182,7 +182,7 @@ export function LabsServicesShowcase() {
         </div>
 
         {/* Other Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 justify-items-center lg:justify-items-start">
           {otherServices.map((service, idx) => {
             const Icon = service.icon;
             return (
