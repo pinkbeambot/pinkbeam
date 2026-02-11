@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader } from '@/components/ui/card'
 import { AlertCircle } from 'lucide-react'
 
+export const dynamic = 'force-dynamic';
+
 export default function AuthCodeErrorPage() {
   return (
     <main
