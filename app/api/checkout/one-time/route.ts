@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
         userId: user.id,
         serviceType,
         ...(planId && { planId }),
-        ...(planSlug && { planSlug }),
+        ...(parsed.planSlug && { planSlug: parsed.planSlug }),
         paymentType: 'one-time',
       },
       payment_intent_data: {

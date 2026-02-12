@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { CaseStudiesAdminClient } from "./CaseStudiesAdminClient";
 import type { CaseStudy, CaseStudyMetric } from "@/lib/case-studies-types";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: "Case Studies — Admin",
 };

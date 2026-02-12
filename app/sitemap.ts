@@ -2,6 +2,9 @@ import { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/metadata";
 import { prisma } from "@/lib/prisma";
 
+// Force dynamic rendering to avoid DB access during build
+export const dynamic = 'force-dynamic';
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = siteConfig.url;
 
