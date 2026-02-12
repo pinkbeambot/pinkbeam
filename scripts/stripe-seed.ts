@@ -23,20 +23,31 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2026-01-28.clover',
 });
 
 const isTestMode = process.env.STRIPE_SECRET_KEY.startsWith('sk_test_');
 
 console.log(`\n🔧 Running in ${isTestMode ? 'TEST' : 'LIVE'} mode\n`);
 
+type ProductMetadata = Record<string, string>;
+
 // Product definitions
-const products = [
+const products: Array<{
+  name: string;
+  description: string;
+  metadata: ProductMetadata;
+  prices: Array<{
+    tier: string;
+    amount: number;
+    interval: 'month' | 'year' | null;
+  }>;
+}> = [
   // AI Employees - Recurring Subscriptions (6 roles × 3 tiers each = 18 prices)
   {
     name: 'Sarah - Research Agent',
     description: 'AI research assistant that delivers comprehensive insights and analysis.',
-    metadata: { category: 'agent', role: 'sarah' },
+    metadata: { category: 'agent', role: 'sarah' } as ProductMetadata,
     prices: [
       { tier: 'starter', amount: 39700, interval: 'month' }, // $397/mo
       { tier: 'professional', amount: 79700, interval: 'month' }, // $797/mo
@@ -46,7 +57,7 @@ const products = [
   {
     name: 'Mike - Sales Agent',
     description: 'AI sales development rep for lead qualification and outreach.',
-    metadata: { category: 'agent', role: 'mike' },
+    metadata: { category: 'agent', role: 'mike' } as ProductMetadata,
     prices: [
       { tier: 'starter', amount: 39700, interval: 'month' },
       { tier: 'professional', amount: 79700, interval: 'month' },
@@ -56,7 +67,7 @@ const products = [
   {
     name: 'Alex - Support Agent',
     description: 'AI customer support specialist available 24/7.',
-    metadata: { category: 'agent', role: 'alex' },
+    metadata: { category: 'agent', role: 'alex' } as ProductMetadata,
     prices: [
       { tier: 'starter', amount: 39700, interval: 'month' },
       { tier: 'professional', amount: 79700, interval: 'month' },
@@ -66,7 +77,7 @@ const products = [
   {
     name: 'Casey - Content Agent',
     description: 'AI content creator for blogs, social media, and marketing materials.',
-    metadata: { category: 'agent', role: 'casey' },
+    metadata: { category: 'agent', role: 'casey' } as ProductMetadata,
     prices: [
       { tier: 'starter', amount: 39700, interval: 'month' },
       { tier: 'professional', amount: 79700, interval: 'month' },
@@ -76,7 +87,7 @@ const products = [
   {
     name: 'Jordan - Design Agent',
     description: 'AI design assistant for graphics, layouts, and brand assets.',
-    metadata: { category: 'agent', role: 'jordan' },
+    metadata: { category: 'agent', role: 'jordan' } as ProductMetadata,
     prices: [
       { tier: 'starter', amount: 39700, interval: 'month' },
       { tier: 'professional', amount: 79700, interval: 'month' },
@@ -86,7 +97,7 @@ const products = [
   {
     name: 'LUMEN - Analytics Agent',
     description: 'AI analytics specialist for data insights and reporting.',
-    metadata: { category: 'agent', role: 'lumen' },
+    metadata: { category: 'agent', role: 'lumen' } as ProductMetadata,
     prices: [
       { tier: 'starter', amount: 39700, interval: 'month' },
       { tier: 'professional', amount: 79700, interval: 'month' },
@@ -98,7 +109,7 @@ const products = [
   {
     name: 'Web - Starter Website',
     description: '5-page professional website with SEO foundation.',
-    metadata: { category: 'web', package: 'starter' },
+    metadata: { category: 'web', package: 'starter' } as ProductMetadata,
     prices: [
       { tier: 'one-time', amount: 200000, interval: null }, // $2,000
       { tier: 'monthly', amount: 9900, interval: 'month' }, // $99/mo maintenance
@@ -107,7 +118,7 @@ const products = [
   {
     name: 'Web - Business Website',
     description: '10-page business website with advanced SEO and analytics.',
-    metadata: { category: 'web', package: 'business' },
+    metadata: { category: 'web', package: 'business' } as ProductMetadata,
     prices: [
       { tier: 'one-time', amount: 500000, interval: null }, // $5,000
       { tier: 'monthly', amount: 19900, interval: 'month' }, // $199/mo maintenance
@@ -116,7 +127,7 @@ const products = [
   {
     name: 'Web - Enterprise Website',
     description: 'Custom enterprise website with advanced features.',
-    metadata: { category: 'web', package: 'enterprise' },
+    metadata: { category: 'web', package: 'enterprise' } as ProductMetadata,
     prices: [
       { tier: 'one-time', amount: 1000000, interval: null }, // $10,000
       { tier: 'monthly', amount: 29900, interval: 'month' }, // $299/mo maintenance
@@ -127,7 +138,7 @@ const products = [
   {
     name: 'Labs - MVP Development',
     description: 'Custom software MVP development (8-12 weeks).',
-    metadata: { category: 'labs', package: 'mvp' },
+    metadata: { category: 'labs', package: 'mvp' } as ProductMetadata,
     prices: [
       { tier: 'one-time', amount: 3000000, interval: null }, // $30,000 - $50,000 (start at lower)
     ],
@@ -135,7 +146,7 @@ const products = [
   {
     name: 'Labs - Monthly Retainer',
     description: 'Ongoing development support and feature builds.',
-    metadata: { category: 'labs', package: 'retainer' },
+    metadata: { category: 'labs', package: 'retainer' } as ProductMetadata,
     prices: [
       { tier: 'light', amount: 500000, interval: 'month' }, // $5,000/mo
       { tier: 'standard', amount: 1000000, interval: 'month' }, // $10,000/mo
@@ -147,7 +158,7 @@ const products = [
   {
     name: 'Solutions - AI Strategy Workshop',
     description: 'Half-day AI strategy and implementation planning workshop.',
-    metadata: { category: 'solutions', package: 'workshop-ai' },
+    metadata: { category: 'solutions', package: 'workshop-ai' } as ProductMetadata,
     prices: [
       { tier: 'one-time', amount: 250000, interval: null }, // $2,500
     ],
@@ -155,7 +166,7 @@ const products = [
   {
     name: 'Solutions - Digital Transformation Assessment',
     description: 'Comprehensive technology audit and roadmap.',
-    metadata: { category: 'solutions', package: 'assessment' },
+    metadata: { category: 'solutions', package: 'assessment' } as ProductMetadata,
     prices: [
       { tier: 'one-time', amount: 500000, interval: null }, // $5,000
     ],
@@ -163,7 +174,7 @@ const products = [
   {
     name: 'Solutions - Fractional CTO',
     description: 'Part-time technical leadership and advisory.',
-    metadata: { category: 'solutions', package: 'fractional-cto' },
+    metadata: { category: 'solutions', package: 'fractional-cto' } as ProductMetadata,
     prices: [
       { tier: 'monthly', amount: 500000, interval: 'month' }, // $5,000/mo
     ],
@@ -216,7 +227,7 @@ async function seedProducts() {
         product: product.id,
         unit_amount: priceDef.amount,
         currency: 'usd',
-        metadata: { tier: priceDef.tier },
+        metadata: { tier: priceDef.tier } as ProductMetadata,
       };
 
       if (priceDef.interval) {

@@ -33,8 +33,12 @@ async function main() {
     console.log(JSON.stringify(users, null, 2));
 
     const subscriptions = await prisma.subscription.findMany({
-      select: { id: true, userId: true, status: true },
-      include: { plan: { select: { name: true } } }
+      select: {
+        id: true,
+        userId: true,
+        status: true,
+        plan: { select: { name: true } }
+      }
     });
 
     console.log('\nSubscriptions:');

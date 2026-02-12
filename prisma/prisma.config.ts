@@ -1,14 +1,12 @@
-import { defineConfig } from '@prisma/client';
+import { defineConfig } from 'prisma/config';
 import dotenv from 'dotenv';
 
 // Load environment variables from .env.local
 dotenv.config({ path: '.env.local', override: true });
 
 export default defineConfig({
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL!,
-      directUrl: process.env.DIRECT_URL!,
-    },
+  datasource: {
+    url: process.env.DATABASE_URL!,
+    shadowDatabaseUrl: process.env.DIRECT_URL,
   },
 });

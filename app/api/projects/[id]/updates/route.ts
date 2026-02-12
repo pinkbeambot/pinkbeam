@@ -7,7 +7,7 @@ import { z } from 'zod'
 // GET /api/projects/[id]/updates - List project updates
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
@@ -20,7 +20,7 @@ export async function GET(
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
-    const projectId = params.id
+    const { id: projectId } = await params
 
     // Fetch user from database to check role
     const dbUser = await prisma.user.findUnique({
@@ -89,7 +89,7 @@ const createUpdateSchema = z.object({
 // POST /api/projects/[id]/updates - Create a new update (admin only)
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
@@ -102,7 +102,7 @@ export async function POST(
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
-    const projectId = params.id
+    const { id: projectId } = await params
 
     // Check if user is admin
     const dbUser = await prisma.user.findUnique({
