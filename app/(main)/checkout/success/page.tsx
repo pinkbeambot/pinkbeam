@@ -4,9 +4,7 @@ import { CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-function SuccessContent({ searchParams }: { searchParams: { session_id?: string } }) {
-  const sessionId = searchParams.session_id;
-
+function SuccessContent({ sessionId }: { sessionId?: string }) {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="max-w-md w-full">
@@ -45,14 +43,15 @@ function SuccessContent({ searchParams }: { searchParams: { session_id?: string 
   );
 }
 
-export default function CheckoutSuccessPage({
-  searchParams,
-}: {
-  searchParams: { session_id?: string };
+export default async function CheckoutSuccessPage(props: {
+  searchParams: Promise<{ session_id?: string }>;
 }) {
+  const searchParams = await props.searchParams;
+  const sessionId = searchParams.session_id;
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <SuccessContent searchParams={searchParams} />
+      <SuccessContent sessionId={sessionId} />
     </Suspense>
   );
 }

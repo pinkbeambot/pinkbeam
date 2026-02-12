@@ -27,8 +27,8 @@ test('basic accessibility checks', async ({ page }) => {
   expect(quoteResults.violations).toEqual([])
 
   await loginAsTestUser(page)
-  await page.goto('/dashboard/platform')
-  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
+  await page.goto('/portal/platform')
+  await expect(page.getByRole('heading', { name: 'Portal' })).toBeVisible()
   await waitForDarkTheme()
 
   const dashboardResults = await new AxeBuilder({ page }).analyze()

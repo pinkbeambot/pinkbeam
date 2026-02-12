@@ -77,32 +77,32 @@ test.describe('Contact Page (/contact)', () => {
   })
 })
 
-test.describe('Dashboard Redirect (/dashboard)', () => {
-  test('redirects to agents dashboard', async ({ page }) => {
-    await page.goto('/dashboard')
-    await expect(page).toHaveURL(/\/agents\/dashboard/)
+test.describe('Portal Redirect (/portal)', () => {
+  test('redirects to portal', async ({ page }) => {
+    await page.goto('/portal')
+    await expect(page).toHaveURL(/\/portal/)
   })
 })
 
-test.describe('Platform Dashboard (/dashboard/platform)', () => {
+test.describe('Platform Portal (/portal/platform)', () => {
   test.beforeEach(async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
   })
 
   test('renders for unauthenticated users', async ({ page }) => {
-    await page.goto('/dashboard/platform')
-    await expect(page.getByRole('heading', { name: /Dashboard/i })).toBeVisible()
+    await page.goto('/portal/platform')
+    await expect(page.getByRole('heading', { name: /Portal/i })).toBeVisible()
     await expect(page.getByText(/Manage all your Pink Beam services/i)).toBeVisible()
   })
 
   test('service cards display', async ({ page }) => {
-    await page.goto('/dashboard/platform')
+    await page.goto('/portal/platform')
     await expect(page.getByText(/AI Employees/i)).toBeVisible()
     await expect(page.getByText(/Web Services/i)).toBeVisible()
   })
 
   test('Open Dashboard links work', async ({ page }) => {
-    await page.goto('/dashboard/platform')
+    await page.goto('/portal/platform')
     const openDashboardLinks = page.getByRole('link', { name: /Open Dashboard/i })
     await expect(openDashboardLinks.first()).toBeVisible()
   })
