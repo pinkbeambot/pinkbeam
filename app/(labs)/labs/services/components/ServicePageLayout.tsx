@@ -29,16 +29,16 @@ interface ServicePageLayoutProps {
 
 export function ServiceHero({ hero }: { hero: ServicePageLayoutProps["hero"] }) {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-void">
+    <section className="relative h-[40vh] min-h-[450px] max-h-[550px] flex items-center justify-center overflow-hidden bg-gradient-void">
       {/* Cyan glow effects */}
       <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/10 via-transparent to-transparent pointer-events-none" />
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] md:w-[600px] md:h-[600px] bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Content */}
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-32 md:py-40">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <div className="text-center max-w-3xl mx-auto">
           <FadeIn>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 mb-6">
               <hero.badge.icon className="w-4 h-4 text-cyan-400" />
               <span className="text-sm font-medium text-cyan-400">
                 {hero.badge.text}
@@ -47,13 +47,13 @@ export function ServiceHero({ hero }: { hero: ServicePageLayoutProps["hero"] }) 
           </FadeIn>
 
           <FadeIn delay={0.1}>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold mb-6 text-white tracking-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-5 text-white tracking-tight">
               {hero.title}
             </h1>
           </FadeIn>
 
           <FadeIn delay={0.2}>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
               {hero.description}
             </p>
           </FadeIn>
@@ -80,12 +80,6 @@ export function ServiceHero({ hero }: { hero: ServicePageLayoutProps["hero"] }) 
             </div>
           </FadeIn>
         </div>
-      </div>
-
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground">
-        <span className="text-xs uppercase tracking-wider">Scroll</span>
-        <ChevronDown className="w-5 h-5 text-cyan-400 animate-bounce" />
       </div>
     </section>
   );
@@ -215,8 +209,8 @@ export function CaseStudyTeaser({ title, description, stats }: CaseStudyTeaserPr
 
           <FadeIn delay={0.3} className="text-center mt-8">
             <Button variant="outline" asChild>
-              <Link href="/labs/case-studies">
-                View All Case Studies
+              <Link href="/labs/pricing">
+                View Pricing
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
             </Button>

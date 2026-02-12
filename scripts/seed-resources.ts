@@ -115,8 +115,8 @@ async function seedResources() {
   for (const resource of initialResources) {
     await prisma.resource.upsert({
       where: { slug: resource.slug },
-      update: resource,
-      create: resource,
+      update: resource as any,
+      create: resource as any,
     });
     console.log(`✓ ${resource.title}`);
   }

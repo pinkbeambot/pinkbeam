@@ -14,6 +14,7 @@ import { useAnalyticsSafe } from '@/components/analytics'
 
 export default function SignUpPage() {
   const router = useRouter()
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -21,6 +22,10 @@ export default function SignUpPage() {
   const [message, setMessage] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const { trackFormSubmission } = useAnalyticsSafe()
+
+  // Get redirect parameter from URL
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
+  const redirectTo = searchParams.get('redirect') || '/portal'
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -46,6 +51,9 @@ export default function SignUpPage() {
       password: validation.data.password,
       options: {
         emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback`,
+        data: {
+          name: name || undefined,
+        },
       },
     })
 
@@ -62,7 +70,7 @@ export default function SignUpPage() {
       if (trackFormSubmission) {
         trackFormSubmission('sign_up', true, { immediate_login: true })
       }
-      router.push('/agents/dashboard')
+      router.push(redirectTo)
       router.refresh()
     } else {
       console.log('Sign up successful, no session (email confirmation enabled?)', data)
@@ -122,6 +130,20 @@ export default function SignUpPage() {
               )}
 
               <div className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="name" className="text-sm font-medium">
+                    Full Name
+                  </label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="John Doe"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="h-11"
+                  />
+                </div>
+
                 <div className="space-y-2">
                   <label htmlFor="email" className="text-sm font-medium">
                     Email

@@ -1,9 +1,10 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { withAuth } from '@/lib/auth/apiMiddleware'
 import { prisma } from '@/lib/prisma'
 import { onboardingProfileSchema } from '@/lib/validation'
 
 // POST /api/onboarding/profile - Save profile data
-export async function POST(request: Request) {
+export const POST = withAuth(async (request: NextRequest, { auth }) => {
   try {
     const body = await request.json()
     const result = onboardingProfileSchema.safeParse(body)
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const userId = 'user-1' // TODO: Get from auth session
+    const userId = auth.userId
     const data = result.data
 
     await prisma.user.update({
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
       { status: 500 }
     )
   }
-}
+})
 
 async function shouldSetStartedAt(userId: string) {
   const user = await prisma.user.findUnique({

@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Check, Globe, MessageSquare, Rocket } from "lucide-react";
+import { ArrowRight, Globe, MessageSquare, Rocket } from "lucide-react";
 import { FadeIn } from "@/components/animations";
 import { WebHero } from "./components/WebHero";
 import { WebProblemSection } from "@/components/web/sections/WebProblemSection";
 import { WebServicesSection } from "@/components/web/sections/WebServicesSection";
 import { WebTestimonialsSection } from "@/components/web/sections/WebTestimonialsSection";
 import { WebFAQSection } from "@/components/web/sections/WebFAQSection";
+import { ExploreServices } from "@/components/sections/ExploreServices";
+import { WebPricingPreview } from "@/components/sections/WebPricingPreview";
 
 const processSteps = [
   {
@@ -39,27 +40,6 @@ const processSteps = [
   },
 ];
 
-const tiers = [
-  {
-    name: "Starter",
-    price: "$2,000",
-    description: "Perfect for small businesses",
-    features: ["5-page website", "Mobile responsive", "Basic SEO", "1 month support"],
-  },
-  {
-    name: "Professional",
-    price: "$5,000",
-    description: "For growing companies",
-    features: ["10-page website", "Advanced SEO", "Analytics dashboard", "3 months support", "Blog setup"],
-  },
-  {
-    name: "Enterprise",
-    price: "$10,000+",
-    description: "Custom solutions",
-    features: ["Unlimited pages", "Custom functionality", "Priority support", "12 months support", "Dedicated manager"],
-  },
-];
-
 export function WebPageClient() {
   return (
     <main className="min-h-screen">
@@ -76,7 +56,7 @@ export function WebPageClient() {
       <section className="py-20 lg:py-32 border-t bg-muted/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">How we work</h2>
+            <h2 className="text-h2 font-display font-bold mb-4">How we work</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               From first conversation to launch and beyond
             </p>
@@ -115,7 +95,7 @@ export function WebPageClient() {
       <section className="py-20 lg:py-32 border-t">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Sample work</h2>
+            <h2 className="text-h2 font-display font-bold mb-4">Sample work</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Design concepts and style examples
             </p>
@@ -156,67 +136,13 @@ export function WebPageClient() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="py-20 lg:py-32 border-t bg-muted/30">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <FadeIn className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Simple pricing</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Get a ballpark estimate below, or use our calculator for more details
-            </p>
-          </FadeIn>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto items-start">
-            {tiers.map((tier, index) => (
-              <FadeIn key={tier.name} delay={index * 0.15} direction="up">
-                <div className={`
-                  relative p-6 lg:p-8 rounded-2xl border bg-card h-full flex flex-col
-                  hover:shadow-lg hover:scale-[1.02] transition-all duration-300
-                  ${tier.name === "Professional" ? "border-violet-500/50 shadow-lg shadow-violet-500/10" : ""}
-                `}>
-                  {tier.name === "Professional" && (
-                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-violet-500 to-violet-600 text-white border-0">
-                      Most Popular
-                    </Badge>
-                  )}
-                  <h3 className="text-xl font-bold mb-2">{tier.name}</h3>
-                  <p className="text-muted-foreground text-sm mb-4">{tier.description}</p>
-                  <div className="text-3xl font-bold mb-6">{tier.price}</div>
-                  <ul className="space-y-3 mb-8 flex-1">
-                    {tier.features.map((feature) => (
-                      <li key={feature} className="flex items-center gap-2 text-sm">
-                        <Check className="w-4 h-4 text-violet-500 shrink-0" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    className="w-full"
-                    variant={tier.name === "Professional" ? "default" : "outline"}
-                    asChild
-                  >
-                    <Link href="/web/quote">
-                      Get a Quote
-                    </Link>
-                  </Button>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
-
-          <FadeIn className="text-center mt-12">
-            <p className="text-body text-muted-foreground">
-              Need exact pricing?{" "}
-              <Link href="/web/pricing" className="text-violet-500 hover:text-violet-600 font-medium">
-                Use our pricing calculator
-              </Link>{" "}
-              to get a detailed estimate
-            </p>
-          </FadeIn>
-        </div>
-      </section>
+      <WebPricingPreview />
 
       {/* Testimonials */}
       <WebTestimonialsSection />
+
+      {/* Explore Other Services */}
+      <ExploreServices currentService="web" />
 
       {/* FAQ */}
       <WebFAQSection />

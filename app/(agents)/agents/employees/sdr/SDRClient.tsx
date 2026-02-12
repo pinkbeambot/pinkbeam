@@ -10,6 +10,7 @@ import { EmployeeProblemSection } from "../components/EmployeeProblemSection";
 import { EmployeeVALISQuote } from "../components/EmployeeVALISQuote";
 import { EmployeeCostComparison } from "../components/EmployeeCostComparison";
 import { EmployeeFAQ } from "../components/EmployeeFAQ";
+import { PromptTemplates } from "../components/PromptTemplates";
 import { FadeIn } from "@/components/animations";
 import { Quote } from "lucide-react";
 
@@ -88,6 +89,33 @@ const problems = [
     icon: Target,
     title: "Inconsistent Pipeline",
     description: "Outbound volume fluctuates based on team bandwidth. Your pipeline suffers when reps are busy closing.",
+  },
+];
+
+const promptTemplates = [
+  {
+    title: "Find Qualified Leads",
+    description: "Generate a targeted prospect list based on your ICP",
+    prompt: "@mike Find 30 companies in [industry] with [criteria]. Include:\n- Company name and website\n- Employee count and revenue (if available)\n- Contact info for [decision-maker title]\n- Brief company description\n- Why they match our ICP",
+    category: "Lead Generation",
+  },
+  {
+    title: "Create Email Sequence",
+    description: "Build a multi-touch outreach campaign",
+    prompt: "@mike Create a 5-email outreach sequence for [product/service] targeting [persona]. Make it personalized, value-focused, and include clear CTAs. Spacing: Day 0, 3, 7, 14, 21.",
+    category: "Outreach",
+  },
+  {
+    title: "Research Competitor Customers",
+    description: "Identify switchable accounts from competitors",
+    prompt: "@mike Research current customers of [competitor] and identify which ones might be good fits for our product. Explain why they might be open to switching.",
+    category: "Research",
+  },
+  {
+    title: "Enrich Lead Data",
+    description: "Add contact info and context to existing leads",
+    prompt: "@mike Here's a list of 50 company names. Find the decision-maker contact info (email, LinkedIn) for [role] at each company and add 2-3 relevant talking points based on recent company news or activity.",
+    category: "Lead Enrichment",
   },
 ];
 
@@ -223,6 +251,14 @@ export default function SDRClient() {
           </div>
         </div>
       </section>
+
+      {/* Prompt Templates */}
+      <PromptTemplates
+        employeeName="Mike"
+        employeeMention="@mike"
+        templates={promptTemplates}
+        colorClass="text-purple-500"
+      />
 
       {/* CRM Integration Showcase */}
       <IntegrationShowcase

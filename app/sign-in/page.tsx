@@ -21,6 +21,10 @@ export default function SignInPage() {
   const [loading, setLoading] = useState(false)
   const { trackFormSubmission } = useAnalyticsSafe()
 
+  // Get redirect parameter from URL
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
+  const redirectTo = searchParams.get('redirect') || '/portal'
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
@@ -54,7 +58,7 @@ export default function SignInPage() {
       if (trackFormSubmission) {
         trackFormSubmission('sign_in', true)
       }
-      router.push('/agents/dashboard')
+      router.push(redirectTo)
       router.refresh()
     }
   }
@@ -89,7 +93,7 @@ export default function SignInPage() {
                 Welcome back
               </h1>
               <p className="text-muted-foreground">
-                Sign in to access your dashboard and continue building.
+                Sign in to access your portal and continue building.
               </p>
             </div>
 

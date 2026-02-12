@@ -330,7 +330,7 @@ export function GrowthStrategyClient() {
           </>
         }
         description="Build scalable growth engines powered by data and technology. We help you identify opportunities, optimize channels, and create sustainable competitive advantages in your market."
-        primaryCta={{ text: "Book Discovery Call", href: "/solutions/contact" }}
+        primaryCta={{ text: "Book Discovery Call", href: "/contact" }}
         secondaryCta={{ text: "View Growth Framework", href: "#audit" }}
       />
 
@@ -534,7 +534,7 @@ export function GrowthStrategyClient() {
         timeline={timeline}
         priceRange="$20,000"
         ctaText="Start Growth Audit"
-        ctaHref="/solutions/contact"
+        ctaHref="/contact"
       />
 
       {/* FAQ */}
@@ -551,7 +551,7 @@ export function GrowthStrategyClient() {
         title="Ready to Accelerate Your Growth?"
         description="Let's analyze your growth engine and identify your biggest opportunities. Schedule a free discovery call to start building your scalable growth strategy."
         buttonText="Book Growth Assessment"
-        buttonHref="/solutions/contact"
+        buttonHref="/contact"
       />
     </main>
   );

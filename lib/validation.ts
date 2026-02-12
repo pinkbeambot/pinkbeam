@@ -218,8 +218,9 @@ export function getFieldErrors(error: z.ZodError): Record<string, string> {
   const { fieldErrors } = error.flatten()
   const errors: Record<string, string> = {}
   for (const [field, messages] of Object.entries(fieldErrors)) {
-    if (messages && messages.length > 0) {
-      errors[field] = messages[0]
+    const messageArray = messages as string[] | undefined
+    if (messageArray && messageArray.length > 0) {
+      errors[field] = messageArray[0]
     }
   }
   return errors

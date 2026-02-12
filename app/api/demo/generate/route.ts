@@ -5,7 +5,7 @@ import { sendWelcomeEmail } from "@/lib/email";
 
 // Validation schema
 const generateRequestSchema = z.object({
-  employeeType: z.enum(["researcher", "analyst", "strategist"]),
+  employeeType: z.enum(["researcher", "analyst", "strategist"]).default("researcher"),
   competitors: z.array(z.string().min(1)).min(1).max(3),
   focusAreas: z.array(z.enum(["market-trends", "competitor-intel", "opportunities"])).min(1),
   email: z.string().email(),
@@ -248,7 +248,7 @@ export async function POST(request: NextRequest) {
         month: "long",
         day: "numeric",
       }),
-      executiveSummary: template.executiveSummary.map((para) =>
+      executiveSummary: template.executiveSummary.map((para: string) =>
         replaceCompetitors(para, competitors)
       ),
       competitorMoves: focusAreas.includes("competitor-intel") ? selectedCompetitorMoves : [],
@@ -273,13 +273,12 @@ export async function POST(request: NextRequest) {
     // Send welcome email with brief link
     try {
       const viewBriefUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://pinkbeam.io'}/agents/demo/result`;
-      await sendDemoWelcomeEmail({
+      await sendWelcomeEmail({
+        fullName: email.split('@')[0], // Use email prefix as name
         email: email.toLowerCase(),
-        employeeType,
-        competitors,
-        viewBriefUrl,
+        loginUrl: viewBriefUrl,
       });
-      
+
       // Update record to mark email as sent
       await prisma.demoRequest.update({
         where: { id: demoRequest.id },
@@ -287,7 +286,13 @@ export async function POST(request: NextRequest) {
       });
     } catch (emailError) {
       // Don't fail the request if email fails
-      console.error("Failed to send demo welcome email:", emailError);
+      console.error('[email-error] Demo welcome email failed:', {
+        demoRequestId: demoRequest.id,
+        recipient: email.toLowerCase(),
+        employeeType,
+        error: emailError instanceof Error ? emailError.message : String(emailError),
+        timestamp: new Date().toISOString(),
+      });
     }
 
     // Return success response with brief data

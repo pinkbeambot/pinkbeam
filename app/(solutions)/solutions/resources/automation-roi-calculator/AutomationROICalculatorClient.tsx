@@ -289,13 +289,13 @@ export function AutomationROICalculatorClient() {
 
                   <div className="flex gap-3">
                     <Button className="flex-1 bg-amber-500 hover:bg-amber-600" asChild>
-                      <Link href="/solutions/contact">
+                      <Link href="/contact">
                         Discuss Your Project
                         <ChevronRight className="w-4 h-4 ml-2" />
                       </Link>
                     </Button>
                     <Button variant="outline" className="flex-1" asChild>
-                      <Link href="/solutions/resources/process-automation-roi-calculator">
+                      <Link href="/solutions/resources/automation-roi-calculator">
                         Download Full Calculator
                       </Link>
                     </Button>

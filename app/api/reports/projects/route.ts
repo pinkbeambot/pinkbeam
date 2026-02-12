@@ -47,9 +47,9 @@ export async function GET(request: NextRequest) {
     const onTimeProjects = completedProjects.filter(p => {
       // Use last invoice date or current date as completion proxy
       const lastInvoice = p.invoices.sort((a, b) => 
-        b.issuedAt.getTime() - a.issuedAt.getTime()
+        b.issueDate.getTime() - a.issueDate.getTime()
       )[0]
-      const completionDate = lastInvoice?.paidAt || lastInvoice?.issuedAt
+      const completionDate = lastInvoice?.paidAt || lastInvoice?.issueDate
       if (!completionDate || !p.deadline) return true
       return completionDate <= p.deadline
     })
@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
     const projectsWithBudget = projects.filter(p => p.budget && p.invoices.length > 0)
     const budgetVsActual = projectsWithBudget.map(p => {
       const actualRevenue = p.invoices.reduce((sum, inv) => 
-        sum + Number(inv.amount), 0
+        sum + Number(inv.total), 0
       )
       const budget = Number(p.budget)
       return {

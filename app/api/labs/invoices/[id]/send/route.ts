@@ -37,24 +37,50 @@ export async function POST(
       }
     })
 
-    // Send email notification
+    // Send email notification with error handling
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
     const invoiceUrl = `${baseUrl}/portal/invoices/${id}`
 
-    await sendInvoiceNotification({
-      invoiceNumber: invoice.invoiceNumber,
-      clientName: invoice.client.name || invoice.client.email,
-      clientEmail: invoice.client.email,
-      amount: formatCurrency(invoice.total),
-      status: 'due',
-      dueDate: formatDate(invoice.dueDate),
-      invoiceUrl,
-    })
+    try {
+      await sendInvoiceNotification({
+        invoiceNumber: invoice.invoiceNumber,
+        clientName: invoice.client.name || invoice.client.email,
+        clientEmail: invoice.client.email,
+        amount: formatCurrency(Number(invoice.total)),
+        status: 'due',
+        dueDate: formatDate(invoice.dueDate),
+        invoiceUrl,
+      })
+    } catch (emailError) {
+      // Log email failure but don't fail the request
+      console.error('[email-error] Invoice notification failed:', {
+        invoiceId: id,
+        invoiceNumber: invoice.invoiceNumber,
+        recipient: invoice.client.email,
+        error: emailError instanceof Error ? emailError.message : String(emailError),
+        timestamp: new Date().toISOString(),
+      })
 
-    return NextResponse.json({ 
-      success: true, 
+      // Create activity log for email failure
+      await prisma.activityLog.create({
+        data: {
+          action: 'email_failed',
+          entityType: 'Invoice',
+          entityId: id,
+          userId: invoice.clientId,
+          metadata: {
+            emailType: 'invoice_notification',
+            recipient: invoice.client.email,
+            error: emailError instanceof Error ? emailError.message : String(emailError),
+          },
+        },
+      }).catch((logErr) => console.error('[activitylog] Failed to log email error:', logErr))
+    }
+
+    return NextResponse.json({
+      success: true,
       message: 'Invoice sent successfully',
-      data: updatedInvoice 
+      data: updatedInvoice
     })
   } catch (error) {
     console.error('Error sending invoice:', error)

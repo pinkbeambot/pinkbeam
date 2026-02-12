@@ -7,14 +7,14 @@ import {
 } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
-  title: "Alex — AI Customer Support Specialist | Pink Beam",
+  title: "Alex — AI Customer Support Specialist — Pink Beam",
   description:
     "Hire Alex, your AI Customer Support Specialist. Provides 24/7 instant support, resolves 70%+ tickets autonomously, and seamlessly escalates complex issues.",
   alternates: {
     canonical: "https://pinkbeam.io/agents/employees/support",
   },
   openGraph: {
-    title: "Alex — AI Customer Support Specialist | Pink Beam",
+    title: "Alex — AI Customer Support Specialist — Pink Beam",
     description:
       "Hire Alex, your AI Customer Support Specialist. Provides 24/7 instant support and resolves 70%+ tickets autonomously.",
     url: "https://pinkbeam.io/agents/employees/support",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Alex — AI Customer Support Specialist | Pink Beam",
+    title: "Alex — AI Customer Support Specialist — Pink Beam",
     description:
       "Hire Alex, your AI Customer Support Specialist. Provides 24/7 instant support and resolves 70%+ tickets autonomously.",
     images: ["/api/og?type=employee&employee=Alex&subtitle=AI+Customer+Support+Specialist"],
@@ -52,7 +52,7 @@ export default function SupportPage() {
         ]}
       />
       <WebPageSchema
-        title="Alex — AI Customer Support Specialist | Pink Beam"
+        title="Alex — AI Customer Support Specialist — Pink Beam"
         description="Hire Alex, your AI Customer Support Specialist. Provides 24/7 instant support."
         url="https://pinkbeam.io/agents/employees/support"
       />

@@ -108,8 +108,9 @@ export function LabsResourcesPageClient({ initialResources }: LabsResourcesPageC
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[45vh] min-h-[450px] max-h-[550px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-transparent to-transparent" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] md:w-[600px] md:h-[600px] bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="container relative">
           <FadeInOnMount>
             <div className="max-w-3xl mx-auto text-center">
@@ -117,14 +118,14 @@ export function LabsResourcesPageClient({ initialResources }: LabsResourcesPageC
                 <Code2 className="w-3 h-3 mr-1" />
                 Resource Library
               </Badge>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-5">
                 Development Resources & Tools
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Download practical templates, checklists, and guides to accelerate your 
+              <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
+                Download practical templates, checklists, and guides to accelerate your
                 development workflow. Built for engineering teams by engineering teams.
               </p>
-              
+
               {/* Search Bar */}
               <div className="relative max-w-xl mx-auto">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -138,12 +139,6 @@ export function LabsResourcesPageClient({ initialResources }: LabsResourcesPageC
               </div>
             </div>
           </FadeInOnMount>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground animate-bounce">
-          <span className="text-sm">Scroll</span>
-          <ChevronDown className="w-5 h-5" />
         </div>
       </section>
 

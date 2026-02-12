@@ -107,7 +107,29 @@ export async function POST(
           },
           result.data.body,
           comment.author?.name || 'Support Team'
-        ).catch((err) => console.error('[email] ticket comment notification failed:', err))
+        ).catch(async (err) => {
+          console.error('[email-error] Ticket comment notification failed:', {
+            ticketId: id,
+            commentId: comment.id,
+            recipient: ticketWithClient.client.email,
+            error: err instanceof Error ? err.message : String(err),
+            timestamp: new Date().toISOString(),
+          })
+          await prisma.activityLog.create({
+            data: {
+              action: 'email_failed',
+              entityType: 'SupportTicket',
+              entityId: id,
+              userId: ticketWithClient.client.id,
+              metadata: {
+                emailType: 'ticket_comment',
+                commentId: comment.id,
+                recipient: ticketWithClient.client.email,
+                error: err instanceof Error ? err.message : String(err),
+              },
+            },
+          }).catch((logErr) => console.error('[activitylog] Failed to log email error:', logErr))
+        })
 
         // Create in-app notification for the client
         createNotification({
@@ -120,7 +142,7 @@ export async function POST(
             ticketTitle: ticketWithClient.title,
             commentId: comment.id,
             authorName: comment.author?.name || 'Support Team',
-            link: `/dashboard/tickets/${id}`,
+            link: `/portal/support`,
           },
         }).catch((err) => console.error('[notifications] Failed to create ticket notification:', err))
       }

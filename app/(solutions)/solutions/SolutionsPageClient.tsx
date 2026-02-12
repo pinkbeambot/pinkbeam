@@ -6,6 +6,7 @@ import { SolutionsServicesShowcase } from "@/components/sections/SolutionsServic
 import { SolutionsPricingPreview } from "@/components/sections/SolutionsPricingPreview";
 import { SolutionsProcessTimeline } from "@/components/sections/SolutionsProcessTimeline";
 import { SolutionsFAQSection } from "@/components/sections/SolutionsFAQSection";
+import { ExploreServices } from "@/components/sections/ExploreServices";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -69,6 +70,7 @@ export function SolutionsPageClient() {
       <SolutionsServicesShowcase />
       <SolutionsPricingPreview />
       <SolutionsProcessTimeline />
+      <ExploreServices currentService="solutions" />
       <SolutionsFAQSection />
       <SolutionsCTASection />
     </main>

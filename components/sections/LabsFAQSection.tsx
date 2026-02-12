@@ -73,7 +73,7 @@ export function LabsFAQSection() {
             {faqs.map((faq, idx) => (
               <AccordionItem key={idx} value={`item-${idx}`}>
                 <AccordionTrigger className="text-left hover:text-cyan-500 transition-colors">
-                  <span className="text-body font-semibold">{faq.question}</span>
+                  <span className="text-body font-display font-semibold">{faq.question}</span>
                 </AccordionTrigger>
                 <AccordionContent className="text-muted-foreground">
                   {faq.answer}

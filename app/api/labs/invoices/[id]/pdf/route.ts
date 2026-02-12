@@ -107,7 +107,7 @@ function generateInvoiceHTML(invoice: any): string {
     </div>
   ` : ''
 
-  const statusBadge = {
+  const statusBadge = ({
     DRAFT: { bg: '#9e9e9e', color: '#fff' },
     SENT: { bg: '#2196f3', color: '#fff' },
     VIEWED: { bg: '#9c27b0', color: '#fff' },
@@ -115,7 +115,7 @@ function generateInvoiceHTML(invoice: any): string {
     PAID: { bg: '#4caf50', color: '#fff' },
     OVERDUE: { bg: '#f44336', color: '#fff' },
     CANCELLED: { bg: '#757575', color: '#fff' },
-  }[invoice.status] || { bg: '#9e9e9e', color: '#fff' }
+  } as any)[invoice.status] || { bg: '#9e9e9e', color: '#fff' }
 
   return `<!DOCTYPE html>
 <html lang="en">

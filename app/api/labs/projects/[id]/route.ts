@@ -2,60 +2,68 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { Prisma, ProjectStatus } from '@prisma/client'
 import { z } from 'zod'
+import { withAuth, checkOwnership } from '@/lib/auth/apiMiddleware'
 
-// GET /api/labs/projects/[id] - Get project details
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params
-
+// GET /api/labs/projects/[id] - Get project details (owner or admin)
+export const GET = withAuth(checkOwnership(
+  async (request, { params }) => {
+    const { id } = await params!
     const project = await prisma.project.findUnique({
       where: { id },
-      include: {
-        client: {
-          select: { id: true, name: true, email: true, company: true }
-        },
-        members: {
-          include: {
-            user: {
-              select: { id: true, name: true, email: true, role: true }
-            }
-          }
-        },
-        milestones: {
-          orderBy: { order: 'asc' }
-        },
-        files: {
-          orderBy: { createdAt: 'desc' },
-          take: 10
-        },
-        quotes: {
-          orderBy: { createdAt: 'desc' }
-        },
-        invoices: {
-          orderBy: { createdAt: 'desc' }
-        }
-      }
+      select: { clientId: true }
     })
+    return project?.clientId || null
+  },
+  async (request, { params, auth }) => {
+    try {
+      const { id } = await params!
 
-    if (!project) {
+      const project = await prisma.project.findUnique({
+        where: { id },
+        include: {
+          client: {
+            select: { id: true, name: true, email: true, company: true }
+          },
+          members: {
+            include: {
+              user: {
+                select: { id: true, name: true, email: true, role: true }
+              }
+            }
+          },
+          milestones: {
+            orderBy: { order: 'asc' }
+          },
+          files: {
+            orderBy: { createdAt: 'desc' },
+            take: 10
+          },
+          quotes: {
+            orderBy: { createdAt: 'desc' }
+          },
+          invoices: {
+            orderBy: { createdAt: 'desc' }
+          }
+        }
+      })
+
+      if (!project) {
+        return NextResponse.json(
+          { success: false, error: 'Project not found' },
+          { status: 404 }
+        )
+      }
+
+      return NextResponse.json({ success: true, data: project })
+    } catch (error) {
+      console.error('Error fetching project:', error)
       return NextResponse.json(
-        { success: false, error: 'Project not found' },
-        { status: 404 }
+        { success: false, error: 'Failed to fetch project' },
+        { status: 500 }
       )
     }
-
-    return NextResponse.json({ success: true, data: project })
-  } catch (error) {
-    console.error('Error fetching project:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch project' },
-      { status: 500 }
-    )
   }
-}
+))
 
 // PUT /api/labs/projects/[id] - Update project
 const updateProjectSchema = z.object({

@@ -131,9 +131,9 @@ export const serviceMetadata = {
     noIndex: true,
   },
   dashboard: {
-    title: "Dashboard",
+    title: "Portal",
     description: "Manage your Pink Beam services, AI employees, and account settings.",
-    path: "/dashboard",
+    path: "/portal",
     noIndex: true,
   },
 };
@@ -166,11 +166,6 @@ export const structuredData = {
       "@type": "Offer",
       price: "99.00",
       priceCurrency: "USD",
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      ratingCount: "127",
     },
   }),
 

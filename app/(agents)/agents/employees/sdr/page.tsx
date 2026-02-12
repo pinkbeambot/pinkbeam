@@ -7,14 +7,14 @@ import {
 } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
-  title: "Mike — AI Sales Development Rep | Pink Beam",
+  title: "Mike — AI Sales Development Rep — Pink Beam",
   description:
     "Hire Mike, your AI Sales Development Representative. Researches prospects, writes personalized emails, and books qualified meetings for $497/month.",
   alternates: {
     canonical: "https://pinkbeam.io/agents/employees/sdr",
   },
   openGraph: {
-    title: "Mike — AI Sales Development Rep | Pink Beam",
+    title: "Mike — AI Sales Development Rep — Pink Beam",
     description:
       "Hire Mike, your AI Sales Development Representative. Researches prospects, writes personalized emails, and books qualified meetings.",
     url: "https://pinkbeam.io/agents/employees/sdr",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mike — AI Sales Development Rep | Pink Beam",
+    title: "Mike — AI Sales Development Rep — Pink Beam",
     description:
       "Hire Mike, your AI Sales Development Representative. Researches prospects and books qualified meetings.",
     images: ["/api/og?type=employee&employee=Mike&subtitle=AI+Sales+Development+Representative"],
@@ -52,7 +52,7 @@ export default function SDRPage() {
         ]}
       />
       <WebPageSchema
-        title="Mike — AI Sales Development Rep | Pink Beam"
+        title="Mike — AI Sales Development Rep — Pink Beam"
         description="Hire Mike, your AI Sales Development Representative. Researches prospects and books qualified meetings."
         url="https://pinkbeam.io/agents/employees/sdr"
       />

@@ -12,7 +12,7 @@ const sampleTicket = {
   clientName: 'Jane Smith',
   clientEmail: 'jane@example.com',
   status: 'OPEN',
-  priority: 'HIGH',
+  priority: 'HIGH' as 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT',
   category: 'BUG',
 }
 

@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { Palette, Code, Search, BarChart3, PenTool, Wrench, Check, ArrowRight } from "lucide-react";
+import { Palette, Code, Search, BarChart3, PenTool, Wrench, Check } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui";
-import { Button } from "@/components/ui";
 import { FadeIn } from "@/components/animations";
 
 const servicesTabs = [
@@ -101,7 +99,7 @@ const servicesTabs = [
 
 export function WebServicesSection() {
   return (
-    <section className="py-20 md:py-32 bg-surface-sunken">
+    <section id="services" className="py-20 md:py-32 bg-surface-sunken">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <FadeIn className="text-center mb-12">
@@ -149,13 +147,7 @@ export function WebServicesSection() {
                       <tab.icon className="w-8 h-8 text-white" />
                     </div>
                     <h3 className="text-h3 font-display font-bold mb-2">{tab.title}</h3>
-                    <p className="text-body text-violet-500 font-medium mb-6">{tab.description}</p>
-                    <Link href="/web/quote">
-                      <Button variant="beam" size="sm" className="w-full group">
-                        Get a Quote
-                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                      </Button>
-                    </Link>
+                    <p className="text-body text-violet-500 font-medium">{tab.description}</p>
                   </div>
 
                   {/* Right: Capabilities */}

@@ -63,11 +63,6 @@ export function SoftwareApplicationSchema({
       price: "397.00",
       priceCurrency: "USD",
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      ratingCount: "127",
-    },
     provider: {
       "@type": "Organization",
       name: "Pink Beam",

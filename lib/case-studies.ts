@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { mockCaseStudies, mockFilterOptions } from "./case-studies-mock";
+import type { CaseStudy, CaseStudyFilters } from "./case-studies-types";
 
 // Re-export types and constants from the shared types file (safe for client components)
 export type { CaseStudy, CaseStudyMetric, CaseStudyFilters } from "./case-studies-types";
@@ -8,7 +8,6 @@ export { INDUSTRIES, SERVICES, ENGAGEMENT_TYPES } from "./case-studies-types";
 // Get all published case studies with optional filtering
 export async function getCaseStudies(filters?: CaseStudyFilters): Promise<CaseStudy[]> {
   try {
-    // Try to fetch from database first
     const caseStudies = await prisma.caseStudy.findMany({
       where: { published: true },
       orderBy: [
@@ -16,68 +15,39 @@ export async function getCaseStudies(filters?: CaseStudyFilters): Promise<CaseSt
         { createdAt: 'desc' },
       ],
     });
-    
-    let results = caseStudies as CaseStudy[];
-    
-    // If no data in database, use mock data
-    if (results.length === 0) {
-      results = mockCaseStudies.filter(s => s.published);
-    }
-    
+
+    let results = caseStudies as unknown as CaseStudy[];
+
     // Apply filters
     if (filters?.industry) {
       results = results.filter(s => s.industry === filters.industry);
     }
-    
+
     if (filters?.service) {
       results = results.filter(s => s.services.includes(filters.service!));
     }
-    
+
     if (filters?.engagementType) {
       results = results.filter(s => s.engagementType === filters.engagementType);
     }
-    
+
     if (filters?.featured) {
       results = results.filter(s => s.featured);
     }
-    
+
     if (filters?.search) {
       const query = filters.search.toLowerCase();
-      results = results.filter(s => 
+      results = results.filter(s =>
         s.title.toLowerCase().includes(query) ||
         s.clientName.toLowerCase().includes(query) ||
         s.industry.toLowerCase().includes(query)
       );
     }
-    
+
     return results;
   } catch (error) {
-    console.warn("Database unavailable, using mock data");
-    // Return filtered mock data
-    let results = mockCaseStudies.filter(s => s.published);
-    
-    if (filters?.industry) {
-      results = results.filter(s => s.industry === filters.industry);
-    }
-    if (filters?.service) {
-      results = results.filter(s => s.services.includes(filters.service!));
-    }
-    if (filters?.engagementType) {
-      results = results.filter(s => s.engagementType === filters.engagementType);
-    }
-    if (filters?.featured) {
-      results = results.filter(s => s.featured);
-    }
-    if (filters?.search) {
-      const query = filters.search.toLowerCase();
-      results = results.filter(s => 
-        s.title.toLowerCase().includes(query) ||
-        s.clientName.toLowerCase().includes(query) ||
-        s.industry.toLowerCase().includes(query)
-      );
-    }
-    
-    return results;
+    console.warn("Database unavailable for case studies");
+    return [];
   }
 }
 
@@ -87,16 +57,11 @@ export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null
     const caseStudy = await prisma.caseStudy.findUnique({
       where: { slug, published: true },
     });
-    
-    if (caseStudy) {
-      return caseStudy as CaseStudy;
-    }
-    
-    // Fallback to mock data
-    return mockCaseStudies.find(s => s.slug === slug && s.published) || null;
+
+    return caseStudy ? (caseStudy as unknown as CaseStudy) : null;
   } catch (error) {
-    console.warn("Database unavailable, using mock data");
-    return mockCaseStudies.find(s => s.slug === slug && s.published) || null;
+    console.warn("Database unavailable for case study lookup");
+    return null;
   }
 }
 
@@ -108,20 +73,11 @@ export async function getFeaturedCaseStudies(limit: number = 3): Promise<CaseStu
       orderBy: { createdAt: 'desc' },
       take: limit,
     });
-    
-    if (caseStudies.length > 0) {
-      return caseStudies as CaseStudy[];
-    }
-    
-    // Fallback to mock data
-    return mockCaseStudies
-      .filter(s => s.published && s.featured)
-      .slice(0, limit);
+
+    return caseStudies as unknown as CaseStudy[];
   } catch (error) {
-    console.warn("Database unavailable, using mock data");
-    return mockCaseStudies
-      .filter(s => s.published && s.featured)
-      .slice(0, limit);
+    console.warn("Database unavailable for featured case studies");
+    return [];
   }
 }
 
@@ -145,28 +101,11 @@ export async function getRelatedCaseStudies(
       orderBy: { createdAt: 'desc' },
       take: limit,
     });
-    
-    if (caseStudies.length > 0) {
-      return caseStudies as CaseStudy[];
-    }
-    
-    // Fallback to mock data
-    return mockCaseStudies
-      .filter(s => 
-        s.published && 
-        s.slug !== currentSlug &&
-        (s.industry === industry || s.services.some(svc => services.includes(svc)))
-      )
-      .slice(0, limit);
+
+    return caseStudies as unknown as CaseStudy[];
   } catch (error) {
-    console.warn("Database unavailable, using mock data");
-    return mockCaseStudies
-      .filter(s => 
-        s.published && 
-        s.slug !== currentSlug &&
-        (s.industry === industry || s.services.some(svc => services.includes(svc)))
-      )
-      .slice(0, limit);
+    console.warn("Database unavailable for related case studies");
+    return [];
   }
 }
 
@@ -185,19 +124,14 @@ export async function getFilterOptions(): Promise<{
         engagementType: true,
       },
     });
-    
-    if (caseStudies.length > 0) {
-      const industries = [...new Set(caseStudies.map((cs) => cs.industry))].sort();
-      const services = [...new Set(caseStudies.flatMap((cs) => cs.services))].sort();
-      const engagementTypes = [...new Set(caseStudies.map((cs) => cs.engagementType))].sort();
-      
-      return { industries, services, engagementTypes };
-    }
-    
-    // Fallback to mock data
-    return mockFilterOptions;
+
+    const industries = [...new Set(caseStudies.map((cs) => cs.industry))].sort();
+    const services = [...new Set(caseStudies.flatMap((cs) => cs.services))].sort();
+    const engagementTypes = [...new Set(caseStudies.map((cs) => cs.engagementType))].sort();
+
+    return { industries, services, engagementTypes };
   } catch (error) {
-    console.warn("Database unavailable, using mock filter options");
-    return mockFilterOptions;
+    console.warn("Database unavailable for filter options");
+    return { industries: [], services: [], engagementTypes: [] };
   }
 }

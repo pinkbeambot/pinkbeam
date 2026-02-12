@@ -5,11 +5,11 @@
  * Button wrapper that automatically tracks CTA clicks
  */
 
-import { useCallback, type ReactNode } from "react";
-import { Button, type ButtonProps } from "@/components/ui/button";
+import { useCallback, type ReactNode, type ComponentPropsWithoutRef } from "react";
+import { Button } from "@/components/ui/button";
 import { useAnalyticsSafe } from "./AnalyticsProvider";
 
-interface TrackedButtonProps extends ButtonProps {
+interface TrackedButtonProps extends ComponentPropsWithoutRef<typeof Button> {
   ctaName: string;
   location: string;
   additionalProps?: Record<string, unknown>;

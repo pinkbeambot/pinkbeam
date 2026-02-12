@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { Prisma } from '@prisma/client'
+import { Prisma, InvoiceStatus } from '@prisma/client'
 import { z } from 'zod'
 
 // GET /api/invoices - List invoices
@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     const clientId = searchParams.get('clientId')
 
     const where: Prisma.InvoiceWhereInput = {}
-    if (status) where.status = status.toUpperCase()
+    if (status) where.status = status.toUpperCase() as InvoiceStatus
     if (clientId) where.project = { clientId }
 
     const invoices = await prisma.invoice.findMany({
@@ -30,8 +30,8 @@ export async function GET(request: Request) {
 
     const data = invoices.map(({ project, ...invoice }) => ({
       ...invoice,
-      project: { id: project.id, title: project.title },
-      client: project.client,
+      project: project ? { id: project.id, title: project.title } : null,
+      client: project?.client || null,
     }))
 
     return NextResponse.json({ success: true, data })
@@ -45,12 +45,16 @@ export async function GET(request: Request) {
 }
 
 // POST /api/invoices - Create invoice
+// NOTE: This endpoint is incomplete - missing required fields (clientId, invoiceNumber, createdById, etc.)
 const createInvoiceSchema = z.object({
   projectId: z.string().min(1, 'Project ID is required'),
-  amount: z.number().min(0, 'Amount must be positive'),
-  description: z.string().min(1, 'Description is required'),
-  dueDate: z.string().datetime().optional(),
-  status: z.string().optional(),
+  clientId: z.string().min(1, 'Client ID is required'),
+  invoiceNumber: z.string().min(1, 'Invoice number is required'),
+  subtotal: z.number().min(0, 'Subtotal must be positive'),
+  total: z.number().min(0, 'Total must be positive'),
+  notes: z.string().optional(),
+  dueDate: z.string().datetime(),
+  createdById: z.string().min(1, 'Creator ID is required'),
 })
 
 export async function POST(request: Request) {
@@ -68,10 +72,14 @@ export async function POST(request: Request) {
     const invoice = await prisma.invoice.create({
       data: {
         projectId: result.data.projectId,
-        amount: result.data.amount,
-        description: result.data.description,
-        dueAt: result.data.dueDate ? new Date(result.data.dueDate) : null,
-        status: result.data.status ? result.data.status.toUpperCase() : 'PENDING',
+        clientId: result.data.clientId,
+        invoiceNumber: result.data.invoiceNumber,
+        subtotal: result.data.subtotal,
+        total: result.data.total,
+        amountDue: result.data.total,
+        notes: result.data.notes,
+        dueDate: new Date(result.data.dueDate),
+        createdById: result.data.createdById,
       },
       include: {
         project: {
@@ -89,8 +97,8 @@ export async function POST(request: Request) {
         success: true,
         data: {
           ...invoice,
-          project: { id: invoice.project.id, title: invoice.project.title },
-          client: invoice.project.client,
+          project: invoice.project ? { id: invoice.project.id, title: invoice.project.title } : null,
+          client: invoice.project?.client || null,
         },
       },
       { status: 201 }

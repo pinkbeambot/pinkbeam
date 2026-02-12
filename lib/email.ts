@@ -4,6 +4,9 @@ import {
   followUpDay1Template,
   followUpDay3Template,
   followUpDay7Template,
+  statusUpdateTemplate,
+  quoteAcceptedAdminTemplate,
+  quoteDeclinedAdminTemplate,
   invoiceNotificationTemplate,
   invoiceReceiptTemplate,
   projectStatusUpdateTemplate,
@@ -14,7 +17,6 @@ import {
   accountVerificationTemplate,
   welcomeTemplate,
   onboardingWelcomeTemplate,
-  statusUpdateTemplate,
   ticketCreatedTemplate,
   ticketAdminNotificationTemplate,
   ticketStatusUpdateTemplate,
@@ -32,6 +34,78 @@ import type {
   PasswordResetVariables,
   VerificationVariables,
 } from './email-templates'
+
+// ============================================================================
+// Configuration & Helpers
+// ============================================================================
+
+/** Get base URL for the application (used in email links) */
+function getBaseUrl(): string {
+  return process.env.NEXT_PUBLIC_APP_URL || 'https://pinkbeam.io'
+}
+
+/** Get FROM email address */
+function getFromEmail(): string {
+  return process.env.EMAIL_FROM || 'Pink Beam <notifications@pinkbeam.io>'
+}
+
+/** Get team notification email */
+function getTeamEmail(): string {
+  return process.env.QUOTE_NOTIFY_EMAIL || 'team@pinkbeam.io'
+}
+
+/** Get support notification email */
+function getSupportEmail(): string {
+  return process.env.SUPPORT_NOTIFY_EMAIL || process.env.QUOTE_NOTIFY_EMAIL || 'support@pinkbeam.io'
+}
+
+// ============================================================================
+// Error Handling & Logging
+// ============================================================================
+
+interface EmailError {
+  type: string
+  recipient: string | string[]
+  error: string
+  timestamp: Date
+  metadata?: Record<string, unknown>
+}
+
+/** Log structured email errors for observability */
+function logEmailError(error: EmailError): void {
+  console.error('[email-error]', JSON.stringify({
+    ...error,
+    timestamp: error.timestamp.toISOString(),
+  }))
+}
+
+/**
+ * Safe wrapper for email operations with structured error handling
+ * Returns { success: boolean, error?: string }
+ */
+export async function safeEmailSend(
+  fn: () => Promise<boolean>,
+  context: {
+    type: string
+    recipient: string | string[]
+    metadata?: Record<string, unknown>
+  }
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    await fn()
+    return { success: true }
+  } catch (err) {
+    const error = err instanceof Error ? err.message : String(err)
+    logEmailError({
+      type: context.type,
+      recipient: context.recipient,
+      error,
+      timestamp: new Date(),
+      metadata: context.metadata,
+    })
+    return { success: false, error }
+  }
+}
 
 // ============================================================================
 // Types
@@ -90,7 +164,7 @@ async function sendEmail(params: SendEmailParams): Promise<boolean> {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'Pink Beam <notifications@pinkbeam.ai>',
+      from: getFromEmail(),
       to: Array.isArray(params.to) ? params.to : [params.to],
       subject: params.subject,
       html: params.html,
@@ -114,11 +188,10 @@ async function sendEmail(params: SendEmailParams): Promise<boolean> {
 
 /** Send admin notification when a new quote is submitted */
 export async function sendQuoteNotification(quote: QuoteRequestData) {
-  const notifyEmail = process.env.QUOTE_NOTIFY_EMAIL || 'team@pinkbeam.ai'
   const { subject, html, text } = adminNotificationTemplate(quote)
 
   await sendEmail({
-    to: notifyEmail,
+    to: getTeamEmail(),
     subject,
     html,
     text,
@@ -138,7 +211,7 @@ export async function sendClientAutoResponse(quote: QuoteRequestData) {
     subject,
     html,
     text,
-    replyTo: process.env.QUOTE_NOTIFY_EMAIL || 'team@pinkbeam.ai',
+    replyTo: getTeamEmail(),
     tags: [
       { name: 'type', value: 'auto-response' },
       { name: 'quote_id', value: quote.id },
@@ -163,7 +236,7 @@ export async function sendFollowUpEmail(quote: QuoteRequestData, stage: number) 
     subject,
     html,
     text,
-    replyTo: process.env.QUOTE_NOTIFY_EMAIL || 'team@pinkbeam.ai',
+    replyTo: getTeamEmail(),
     tags: [
       { name: 'type', value: `follow-up-${stage}` },
       { name: 'quote_id', value: quote.id },
@@ -188,11 +261,43 @@ export async function sendStatusUpdateEmail(
     subject,
     html,
     text,
-    replyTo: process.env.QUOTE_NOTIFY_EMAIL || 'team@pinkbeam.ai',
+    replyTo: getTeamEmail(),
     tags: [
       { name: 'type', value: 'status-update' },
       { name: 'quote_id', value: quote.id },
       { name: 'status', value: newStatus },
+    ],
+  })
+}
+
+/** Send admin notification when quote is accepted - triggers onboarding */
+export async function sendQuoteAcceptedNotification(quote: QuoteRequestData) {
+  const { subject, html, text } = quoteAcceptedAdminTemplate(quote)
+
+  await sendEmail({
+    to: getTeamEmail(),
+    subject,
+    html,
+    text,
+    tags: [
+      { name: 'type', value: 'quote-accepted' },
+      { name: 'quote_id', value: quote.id },
+    ],
+  })
+}
+
+/** Send admin notification when quote is declined - for tracking */
+export async function sendQuoteDeclinedNotification(quote: QuoteRequestData) {
+  const { subject, html, text } = quoteDeclinedAdminTemplate(quote)
+
+  await sendEmail({
+    to: getTeamEmail(),
+    subject,
+    html,
+    text,
+    tags: [
+      { name: 'type', value: 'quote-declined' },
+      { name: 'quote_id', value: quote.id },
     ],
   })
 }
@@ -218,10 +323,9 @@ export async function sendTicketCreatedEmail(ticket: TicketEmailData) {
 
 /** Send admin notification for new ticket */
 export async function sendTicketAdminNotification(ticket: TicketEmailData) {
-  const notifyEmail = process.env.SUPPORT_NOTIFY_EMAIL || process.env.QUOTE_NOTIFY_EMAIL || 'team@pinkbeam.ai'
   const { subject, html, text } = ticketAdminNotificationTemplate(ticket)
   await sendEmail({
-    to: notifyEmail,
+    to: getSupportEmail(),
     subject,
     html,
     text,
@@ -664,6 +768,9 @@ interface DemoWelcomeEmailData {
 
 /** Send demo welcome email with brief link */
 export async function sendDemoWelcomeEmail(data: DemoWelcomeEmailData) {
+  const baseUrl = getBaseUrl();
+  const pricingUrl = `${baseUrl}/agents/pricing`;
+
   const subject = 'Your Competitive Intelligence Brief is Ready';
   const html = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
@@ -671,10 +778,10 @@ export async function sendDemoWelcomeEmail(data: DemoWelcomeEmailData) {
       <p>Thank you for trying our AI-powered competitive intelligence.</p>
       <p>We've analyzed <strong>${data.competitors.join(', ')}</strong> using our <strong>${data.employeeType}</strong> agent.</p>
       <a href="${data.viewBriefUrl}" style="display: inline-block; padding: 12px 24px; background: #FF006E; color: white; text-decoration: none; border-radius: 6px; margin: 16px 0;">View Your Brief</a>
-      <p style="color: #666; font-size: 14px;">This is a demo of our AI employee capabilities. For full access, <a href="https://pinkbeam.io/agents/pricing">upgrade your plan</a>.</p>
+      <p style="color: #666; font-size: 14px;">This is a demo of our AI employee capabilities. For full access, <a href="${pricingUrl}">upgrade your plan</a>.</p>
     </div>
   `;
-  const text = `Your Brief is Ready\n\nThank you for trying our AI-powered competitive intelligence.\n\nWe've analyzed ${data.competitors.join(', ')} using our ${data.employeeType} agent.\n\nView your brief: ${data.viewBriefUrl}\n\nThis is a demo of our AI employee capabilities. For full access, visit https://pinkbeam.io/agents/pricing`;
+  const text = `Your Brief is Ready\n\nThank you for trying our AI-powered competitive intelligence.\n\nWe've analyzed ${data.competitors.join(', ')} using our ${data.employeeType} agent.\n\nView your brief: ${data.viewBriefUrl}\n\nThis is a demo of our AI employee capabilities. For full access, visit ${pricingUrl}`;
 
   await sendEmail({
     to: data.email,
@@ -703,8 +810,11 @@ interface ResourceDownloadEmailData {
 
 /** Send resource download email with access link */
 export async function sendResourceDownloadEmail(data: ResourceDownloadEmailData) {
+  const baseUrl = getBaseUrl();
+  const contactUrl = `${baseUrl}/contact`;
+
   const subject = `Your Download: ${data.resourceTitle}`;
-  
+
   const html = `
     <!DOCTYPE html>
     <html>
@@ -732,27 +842,27 @@ export async function sendResourceDownloadEmail(data: ResourceDownloadEmailData)
                   <p style="font-size: 15px; line-height: 1.6; color: #444; margin: 0 0 24px 0;">
                     Thank you for downloading <strong>${data.resourceTitle}</strong>. Your resource is ready and waiting for you.
                   </p>
-                  
+
                   <div style="background: #f0fdfa; border: 1px solid #ccfbf1; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
                     <h2 style="margin: 0 0 12px 0; font-size: 16px; color: #0e7490;">${data.resourceTitle}</h2>
                     <p style="margin: 0 0 8px 0; font-size: 14px; color: #666;">Type: ${data.resourceType}</p>
                     <p style="margin: 0 0 16px 0; font-size: 14px; color: #666;">Format: ${data.fileFormat}</p>
                     <a href="${data.downloadUrl}" style="display: inline-block; background: #06b6d4; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">Download Now</a>
                   </div>
-                  
+
                   <p style="font-size: 14px; line-height: 1.6; color: #666; margin: 0 0 16px 0;">
                     If the button doesn't work, copy and paste this link into your browser:
                   </p>
                   <p style="font-size: 13px; line-height: 1.6; color: #06b6d4; word-break: break-all; margin: 0 0 24px 0;">
                     ${data.downloadUrl}
                   </p>
-                  
+
                   <p style="font-size: 14px; line-height: 1.6; color: #444; margin: 0 0 8px 0;">
                     <strong>Need help implementing this?</strong>
                   </p>
                   <p style="font-size: 14px; line-height: 1.6; color: #666; margin: 0 0 16px 0;">
-                    Our team is here to help you put these insights into action. Reply to this email or 
-                    <a href="https://pinkbeam.io/solutions/contact" style="color: #06b6d4; text-decoration: none;">schedule a consultation</a>.
+                    Our team is here to help you put these insights into action. Reply to this email or
+                    <a href="${contactUrl}" style="color: #06b6d4; text-decoration: none;">schedule a consultation</a>.
                   </p>
                 </td>
               </tr>
@@ -771,8 +881,8 @@ export async function sendResourceDownloadEmail(data: ResourceDownloadEmailData)
     </body>
     </html>
   `;
-  
-  const text = `Your Download is Ready\n\nHi ${data.name},\n\nThank you for downloading ${data.resourceTitle}. Your resource is ready and waiting for you.\n\nResource: ${data.resourceTitle}\nType: ${data.resourceType}\nFormat: ${data.fileFormat}\n\nDownload: ${data.downloadUrl}\n\nNeed help implementing this? Our team is here to help you put these insights into action. Reply to this email or visit https://pinkbeam.io/solutions/contact to schedule a consultation.\n\nPink Beam Solutions — AI Strategy & Digital Transformation`;
+
+  const text = `Your Download is Ready\n\nHi ${data.name},\n\nThank you for downloading ${data.resourceTitle}. Your resource is ready and waiting for you.\n\nResource: ${data.resourceTitle}\nType: ${data.resourceType}\nFormat: ${data.fileFormat}\n\nDownload: ${data.downloadUrl}\n\nNeed help implementing this? Our team is here to help you put these insights into action. Reply to this email or visit ${contactUrl} to schedule a consultation.\n\nPink Beam Solutions — AI Strategy & Digital Transformation`;
 
   await sendEmail({
     to: data.email,

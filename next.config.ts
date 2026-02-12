@@ -115,19 +115,81 @@ const nextConfig: NextConfig = {
         destination: '/solutions',
         permanent: true,
       },
+      // Redirect old /resources/ URLs to /solutions/resources/
       {
-        source: '/solutions/resources/calculators',
-        destination: '/solutions',
+        source: '/resources/ai-readiness-score',
+        destination: '/solutions/resources/ai-readiness-score',
         permanent: true,
       },
       {
-        source: '/solutions/resources/:slug',
-        destination: '/solutions',
+        source: '/resources/automation-roi-calculator',
+        destination: '/solutions/resources/automation-roi-calculator',
         permanent: true,
       },
       {
         source: '/solutions/services/process-automation',
         destination: '/solutions/services/technology-architecture',
+        permanent: true,
+      },
+      // Legacy dashboard → Portal redirects
+      {
+        source: '/dashboard',
+        destination: '/portal',
+        permanent: true,
+      },
+      {
+        source: '/dashboard/:path*',
+        destination: '/portal/:path*',
+        permanent: true,
+      },
+      {
+        source: '/agents/dashboard',
+        destination: '/portal/agents',
+        permanent: true,
+      },
+      {
+        source: '/agents/dashboard/:path*',
+        destination: '/portal/agents/:path*',
+        permanent: true,
+      },
+      {
+        source: '/web/admin',
+        destination: '/portal/admin/web',
+        permanent: true,
+      },
+      {
+        source: '/web/admin/:path*',
+        destination: '/portal/admin/web/:path*',
+        permanent: true,
+      },
+      {
+        source: '/web/portal',
+        destination: '/portal',
+        permanent: true,
+      },
+      {
+        source: '/web/portal/:path*',
+        destination: '/portal/:path*',
+        permanent: true,
+      },
+      {
+        source: '/labs/dashboard',
+        destination: '/portal/admin/labs',
+        permanent: true,
+      },
+      {
+        source: '/labs/dashboard/:path*',
+        destination: '/portal/admin/labs/:path*',
+        permanent: true,
+      },
+      {
+        source: '/solutions/dashboard',
+        destination: '/portal/admin/solutions',
+        permanent: true,
+      },
+      {
+        source: '/solutions/dashboard/:path*',
+        destination: '/portal/admin/solutions/:path*',
         permanent: true,
       },
     ];

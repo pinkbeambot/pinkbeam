@@ -1,14 +1,13 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { withAuth } from '@/lib/auth/apiMiddleware'
 import { prisma } from '@/lib/prisma'
 import { getOnboardingStatus } from '@/lib/onboarding'
 import type { OnboardingStep } from '@/lib/onboarding'
 
 // GET /api/onboarding - Get current onboarding status
-export async function GET() {
+export const GET = withAuth(async (request: NextRequest, { auth }) => {
   try {
-    // In production, this would get the user from the auth session
-    // For now, we return mock data or look up by email header
-    const userId = 'user-1' // TODO: Get from auth session
+    const userId = auth.userId
 
     const status = await getOnboardingStatus(userId)
 
@@ -23,10 +22,10 @@ export async function GET() {
       { status: 500 }
     )
   }
-}
+})
 
 // POST /api/onboarding/step - Update current step
-export async function POST(request: Request) {
+export const POST = withAuth(async (request: NextRequest, { auth }) => {
   try {
     const body = await request.json()
     const { step } = body as { step: OnboardingStep }
@@ -38,7 +37,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const userId = 'user-1' // TODO: Get from auth session
+    const userId = auth.userId
 
     await prisma.user.update({
       where: { id: userId },
@@ -59,4 +58,4 @@ export async function POST(request: Request) {
       { status: 500 }
     )
   }
-}
+})

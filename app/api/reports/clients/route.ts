@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     const clientMetrics = clients.map(client => {
       const totalRevenue = client.projects.reduce((sum, project) => 
         sum + project.invoices.reduce((invSum, inv) => 
-          inv.status === 'PAID' ? invSum + Number(inv.amount) : invSum, 0
+          inv.status === 'PAID' ? invSum + Number(inv.total) : invSum, 0
         ), 0
       )
 

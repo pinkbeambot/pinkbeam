@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { startOfMonth, endOfMonth, subMonths, format, parseISO } from 'date-fns'
+import { withAdmin } from '@/lib/auth/apiMiddleware'
 
-export async function GET(request: NextRequest) {
+// GET /api/reports/revenue - Revenue analytics (ADMIN ONLY)
+export const GET = withAdmin(async (request: NextRequest, { auth }) => {
   try {
     const { searchParams } = new URL(request.url)
     const startDate = searchParams.get('startDate')
@@ -15,7 +17,7 @@ export async function GET(request: NextRequest) {
     // Get all invoices in date range with project info
     const invoices = await prisma.invoice.findMany({
       where: {
-        issuedAt: {
+        issueDate: {
           gte: start,
           lte: end,
         },
@@ -24,7 +26,7 @@ export async function GET(request: NextRequest) {
         project: true,
       },
       orderBy: {
-        issuedAt: 'asc',
+        issueDate: 'asc',
       },
     })
 
@@ -35,7 +37,7 @@ export async function GET(request: NextRequest) {
 
     const currentMonthInvoices = await prisma.invoice.findMany({
       where: {
-        issuedAt: {
+        issueDate: {
           gte: currentMonthStart,
           lte: currentMonthEnd,
         },
@@ -44,14 +46,14 @@ export async function GET(request: NextRequest) {
     })
 
     const mrr = currentMonthInvoices.reduce((sum, inv) => 
-      sum + Number(inv.amount), 0
+      sum + Number(inv.total), 0
     )
 
     // Calculate ARR (Annual Recurring Revenue)
     const last12MonthsStart = subMonths(now, 12)
     const last12MonthsInvoices = await prisma.invoice.findMany({
       where: {
-        issuedAt: {
+        issueDate: {
           gte: last12MonthsStart,
           lte: now,
         },
@@ -60,7 +62,7 @@ export async function GET(request: NextRequest) {
     })
 
     const arr = last12MonthsInvoices.reduce((sum, inv) => 
-      sum + Number(inv.amount), 0
+      sum + Number(inv.total), 0
     )
 
     // Revenue by month (trend)
@@ -78,9 +80,9 @@ export async function GET(request: NextRequest) {
     }
 
     invoices.forEach((invoice) => {
-      const monthKey = format(invoice.issuedAt, 'yyyy-MM')
+      const monthKey = format(invoice.issueDate, 'yyyy-MM')
       if (monthlyRevenue[monthKey]) {
-        const amount = Number(invoice.amount)
+        const amount = Number(invoice.total)
         monthlyRevenue[monthKey].revenue += amount
         if (invoice.status === 'PAID') {
           monthlyRevenue[monthKey].paid += amount
@@ -93,7 +95,7 @@ export async function GET(request: NextRequest) {
     // Revenue by service type (from project services array)
     const serviceRevenue: Record<string, number> = {}
     invoices.forEach((invoice) => {
-      const amount = Number(invoice.amount)
+      const amount = Number(invoice.total)
       const services = (invoice.project?.services as string[]) || []
       services.forEach((service: string) => {
         serviceRevenue[service] = (serviceRevenue[service] || 0) + amount
@@ -103,8 +105,8 @@ export async function GET(request: NextRequest) {
     // Outstanding invoices
     const outstandingInvoices = await prisma.invoice.findMany({
       where: {
-        status: 'PENDING',
-        issuedAt: {
+        status: { in: ['SENT', 'VIEWED', 'OVERDUE'] },
+        issueDate: {
           gte: subMonths(now, 6),
         },
       },
@@ -121,13 +123,13 @@ export async function GET(request: NextRequest) {
         },
       },
       orderBy: {
-        issuedAt: 'desc',
+        issueDate: 'desc',
       },
       take: 10,
     })
 
     const totalOutstanding = outstandingInvoices.reduce((sum, inv) => 
-      sum + Number(inv.amount), 0
+      sum + Number(inv.total), 0
     )
 
     // Simple revenue forecast (3 month projection based on average)
@@ -152,10 +154,10 @@ export async function GET(request: NextRequest) {
         })),
         outstandingInvoices: outstandingInvoices.map(inv => ({
           id: inv.id,
-          amount: Number(inv.amount),
-          description: inv.description,
-          issuedAt: inv.issuedAt,
-          dueAt: inv.dueAt,
+          amount: Number(inv.total),
+          notes: inv.notes,
+          issueDate: inv.issueDate,
+          dueDate: inv.dueDate,
           clientName: inv.project?.client?.name || 'Unknown',
           clientCompany: inv.project?.client?.company,
         })),
@@ -169,4 +171,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})

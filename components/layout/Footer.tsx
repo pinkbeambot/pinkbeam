@@ -196,8 +196,8 @@ export function Footer() {
     resources: {
       title: "Resources",
       links: [
-        { label: "AI Readiness", href: "/resources/ai-readiness-score" },
-        { label: "ROI Calculator", href: "/resources/automation-roi-calculator" },
+        { label: "AI Readiness", href: "/solutions/resources/ai-readiness-score" },
+        { label: "ROI Calculator", href: "/solutions/resources/automation-roi-calculator" },
       ],
     },
     company: {
@@ -205,6 +205,14 @@ export function Footer() {
       links: [
         { label: "About", href: "/about" },
         { label: "Contact", href: "/contact" },
+      ],
+    },
+    legal: {
+      title: "Legal",
+      links: [
+        { label: "Privacy Policy", href: "/privacy" },
+        { label: "Terms of Service", href: "/terms" },
+        { label: "Cookie Policy", href: "/cookies" },
       ],
     },
   };
@@ -224,7 +232,7 @@ export function Footer() {
             </div>
 
             {/* Links Grid */}
-            <div className="lg:col-span-4 grid grid-cols-2 sm:grid-cols-4 gap-6 lg:gap-8">
+            <div className="lg:col-span-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 lg:gap-8">
               <FooterColumn
                 title={footerLinks.services.title}
                 links={footerLinks.services.links}
@@ -243,6 +251,11 @@ export function Footer() {
               <FooterColumn
                 title={footerLinks.company.title}
                 links={footerLinks.company.links}
+                hoverColor={linkHoverColor}
+              />
+              <FooterColumn
+                title={footerLinks.legal.title}
+                links={footerLinks.legal.links}
                 hoverColor={linkHoverColor}
               />
             </div>

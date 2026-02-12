@@ -288,7 +288,7 @@ export function AIReadinessScoreClient() {
                     Retake Assessment
                   </Button>
                   <Button className="bg-amber-500 hover:bg-amber-600 gap-2" asChild>
-                    <Link href="/solutions/contact">
+                    <Link href="/contact">
                       Schedule a Consultation
                       <ChevronRight className="w-4 h-4" />
                     </Link>

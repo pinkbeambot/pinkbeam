@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -14,9 +14,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowRight, Check, Calculator, HelpCircle, ChevronDown, DollarSign } from "lucide-react";
+import { ArrowRight, Check, Calculator, HelpCircle, DollarSign, Mail } from "lucide-react";
 import { FadeIn, FadeInOnMount } from "@/components/animations";
+import { CompactHero } from "@/components/sections/CompactHero";
 import { WebROICalculator } from "@/components/web/sections/WebROICalculator";
+import { FeatureComparisonTable } from "@/components/pricing/FeatureComparisonTable";
+import { PricingFAQ } from "@/components/pricing/PricingFAQ";
+import type { FeatureComparison } from "@/components/pricing/FeatureComparisonTable";
+import type { FAQItem } from "@/components/pricing/PricingFAQ";
 
 // Calculator types
 type ProjectType = "landing" | "starter" | "business" | "ecommerce" | "custom";
@@ -110,7 +115,95 @@ function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
-const faqs = [
+// Feature comparison for website types
+const featureComparisons: FeatureComparison[] = [
+  {
+    feature: "Number of Pages",
+    essential: "1 page",
+    growth: "5-10 pages",
+    scale: "Unlimited",
+    tooltip: "Total number of unique pages on your website",
+  },
+  {
+    feature: "Custom Design",
+    essential: "Template-based",
+    growth: "Semi-custom",
+    scale: "Fully custom",
+    tooltip: "Level of design customization and uniqueness",
+  },
+  {
+    feature: "Content Management",
+    essential: false,
+    growth: true,
+    scale: true,
+    tooltip: "Ability to edit content yourself without developer help",
+  },
+  {
+    feature: "SEO Setup",
+    essential: "Basic",
+    growth: "Standard",
+    scale: "Advanced",
+    tooltip: "On-page SEO, meta tags, sitemap, and optimization",
+  },
+  {
+    feature: "Mobile Responsive",
+    essential: true,
+    growth: true,
+    scale: true,
+    tooltip: "Website adapts to all screen sizes",
+  },
+  {
+    feature: "Contact Forms",
+    essential: "1 form",
+    growth: "3 forms",
+    scale: "Unlimited",
+    tooltip: "Number of custom contact/lead forms",
+  },
+  {
+    feature: "E-commerce",
+    essential: false,
+    growth: "Basic",
+    scale: "Advanced",
+    tooltip: "Online store with payment processing",
+  },
+  {
+    feature: "Analytics Integration",
+    essential: true,
+    growth: true,
+    scale: true,
+    tooltip: "Google Analytics and conversion tracking",
+  },
+  {
+    feature: "Performance Optimization",
+    essential: "Standard",
+    growth: "Advanced",
+    scale: "Enterprise",
+    tooltip: "Page speed and loading time optimization",
+  },
+  {
+    feature: "Security Features",
+    essential: "SSL only",
+    growth: "SSL + Basic",
+    scale: "Enterprise grade",
+    tooltip: "Website security, SSL certificates, and protection",
+  },
+  {
+    feature: "Custom Animations",
+    essential: false,
+    growth: "Basic",
+    scale: "Advanced",
+    tooltip: "Interactive animations and transitions",
+  },
+  {
+    feature: "Third-party Integrations",
+    essential: "2 included",
+    growth: "5 included",
+    scale: "Unlimited",
+    tooltip: "CRM, email marketing, and other tool integrations",
+  },
+];
+
+const faqs: FAQItem[] = [
   {
     question: "How accurate is the calculator?",
     answer: "The calculator provides a realistic range based on typical projects. Final pricing depends on specific requirements, design complexity, and timeline. Contact us for an exact quote.",
@@ -126,6 +219,14 @@ const faqs = [
   {
     question: "What if my project doesn't fit these categories?",
     answer: "Every project is unique. Use the 'Custom Project' option for a rough estimate, or contact us directly. We'll provide a detailed proposal after understanding your specific needs.",
+  },
+  {
+    question: "How long does a typical project take?",
+    answer: "Landing pages take 1-2 weeks, starter websites take 3-4 weeks, business websites take 6-8 weeks, and e-commerce sites take 8-12 weeks. Rush timelines available for +25%.",
+  },
+  {
+    question: "Do you provide hosting?",
+    answer: "We can set up hosting for you on your preferred provider (Vercel, Netlify, AWS, etc.). Hosting costs are separate and typically range from $10-100/month depending on your needs.",
   },
 ];
 
@@ -180,6 +281,7 @@ const maintenancePlans = [
 export function PricingPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const isInitialMount = useRef(true);
 
   // Initialize state from URL or defaults
   const [state, setState] = useState<CalculatorState>({
@@ -191,8 +293,14 @@ export function PricingPageClient() {
     isRush: searchParams.get("rush") === "true",
   });
 
-  // Update URL when state changes
+  // Update URL when state changes (but not on initial mount)
   useEffect(() => {
+    // Skip URL update on initial mount
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
     const params = new URLSearchParams();
     params.set("type", state.projectType);
     params.set("pages", state.pageCount.toString());
@@ -212,71 +320,28 @@ export function PricingPageClient() {
 
   return (
     <main className="min-h-screen">
-      {/* Hero Section - Full screen with violet theme */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-void">
-        {/* Violet Background Effects */}
-        <div className="absolute inset-0 bg-gradient-to-b from-violet-500/10 via-transparent to-transparent pointer-events-none" />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] bg-violet-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-violet-500/5 rounded-full blur-3xl pointer-events-none" />
-
-        {/* Animated Grid Background */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.03)_1px,transparent_1px)] bg-[size:60px_60px] pointer-events-none" />
-
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-32 md:py-40">
-          <div className="text-center max-w-4xl mx-auto">
-            {/* Badge */}
-            <FadeInOnMount delay={0}>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 mb-8">
-                <DollarSign className="w-4 h-4 text-violet-400" />
-                <span className="text-sm font-medium text-violet-400">
-                  Transparent Pricing
-                </span>
-              </div>
-            </FadeInOnMount>
-
-            {/* Main Headline */}
-            <FadeInOnMount delay={0.1}>
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold mb-6 text-white tracking-tight">
-                Simple{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-violet-300">
-                  Pricing
-                </span>
-              </h1>
-            </FadeInOnMount>
-
-            {/* Subheadline */}
-            <FadeInOnMount delay={0.2}>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-                Get an instant estimate with our project calculator. No hidden fees, 
-                no surprises—just transparent pricing for your web project.
-              </p>
-            </FadeInOnMount>
-
-            {/* CTA Buttons */}
-            <FadeInOnMount delay={0.3}>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-violet-500 to-violet-600 hover:opacity-90 shadow-lg shadow-violet-500/25" asChild>
-                  <Link href="#calculator">
-                    Calculate Your Project
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Link>
-                </Button>
-                <Link href="#maintenance" className="w-full sm:w-auto">
-                  <Button size="lg" variant="outline" className="w-full border-violet-500/30 hover:bg-violet-500/10">
-                    View Maintenance Plans
-                  </Button>
-                </Link>
-              </div>
-            </FadeInOnMount>
-          </div>
+      {/* Compact Hero Section */}
+      <CompactHero
+        icon={Calculator}
+        title="Simple Pricing"
+        highlightText="Pricing"
+        subtitle="Get an instant estimate with our project calculator. No hidden fees, no surprises—just transparent pricing for your web project."
+        accentColor="violet-500"
+      >
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-violet-500 to-violet-600 hover:opacity-90 shadow-lg shadow-violet-500/25" asChild>
+            <Link href="#calculator">
+              Calculate Your Project
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Link>
+          </Button>
+          <Link href="#maintenance" className="w-full sm:w-auto">
+            <Button size="lg" variant="outline" className="w-full border-violet-500/30 hover:bg-violet-500/10">
+              View Maintenance Plans
+            </Button>
+          </Link>
         </div>
-
-        {/* Scroll Indicator - CSS only */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground">
-          <span className="text-xs uppercase tracking-wider">Scroll</span>
-          <ChevronDown className="w-5 h-5 text-violet-400 animate-bounce" />
-        </div>
-      </section>
+      </CompactHero>
 
       {/* Calculator Section */}
       <section id="calculator" className="py-20 lg:py-32 bg-background">
@@ -437,6 +502,31 @@ export function PricingPageClient() {
       {/* ROI Calculator */}
       <WebROICalculator />
 
+      {/* Feature Comparison */}
+      <section className="py-20 lg:py-32 border-t">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <FadeIn className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Compare Website Features
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Understand what's included at each tier
+            </p>
+          </FadeIn>
+
+          <FadeIn delay={0.1}>
+            <div className="max-w-5xl mx-auto">
+              <FeatureComparisonTable
+                features={featureComparisons}
+                tiers={["Essential", "Growth", "Scale"]}
+                popularTier="Growth"
+                accentColor="violet"
+              />
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
       {/* Maintenance Plans */}
       <section id="maintenance" className="py-20 lg:py-32 border-t bg-muted/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -498,45 +588,55 @@ export function PricingPageClient() {
       <section className="py-20 lg:py-32 border-t">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="text-center mb-16">
-            <HelpCircle className="w-12 h-12 text-violet-500 mx-auto mb-4" />
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-violet-500/10 mb-6">
+              <HelpCircle className="w-7 h-7 text-violet-500" />
+            </div>
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Pricing Questions
+              Pricing FAQ
             </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Common questions about our pricing and services
+            </p>
           </FadeIn>
 
-          <div className="max-w-3xl mx-auto space-y-6">
-            {faqs.map((faq, index) => (
-              <FadeIn key={index} delay={index * 0.1}>
-                <div className="p-6 rounded-xl border bg-card">
-                  <h3 className="font-bold mb-2">{faq.question}</h3>
-                  <p className="text-sm text-muted-foreground">{faq.answer}</p>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
+          <FadeIn delay={0.1}>
+            <div className="max-w-3xl mx-auto">
+              <PricingFAQ items={faqs} accentColor="violet" />
+            </div>
+          </FadeIn>
         </div>
       </section>
 
-      {/* CTA */}
+      {/* Final CTA */}
       <section className="py-20 lg:py-32 border-t bg-muted/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <FadeIn className="text-center" direction="up">
+          <FadeIn className="text-center max-w-3xl mx-auto">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-violet-500/10 mb-6">
+              <Mail className="w-7 h-7 text-violet-500" />
+            </div>
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
               Ready to get started?
             </h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-              Let's discuss your project and create a custom proposal.
+            <p className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto">
+              Let's discuss your project and create a custom proposal that fits your needs and budget.
             </p>
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-violet-500 to-violet-600"
-              asChild
-            >
-              <Link href="/contact">
-                Schedule a Call
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Link>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-violet-500 to-violet-600 hover:opacity-90 shadow-lg shadow-violet-500/25"
+                asChild
+              >
+                <Link href="/contact">
+                  Schedule a Call
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" className="border-violet-500/30 hover:bg-violet-500/10" asChild>
+                <Link href="mailto:web@pinkbeam.io">
+                  Email Us
+                </Link>
+              </Button>
+            </div>
           </FadeIn>
         </div>
       </section>

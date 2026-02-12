@@ -20,7 +20,7 @@ export default function AuthCallbackPage() {
       // Check for auth code in URL
       const searchParams = new URLSearchParams(window.location.search)
       const code = searchParams.get('code')
-      const next = searchParams.get('next') ?? '/agents/dashboard'
+      const next = searchParams.get('next') ?? '/portal'
 
       if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code)
@@ -34,7 +34,7 @@ export default function AuthCallbackPage() {
         // No code in URL, check if already logged in
         const { data: { user } } = await supabase.auth.getUser()
         if (user) {
-          router.push('/agents/dashboard')
+          router.push('/portal')
         } else {
           setError('No authentication code found')
         }

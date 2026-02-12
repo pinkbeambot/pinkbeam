@@ -308,7 +308,7 @@ export function TechnologyArchitectureClient() {
           </>
         }
         description="Future-proof your technology foundation. We design scalable, secure architectures that support growth, enable innovation, and transform technical debt into competitive advantage."
-        primaryCta={{ text: "Book Discovery Call", href: "/solutions/contact" }}
+        primaryCta={{ text: "Book Discovery Call", href: "/contact" }}
         secondaryCta={{ text: "View Architecture Guide", href: "#assessment" }}
       />
 
@@ -499,7 +499,7 @@ export function TechnologyArchitectureClient() {
         timeline={timeline}
         priceRange="$30,000"
         ctaText="Start Architecture Assessment"
-        ctaHref="/solutions/contact"
+        ctaHref="/contact"
       />
 
       {/* FAQ */}
@@ -516,7 +516,7 @@ export function TechnologyArchitectureClient() {
         title="Ready to Modernize Your Architecture?"
         description="Let's assess your current technology landscape and design a future-proof architecture. Schedule a free discovery call to explore your modernization opportunities."
         buttonText="Book Architecture Review"
-        buttonHref="/solutions/contact"
+        buttonHref="/contact"
       />
     </main>
   );

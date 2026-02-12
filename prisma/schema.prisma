@@ -1,6 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -37,6 +36,7 @@ model User {
   timeEntries         TimeEntry[]
   workloadEntries     WorkloadEntry[]
   capacityConfig      UserCapacity?
+  subscriptions       Subscription[]
   searchVector        String?         @map("search_vector")
 
   @@index([searchVector(ops: raw("gin_trgm_ops"))], type: Gin)
@@ -64,12 +64,18 @@ model Project {
   files        File[]
   members      ProjectMember[]
   milestones   ProjectMilestone[]
+  updates      ProjectUpdate[]
   tasks        Task[]
   timeEntries  TimeEntry[]
   sprints      Sprint[]
   workloadEntries WorkloadEntry[]
   searchVector String?       @map("search_vector")
 
+  @@index([clientId])
+  @@index([status])
+  @@index([clientId, status])
+  @@index([deadline])
+  @@index([createdAt])
   @@index([searchVector(ops: raw("gin_trgm_ops"))], type: Gin)
   @@map("projects")
 }
@@ -106,6 +112,35 @@ model ProjectMilestone {
   @@map("project_milestones")
 }
 
+enum ProjectUpdateType {
+  STATUS_CHANGE
+  MILESTONE
+  DELIVERABLE
+  NOTE
+  BLOCKER
+}
+
+model ProjectUpdate {
+  id            String            @id @default(cuid())
+  projectId     String
+  authorId      String
+  type          ProjectUpdateType @default(NOTE)
+  title         String
+  body          String?
+  visible       Boolean           @default(true) // client-visible or internal-only
+  readBy        String[]          @default([]) // User IDs who have read this update
+  attachments   Json?             // File references {id, name, url}[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  project       Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, createdAt])
+  @@index([visible])
+  @@map("project_updates")
+}
+
 model Quote {
   id          String      @id @default(cuid())
   quoteNumber String      @unique
@@ -133,6 +168,10 @@ model Quote {
   client      User        @relation(fields: [clientId], references: [id])
   lineItems   QuoteLineItem[]
 
+  @@index([clientId])
+  @@index([status])
+  @@index([clientId, status])
+  @@index([createdAt])
   @@map("quotes")
 }
 
@@ -187,6 +226,11 @@ model Invoice {
   payments      Payment[]
   files         File[]
 
+  @@index([clientId])
+  @@index([status])
+  @@index([clientId, status])
+  @@index([dueDate])
+  @@index([createdAt])
   @@map("invoices")
 }
 
@@ -205,16 +249,20 @@ model InvoiceLineItem {
 }
 
 model Payment {
-  id            String   @id @default(cuid())
-  invoiceId     String
-  amount        Decimal  @db.Decimal(10, 2)
-  method        String   // cash, check, transfer
-  reference     String?
-  notes         String?
-  paidAt        DateTime @default(now())
-  recordedById  String
+  id                    String   @id @default(cuid())
+  invoiceId             String
+  amount                Decimal  @db.Decimal(10, 2)
+  method                String   // cash, check, transfer, stripe
+  reference             String?
+  notes                 String?
+  paidAt                DateTime @default(now())
+  recordedById          String
 
-  invoice       Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  // Stripe integration
+  stripePaymentIntentId String?  @unique
+  stripeInvoiceId       String?
+
+  invoice               Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 
   @@map("payments")
 }
@@ -675,6 +723,7 @@ model WebhookEvent {
   @@index([source, eventType])
   @@index([processed])
   @@index([createdAt])
+  @@index([source, processed, createdAt])
   @@map("webhook_events")
 }
 
@@ -793,9 +842,340 @@ model UserCapacity {
   workDays        String[] @default(["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"])
   effectiveFrom   DateTime @default(now())
   effectiveTo     DateTime?
-  
+
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@index([userId])
   @@map("user_capacities")
+}
+
+// Subscription & Billing Models
+
+enum PlanServiceType {
+  AGENTS
+  WEB
+  LABS
+  SOLUTIONS
+}
+
+enum PlanTier {
+  STARTER
+  GROWTH
+  SCALE
+  ENTERPRISE
+  CUSTOM
+}
+
+model Plan {
+  id                    String          @id @default(cuid())
+  name                  String
+  slug                  String          @unique
+  serviceType           PlanServiceType
+  tier                  PlanTier
+  priceMonthly          Decimal         @db.Decimal(10, 2)
+  priceAnnual           Decimal         @db.Decimal(10, 2)
+  features              Json            // Feature list
+  limits                Json            // Usage limits (interactions/month, projects, etc.)
+  stripeProductId       String?         @unique
+  stripePriceIdMonthly  String?         @unique
+  stripePriceIdAnnual   String?         @unique
+  active                Boolean         @default(true)
+  displayOrder          Int             @default(0)
+  description           String?
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  subscriptions         Subscription[]
+
+  @@index([serviceType])
+  @@index([active])
+  @@index([serviceType, active])
+  @@map("plans")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  PAUSED
+  CANCELED
+  TRIALING
+  INCOMPLETE
+}
+
+enum PaymentStatus {
+  ACTIVE
+  PAST_DUE
+  PAUSED
+  CANCELED
+}
+
+model Subscription {
+  id                    String              @id @default(cuid())
+  userId                String
+  planId                String
+  status                SubscriptionStatus  @default(ACTIVE)
+  billingCycle          String              @default("monthly") // "monthly" | "annual"
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  cancelAtPeriodEnd     Boolean             @default(false)
+  canceledAt            DateTime?
+  trialStart            DateTime?
+  trialEnd              DateTime?
+
+  // Stripe integration
+  stripeCustomerId      String?
+  stripeSubscriptionId  String?             @unique
+  stripePriceId         String?
+
+  // Payment recovery & dunning (PROD-043)
+  paymentStatus         PaymentStatus       @default(ACTIVE)
+  failedAt              DateTime?
+  gracePeriodEnds       DateTime?
+  pausedAt              DateTime?
+  lastDunningEmail      DateTime?
+  dunningEmailCount     Int                 @default(0)
+
+  metadata              Json?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  user                  User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan                  Plan                @relation(fields: [planId], references: [id])
+  agentAssignments      AgentAssignment[]
+  usageRecords          UsageRecord[]
+  aiUsage               AIUsage[]
+
+  @@index([userId])
+  @@index([planId])
+  @@index([stripeCustomerId])
+  @@index([stripeSubscriptionId])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([userId, status])
+  @@index([status, currentPeriodEnd])
+  @@map("subscriptions")
+}
+
+enum AgentType {
+  SDR           // Mike - Sales Development
+  RESEARCHER    // Sarah - Research
+  SUPPORT       // Alex - Customer Support
+  CONTENT       // Casey - Content Creation
+  DESIGNER      // LUMEN - Design
+  VIDEO         // FLUX - Video Production
+}
+
+model AgentAssignment {
+  id              String    @id @default(cuid())
+  subscriptionId  String
+  userId          String
+  agentType       AgentType
+  agentName       String    // "Mike", "Sarah", "Alex", "Casey", "LUMEN", "FLUX"
+  active          Boolean   @default(true)
+  configuredAt    DateTime  @default(now())
+  customConfig    Json?     // Brand voice, target audience, etc.
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  subscription    Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  usageRecords    UsageRecord[]
+  aiUsage         AIUsage[]
+
+  @@unique([subscriptionId, agentType])
+  @@index([userId])
+  @@index([subscriptionId])
+  @@index([active])
+  @@map("agent_assignments")
+}
+
+model UsageRecord {
+  id                String    @id @default(cuid())
+  subscriptionId    String
+  agentAssignmentId String?
+  period            String    // "2024-01" (YYYY-MM)
+  interactionCount  Int       @default(0)
+  tokenUsage        Int       @default(0)
+  apiCost           Decimal   @default(0) @db.Decimal(10, 6)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  subscription      Subscription     @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  agentAssignment   AgentAssignment? @relation(fields: [agentAssignmentId], references: [id], onDelete: SetNull)
+
+  @@unique([subscriptionId, period])
+  @@index([subscriptionId])
+  @@index([agentAssignmentId])
+  @@index([period])
+  @@map("usage_records")
+}
+
+// AI Cost Control & Monitoring (PROD-042)
+enum AIModel {
+  HAIKU
+  SONNET
+  OPUS
+}
+
+model AIUsage {
+  id              String       @id @default(cuid())
+  userId          String
+  subscriptionId  String?
+  agentAssignmentId String?
+  employeeType    String       // AgentType as string for flexibility
+  model           AIModel
+  inputTokens     Int
+  outputTokens    Int
+  costUSD         Decimal      @db.Decimal(10, 6)
+  conversationId  String?
+  taskType        String?
+  requestData     Json?        // Store request metadata
+  createdAt       DateTime     @default(now())
+
+  subscription    Subscription?    @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  agentAssignment AgentAssignment? @relation(fields: [agentAssignmentId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([subscriptionId])
+  @@index([agentAssignmentId])
+  @@index([createdAt])
+  @@index([userId, createdAt])
+  @@index([subscriptionId, createdAt])
+  @@map("ai_usage")
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+  PROCESSING
+}
+
+model OneTimeOrder {
+  id                    String      @id @default(cuid())
+  userId                String
+  serviceType           PlanServiceType
+  projectType           String?     // "landing_page", "web_app", "mvp", etc.
+  description           String?
+  priceQuoted           Decimal     @db.Decimal(10, 2)
+  pricePaid             Decimal?    @db.Decimal(10, 2)
+  currency              String      @default("usd")
+
+  // Stripe integration
+  stripePaymentIntentId String?     @unique
+  stripeInvoiceId       String?
+
+  status                OrderStatus @default(PENDING)
+  metadata              Json?
+  paidAt                DateTime?
+  refundedAt            DateTime?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([serviceType])
+  @@index([stripePaymentIntentId])
+  @@index([createdAt])
+  @@map("one_time_orders")
+}
+
+// Real-Time Messaging (PROD-020)
+enum ConversationType {
+  VALIS_CHAT        // Client chatting with VALIS (AI personality)
+  AGENT_CHAT        // Client delegating to AI employee
+  ADMIN_CHAT        // Admin-to-client communication
+  SUPPORT_TICKET    // Support ticket conversation
+}
+
+enum MessageSenderType {
+  USER              // Human user (client or admin)
+  VALIS             // VALIS AI personality
+  AGENT             // AI Employee
+  ADMIN             // Human admin
+  SYSTEM            // System-generated messages
+}
+
+enum MessageContentType {
+  TEXT              // Plain text message
+  FILE              // File attachment
+  IMAGE             // Image attachment
+  TASK_RESULT       // AI employee task result
+  TASK_ASSIGNMENT   // Task assignment notification
+}
+
+model Conversation {
+  id              String             @id @default(cuid())
+  userId          String             // Primary user (client) in the conversation
+  type            ConversationType
+  title           String?
+  participants    String[]           // Array of user IDs participating
+  lastMessageAt   DateTime?
+  unreadCount     Int                @default(0)
+  metadata        Json?              // Store agentType, ticketId, projectId, etc.
+  archived        Boolean            @default(false)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  messages        Message[]
+
+  @@index([userId])
+  @@index([type])
+  @@index([userId, lastMessageAt])
+  @@index([archived])
+  @@map("conversations")
+}
+
+model Message {
+  id              String             @id @default(cuid())
+  conversationId  String
+  senderId        String?            // Null for system/VALIS messages
+  senderType      MessageSenderType
+  content         String             // Text content or file description
+  contentType     MessageContentType @default(TEXT)
+  agentType       String?            // If from AI employee (MIKE, SARAH, etc.)
+  fileUrl         String?            // Supabase Storage URL for attachments
+  fileName        String?
+  fileSize        Int?               // Bytes
+  fileMimeType    String?
+  metadata        Json?              // Task status, references, etc.
+  editedAt        DateTime?
+  deletedAt       DateTime?          // Soft delete
+  createdAt       DateTime           @default(now())
+
+  conversation    Conversation       @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([conversationId, createdAt])
+  @@index([senderType])
+  @@map("messages")
+}
+
+// Bulk Announcements (PROD-033)
+enum AnnouncementType {
+  MAINTENANCE       // System maintenance notice
+  FEATURE          // New feature announcement
+  NEWS             // General company news
+}
+
+enum AnnouncementAudience {
+  ALL              // All clients
+  ACTIVE           // Active subscription clients only
+  INACTIVE         // Inactive/former clients only
+}
+
+model Announcement {
+  id              String                @id @default(cuid())
+  title           String
+  content         String
+  type            AnnouncementType      @default(NEWS)
+  targetAudience  AnnouncementAudience  @default(ALL)
+  sentCount       Int                   @default(0)
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  @@index([createdAt])
+  @@index([type])
+  @@map("announcements")
 }

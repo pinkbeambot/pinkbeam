@@ -84,7 +84,7 @@ export async function POST(request: Request) {
       },
     })
 
-    // Send email notifications (fire and forget)
+    // Send email notifications (fire and forget) with structured error handling
     const emailData = {
       id: ticket.id,
       title: data.title,
@@ -94,12 +94,49 @@ export async function POST(request: Request) {
       priority: data.priority,
       category: data.category,
     }
-    sendTicketCreatedEmail(emailData).catch((err) =>
-      console.error('[email] ticket created notification failed:', err)
-    )
-    sendTicketAdminNotification(emailData).catch((err) =>
-      console.error('[email] ticket admin notification failed:', err)
-    )
+    sendTicketCreatedEmail(emailData).catch(async (err) => {
+      console.error('[email-error] Ticket created notification failed:', {
+        ticketId: ticket.id,
+        recipient: ticket.client?.email,
+        error: err instanceof Error ? err.message : String(err),
+        timestamp: new Date().toISOString(),
+      })
+      await prisma.activityLog.create({
+        data: {
+          action: 'email_failed',
+          entityType: 'SupportTicket',
+          entityId: ticket.id,
+          userId: data.clientId,
+          metadata: {
+            emailType: 'ticket_created',
+            recipient: ticket.client?.email,
+            error: err instanceof Error ? err.message : String(err),
+          },
+        },
+      }).catch((logErr) => console.error('[activitylog] Failed to log email error:', logErr))
+    })
+
+    sendTicketAdminNotification(emailData).catch(async (err) => {
+      console.error('[email-error] Ticket admin notification failed:', {
+        ticketId: ticket.id,
+        recipient: process.env.SUPPORT_NOTIFY_EMAIL || process.env.QUOTE_NOTIFY_EMAIL || 'team@pinkbeam.ai',
+        error: err instanceof Error ? err.message : String(err),
+        timestamp: new Date().toISOString(),
+      })
+      await prisma.activityLog.create({
+        data: {
+          action: 'email_failed',
+          entityType: 'SupportTicket',
+          entityId: ticket.id,
+          userId: data.clientId,
+          metadata: {
+            emailType: 'ticket_admin_notification',
+            recipient: process.env.SUPPORT_NOTIFY_EMAIL || process.env.QUOTE_NOTIFY_EMAIL || 'team@pinkbeam.ai',
+            error: err instanceof Error ? err.message : String(err),
+          },
+        },
+      }).catch((logErr) => console.error('[activitylog] Failed to log email error:', logErr))
+    })
 
     // Create in-app notification for client
     createNotification({
@@ -112,7 +149,7 @@ export async function POST(request: Request) {
         ticketTitle: data.title,
         priority: data.priority,
         category: data.category,
-        link: `/dashboard/tickets/${ticket.id}`,
+        link: `/portal/support`,
       },
     }).catch((err) => console.error('[notifications] Failed to create ticket notification:', err))
 

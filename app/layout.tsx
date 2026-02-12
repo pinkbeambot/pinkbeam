@@ -4,6 +4,10 @@ import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AnalyticsProvider } from "@/components/analytics";
+import { CookieBanner } from "@/components/CookieBanner";
+import { ToastProvider } from "@/components/ui/error-handling/ToastProvider";
+import { OfflineBanner } from "@/components/ui/error-handling/OfflineBanner";
+import { HelpWidget } from "@/components/ui/help-widget";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -127,7 +131,11 @@ export default function RootLayout({
               >
                 Skip to main content
               </a>
+              <OfflineBanner />
               {children}
+              <CookieBanner />
+              <ToastProvider />
+              <HelpWidget />
             </AnalyticsProvider>
           </Suspense>
         </ThemeProvider>

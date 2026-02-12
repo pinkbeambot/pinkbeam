@@ -63,16 +63,16 @@ export function LabsHero() {
                 className="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-cyan-600 hover:opacity-90 shadow-lg shadow-cyan-500/25"
                 asChild
               >
-                <Link href="/contact">
-                  Start Your Project
+                <Link href="#services">
+                  Explore Services
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
-              <Link href="#services" className="w-full sm:w-auto">
-                <Button size="lg" variant="outline" className="w-full">
-                  Explore Our Services
-                </Button>
-              </Link>
+              <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
+                <Link href="#pricing">
+                  View Pricing
+                </Link>
+              </Button>
             </div>
           </FadeInOnMount>
 

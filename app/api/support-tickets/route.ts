@@ -3,20 +3,32 @@ import { prisma } from '@/lib/prisma'
 import { Prisma, TicketStatus } from '@prisma/client'
 import { z } from 'zod'
 
-// GET /api/support-tickets - List support tickets
+// GET /api/support-tickets - List support tickets with pagination
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
     const clientId = searchParams.get('clientId')
+    const page = parseInt(searchParams.get('page') || '1', 10)
+    const limit = parseInt(searchParams.get('limit') || '50', 10)
+
+    // Validate pagination params
+    const validatedPage = Math.max(1, page)
+    const validatedLimit = Math.min(Math.max(1, limit), 100) // Max 100 per page
+    const skip = (validatedPage - 1) * validatedLimit
 
     const where: Prisma.SupportTicketWhereInput = {}
     if (status) where.status = status.toUpperCase() as TicketStatus
     if (clientId) where.clientId = clientId
 
+    // Get total count
+    const total = await prisma.supportTicket.count({ where })
+
     const tickets = await prisma.supportTicket.findMany({
       where,
       orderBy: { createdAt: 'desc' },
+      skip,
+      take: validatedLimit,
       include: {
         client: {
           select: { id: true, name: true, email: true }
@@ -24,7 +36,17 @@ export async function GET(request: Request) {
       }
     })
 
-    return NextResponse.json({ success: true, data: tickets })
+    return NextResponse.json({
+      success: true,
+      data: tickets,
+      pagination: {
+        page: validatedPage,
+        limit: validatedLimit,
+        total,
+        totalPages: Math.ceil(total / validatedLimit),
+        hasMore: validatedPage * validatedLimit < total
+      }
+    })
   } catch (error) {
     console.error('Error fetching tickets:', error)
     return NextResponse.json(

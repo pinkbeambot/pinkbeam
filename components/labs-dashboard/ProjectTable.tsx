@@ -79,7 +79,7 @@ export function ProjectTable({ projects, onArchive }: ProjectTableProps) {
       <div className="text-center py-12">
         <p className="text-muted-foreground">No projects found</p>
         <Button asChild className="mt-4 bg-cyan-600 hover:bg-cyan-700">
-          <Link href="/labs/dashboard/projects/new">Create your first project</Link>
+          <Link href="/portal/admin/labs/projects/new">Create your first project</Link>
         </Button>
       </div>
     )
@@ -132,7 +132,7 @@ export function ProjectTable({ projects, onArchive }: ProjectTableProps) {
               <td className="py-4 px-4 text-right">
                 <div className="flex items-center justify-end gap-2">
                   <Button asChild variant="ghost" size="sm">
-                    <Link href={`/labs/dashboard/projects/${project.id}`}>
+                    <Link href={`/portal/admin/labs/projects/${project.id}`}>
                       View
                       <ArrowRight className="w-4 h-4 ml-1" />
                     </Link>
@@ -145,12 +145,12 @@ export function ProjectTable({ projects, onArchive }: ProjectTableProps) {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem asChild>
-                        <Link href={`/labs/dashboard/projects/${project.id}`}>
+                        <Link href={`/portal/admin/labs/projects/${project.id}`}>
                           View Details
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href={`/labs/dashboard/projects/${project.id}?tab=settings`}>
+                        <Link href={`/portal/admin/labs/projects/${project.id}?tab=settings`}>
                           Edit
                         </Link>
                       </DropdownMenuItem>

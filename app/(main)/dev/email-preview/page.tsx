@@ -1,4 +1,6 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/lib/prisma";
 import {
   adminNotificationTemplate,
   clientAutoResponseTemplate,
@@ -51,7 +53,7 @@ const templates = {
       welcomeTemplate({
         fullName: "Jamie Lee",
         email: "jamie@example.com",
-        loginUrl: "https://pinkbeam.io/dashboard",
+        loginUrl: "https://pinkbeam.io/portal",
       }),
   },
   "password-reset": {
@@ -155,8 +157,24 @@ const templates = {
 export default async function EmailPreviewPage({
   searchParams,
 }: EmailPreviewPageProps) {
-  if (process.env.NODE_ENV === "production") {
-    notFound();
+  // Authentication check - only allow authenticated admin users
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/sign-in?redirect=/dev/email-preview");
+  }
+
+  // Check if user is an admin
+  const dbUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { role: true },
+  });
+
+  if (!dbUser || dbUser.role !== "ADMIN") {
+    notFound(); // Show 404 to non-admin users
   }
 
   const resolvedSearchParams = searchParams ? await searchParams : undefined;

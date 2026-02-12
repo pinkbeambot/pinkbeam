@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyStripeSignature, verifyGitHubSignature, verifyClerkSignature } from './verify-signature'
 import { parseWebhookPayload, extractEventId } from './parse-payload'
+import { sanitizeWebhookPayload, sanitizeStripePayload, sanitizeGitHubPayload } from './sanitize-payload'
 import type {
   WebhookSource,
   WebhookProcessResult,
@@ -72,7 +73,32 @@ export function markEventProcessed(eventId: string): void {
 }
 
 /**
- * Log webhook event to database
+ * Sanitize payload based on webhook source
+ * Applies general sanitization plus source-specific filters
+ * @param payload The payload to sanitize
+ * @param source The webhook source type
+ * @returns Sanitized payload safe for database storage
+ */
+function sanitizePayloadForStorage(payload: unknown, source: WebhookSource): unknown {
+  // Apply general sanitization first
+  let sanitized = sanitizeWebhookPayload(payload, source)
+
+  // Apply source-specific sanitization
+  switch (source) {
+    case 'stripe':
+      sanitized = sanitizeStripePayload(sanitized)
+      break
+    case 'github':
+      sanitized = sanitizeGitHubPayload(sanitized)
+      break
+    // clerk and test use general sanitization only
+  }
+
+  return sanitized
+}
+
+/**
+ * Log webhook event to database with sanitized payload
  * @param params Event logging parameters
  * @returns The created webhook event record
  */
@@ -85,12 +111,15 @@ export async function logWebhookEvent(params: {
   error?: string
 }) {
   try {
+    // Sanitize payload before storing to remove sensitive data
+    const sanitizedPayload = sanitizePayloadForStorage(params.payload, params.source)
+
     const event = await prisma.webhookEvent.upsert({
       where: { id: params.id },
       update: {
         source: params.source,
         eventType: params.eventType,
-        payload: params.payload as Record<string, unknown>,
+        payload: sanitizedPayload as any,
         processed: params.processed ?? false,
         processedAt: params.processed ? new Date() : undefined,
         error: params.error,
@@ -99,7 +128,7 @@ export async function logWebhookEvent(params: {
         id: params.id,
         source: params.source,
         eventType: params.eventType,
-        payload: params.payload as Record<string, unknown>,
+        payload: sanitizedPayload as any,
         processed: params.processed ?? false,
         processedAt: params.processed ? new Date() : undefined,
         error: params.error,
@@ -122,7 +151,7 @@ export async function logWebhookEvent(params: {
 export function createWebhookHandler(
   source: WebhookSource,
   handler: (payload: unknown, eventType: string) => Promise<WebhookProcessResult>,
-  options: WebhookHandlerOptions = { verifySignature: true }
+  options: WebhookHandlerOptions = {}
 ) {
   return async (request: NextRequest): Promise<NextResponse> => {
     const startTime = Date.now()
@@ -141,8 +170,10 @@ export function createWebhookHandler(
         signature: signature ? 'present' : 'missing',
       })
 
-      // Verify signature if required
-      if (options.verifySignature) {
+      // Verify signature by default (unless explicitly skipped)
+      if (options.skipVerification) {
+        console.warn(`[Webhook ${source}] SECURITY: Signature verification skipped`)
+      } else {
         const secret = getWebhookSecret(source)
 
         if (!secret) {

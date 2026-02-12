@@ -216,8 +216,8 @@ export function DigitalTransformationClient() {
           </>
         }
         description="Navigate the complexities of digital transformation with expert guidance. We help you modernize operations, integrate cutting-edge technology, and build a foundation for sustainable growth."
-        primaryCta={{ text: "Book Discovery Call", href: "/solutions/contact" }}
-        secondaryCta={{ text: "View Case Studies", href: "/solutions/case-studies" }}
+        primaryCta={{ text: "Book Discovery Call", href: "/contact" }}
+        secondaryCta={{ text: "View Pricing", href: "/solutions/pricing" }}
       />
 
       {/* What is Digital Transformation */}
@@ -358,7 +358,7 @@ export function DigitalTransformationClient() {
         timeline={timeline}
         priceRange="$25,000"
         ctaText="Book Discovery Call"
-        ctaHref="/solutions/contact"
+        ctaHref="/contact"
       />
 
       {/* FAQ */}
@@ -375,7 +375,7 @@ export function DigitalTransformationClient() {
         title="Ready to Transform Your Business?"
         description="Let's discuss how we can help you navigate your digital transformation journey. Schedule a free discovery call to explore your challenges and opportunities."
         buttonText="Book Your Discovery Call"
-        buttonHref="/solutions/contact"
+        buttonHref="/contact"
       />
     </main>
   );

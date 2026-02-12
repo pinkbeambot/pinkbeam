@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { createMetadata, structuredData } from "@/lib/metadata";
+import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 import { PricingPageClient } from "./PricingPageClient";
 
 export const metadata: Metadata = createMetadata({
@@ -25,6 +26,13 @@ const webPageJsonLd = structuredData.webPage({
 export default function PricingPage() {
   return (
     <>
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", item: "https://pinkbeam.io/" },
+          { name: "Web Services", item: "https://pinkbeam.io/web" },
+          { name: "Pricing", item: "https://pinkbeam.io/web/pricing" },
+        ]}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}

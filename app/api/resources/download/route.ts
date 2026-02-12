@@ -57,15 +57,29 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Send download email
-    await sendResourceDownloadEmail({
-      email: validated.email,
-      name: validated.name,
-      resourceTitle: resource.title,
-      resourceType: resource.type,
-      downloadUrl: resource.fileUrl,
-      fileFormat: resource.fileFormat,
-    });
+    // Send download email with error handling
+    try {
+      await sendResourceDownloadEmail({
+        email: validated.email,
+        name: validated.name,
+        resourceTitle: resource.title,
+        resourceType: resource.type,
+        downloadUrl: resource.fileUrl,
+        fileFormat: resource.fileFormat,
+      });
+    } catch (emailError) {
+      // Log email failure but don't fail the request
+      console.error('[email-error] Resource download email failed:', {
+        resourceId: validated.resourceId,
+        resourceTitle: resource.title,
+        recipient: validated.email,
+        error: emailError instanceof Error ? emailError.message : String(emailError),
+        timestamp: new Date().toISOString(),
+      })
+
+      // Still return success because download was recorded
+      // Email failure shouldn't block user access to the resource
+    }
 
     return NextResponse.json({
       success: true,
@@ -73,7 +87,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Download error:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { success: false, error: 'Invalid data provided' },

@@ -937,7 +937,7 @@ export async function POST() {
             ...post,
             readingTime,
             publishedAt: post.published ? new Date() : null,
-          },
+          } as any,
         })
         results.push({ title: post.title, status: 'created', id: created.id })
       } catch (error) {

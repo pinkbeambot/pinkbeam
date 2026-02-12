@@ -1,12 +1,15 @@
-import type { Metadata } from "next";
-import { createMetadata, serviceMetadata } from "@/lib/metadata";
+import type { Metadata } from 'next'
 
-export const metadata: Metadata = createMetadata(serviceMetadata.signIn);
+export const metadata: Metadata = {
+  title: 'Sign In — Pink Beam',
+  description: 'Sign in to your Pink Beam account to manage your AI employees, projects, and services.',
+  robots: { index: false, follow: false },
+}
 
 export default function SignInLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  return children;
+  return children
 }

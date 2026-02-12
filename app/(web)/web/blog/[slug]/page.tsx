@@ -11,7 +11,7 @@ interface BlogPostPageProps {
 async function getBlogPost(slug: string) {
   try {
     const post = await prisma.blogPost.findUnique({
-      where: { slug, published: true, service: 'WEB' },
+      where: { slug_service: { slug, service: 'WEB' } },
       select: {
         id: true,
         title: true,
@@ -22,14 +22,11 @@ async function getBlogPost(slug: string) {
         publishedAt: true,
         createdAt: true,
         updatedAt: true,
-        author: {
-          select: {
-            name: true,
-          },
-        },
+        authorName: true,
+        published: true,
       },
     });
-    return post;
+    return post?.published ? post : null;
   } catch {
     return null;
   }
@@ -50,7 +47,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   const description = post.metaDesc || post.excerpt || post.content.slice(0, 160);
 
   return createMetadata({
-    title: `${title} | Pink Beam Web`,
+    title: `${title} — Pink Beam Web`,
     description: description || "Read insights on web design, development, and digital strategy.",
     path: `/web/blog/${slug}`,
   });
@@ -75,7 +72,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     dateModified: post.updatedAt.toISOString(),
     author: {
       "@type": "Organization",
-      name: post.author?.name || "Pink Beam",
+      name: post.authorName || "Pink Beam",
       url: "https://pinkbeam.io",
     },
     publisher: {

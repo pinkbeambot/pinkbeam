@@ -63,16 +63,16 @@ export function WebHero() {
           <FadeInOnMount delay={0.3}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
               <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-violet-500 to-violet-600 hover:opacity-90 shadow-lg shadow-violet-500/25" asChild>
-                <Link href="/web/quote">
-                  Get a Quote
+                <Link href="#services">
+                  Explore Services
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
-              <Link href="#features" className="w-full sm:w-auto">
-                <Button size="lg" variant="outline" className="w-full border-violet-500/30 hover:bg-violet-500/10">
-                  View Services
-                </Button>
-              </Link>
+              <Button size="lg" variant="outline" className="w-full sm:w-auto border-violet-500/30 hover:bg-violet-500/10" asChild>
+                <Link href="#pricing">
+                  View Pricing
+                </Link>
+              </Button>
             </div>
           </FadeInOnMount>
         </div>

@@ -64,16 +64,16 @@ export function SolutionsHero() {
                 className="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:opacity-90 shadow-lg shadow-amber-500/25"
                 asChild
               >
-                <Link href="/contact">
-                  Book a Consultation
+                <Link href="#services">
+                  Explore Services
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
-              <Link href="#services" className="w-full sm:w-auto">
-                <Button size="lg" variant="outline" className="w-full">
-                  Explore Services
-                </Button>
-              </Link>
+              <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
+                <Link href="#pricing">
+                  View Pricing
+                </Link>
+              </Button>
             </div>
           </FadeInOnMount>
 

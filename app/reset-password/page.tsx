@@ -33,7 +33,7 @@ export default function ResetPasswordPage() {
     }
     
     const { error } = await supabase.auth.resetPasswordForEmail(validation.data.email, {
-      redirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback?next=/dashboard`,
+      redirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback?next=/portal`,
     })
 
     if (error) {

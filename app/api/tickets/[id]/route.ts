@@ -168,7 +168,7 @@ export async function PUT(
           metadata: { from: existing.status, to: updates.status },
         },
       })
-      // Send status update email to client
+      // Send status update email to client with structured error handling
       sendTicketStatusUpdateEmail(
         {
           id,
@@ -177,7 +177,28 @@ export async function PUT(
           clientEmail: ticket.client?.email || '',
         },
         updates.status
-      ).catch((err) => console.error('[email] ticket status update failed:', err))
+      ).catch(async (err) => {
+        console.error('[email-error] Ticket status update email failed:', {
+          ticketId: id,
+          recipient: ticket.client?.email,
+          newStatus: updates.status,
+          error: err instanceof Error ? err.message : String(err),
+          timestamp: new Date().toISOString(),
+        })
+        await prisma.activityLog.create({
+          data: {
+            action: 'email_failed',
+            entityType: 'SupportTicket',
+            entityId: id,
+            metadata: {
+              emailType: 'ticket_status_update',
+              recipient: ticket.client?.email,
+              newStatus: updates.status,
+              error: err instanceof Error ? err.message : String(err),
+            },
+          },
+        }).catch((logErr) => console.error('[activitylog] Failed to log email error:', logErr))
+      })
     }
     if (updates.priority && updates.priority !== existing.priority) {
       await prisma.activityLog.create({

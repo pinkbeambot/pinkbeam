@@ -1,6 +1,26 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendFollowUpEmail } from '@/lib/email'
+import type { QuoteRequest } from '@prisma/client'
+import type { QuoteVariables } from '@/lib/email-templates'
+
+// Helper to convert Prisma QuoteRequest to QuoteVariables
+function toQuoteVariables(quote: QuoteRequest): QuoteVariables {
+  return {
+    id: quote.id,
+    fullName: quote.fullName,
+    email: quote.email,
+    company: quote.company,
+    projectType: quote.projectType,
+    services: quote.services,
+    budgetRange: quote.budgetRange,
+    timeline: quote.timeline,
+    description: quote.description,
+    leadScore: quote.leadScore,
+    leadQuality: quote.leadQuality as 'hot' | 'warm' | 'cold' | null | undefined,
+    status: quote.status,
+  }
+}
 
 // POST /api/cron/follow-ups — Process follow-up email queue
 // Call this via a cron service (e.g. Vercel Cron, external scheduler)
@@ -26,14 +46,35 @@ export async function POST(request: Request) {
 
   for (const quote of stage1Quotes) {
     try {
-      await sendFollowUpEmail(quote, 1)
+      await sendFollowUpEmail(toQuoteVariables(quote), 1)
       await prisma.quoteRequest.update({
         where: { id: quote.id },
         data: { followUpStage: 1, lastFollowUpAt: now },
       })
       results.stage1++
-    } catch {
+    } catch (error) {
+      console.error('[email-error] Follow-up stage 1 failed:', {
+        quoteId: quote.id,
+        stage: 1,
+        recipient: quote.email,
+        error: error instanceof Error ? error.message : String(error),
+        timestamp: now.toISOString(),
+      })
       results.errors++
+
+      // Log failure in activity log
+      await prisma.activityLog.create({
+        data: {
+          action: 'email_failed',
+          entityType: 'QuoteRequest',
+          entityId: quote.id,
+          metadata: {
+            emailType: 'follow_up_stage_1',
+            recipient: quote.email,
+            error: error instanceof Error ? error.message : String(error),
+          },
+        },
+      }).catch((logErr) => console.error('[activitylog] Failed to log email error:', logErr))
     }
   }
 
@@ -49,14 +90,35 @@ export async function POST(request: Request) {
 
   for (const quote of stage2Quotes) {
     try {
-      await sendFollowUpEmail(quote, 2)
+      await sendFollowUpEmail(toQuoteVariables(quote), 2)
       await prisma.quoteRequest.update({
         where: { id: quote.id },
         data: { followUpStage: 2, lastFollowUpAt: now },
       })
       results.stage2++
-    } catch {
+    } catch (error) {
+      console.error('[email-error] Follow-up stage 2 failed:', {
+        quoteId: quote.id,
+        stage: 2,
+        recipient: quote.email,
+        error: error instanceof Error ? error.message : String(error),
+        timestamp: now.toISOString(),
+      })
       results.errors++
+
+      // Log failure in activity log
+      await prisma.activityLog.create({
+        data: {
+          action: 'email_failed',
+          entityType: 'QuoteRequest',
+          entityId: quote.id,
+          metadata: {
+            emailType: 'follow_up_stage_2',
+            recipient: quote.email,
+            error: error instanceof Error ? error.message : String(error),
+          },
+        },
+      }).catch((logErr) => console.error('[activitylog] Failed to log email error:', logErr))
     }
   }
 
@@ -72,14 +134,35 @@ export async function POST(request: Request) {
 
   for (const quote of stage3Quotes) {
     try {
-      await sendFollowUpEmail(quote, 3)
+      await sendFollowUpEmail(toQuoteVariables(quote), 3)
       await prisma.quoteRequest.update({
         where: { id: quote.id },
         data: { followUpStage: 3, lastFollowUpAt: now },
       })
       results.stage3++
-    } catch {
+    } catch (error) {
+      console.error('[email-error] Follow-up stage 3 failed:', {
+        quoteId: quote.id,
+        stage: 3,
+        recipient: quote.email,
+        error: error instanceof Error ? error.message : String(error),
+        timestamp: now.toISOString(),
+      })
       results.errors++
+
+      // Log failure in activity log
+      await prisma.activityLog.create({
+        data: {
+          action: 'email_failed',
+          entityType: 'QuoteRequest',
+          entityId: quote.id,
+          metadata: {
+            emailType: 'follow_up_stage_3',
+            recipient: quote.email,
+            error: error instanceof Error ? error.message : String(error),
+          },
+        },
+      }).catch((logErr) => console.error('[activitylog] Failed to log email error:', logErr))
     }
   }
 

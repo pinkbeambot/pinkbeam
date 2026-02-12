@@ -79,18 +79,16 @@ export function Hero() {
           {/* CTA Buttons */}
           <FadeInOnMount delay={0.3}>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-              <Button size="lg" variant="beam" className="w-full sm:w-auto shadow-beam">
-                Start Free Trial
-                <ArrowRight className="w-4 h-4 ml-2" />
+              <Button size="lg" variant="beam" className="w-full sm:w-auto shadow-beam" asChild>
+                <Link href="#employees">
+                  Explore AI Employees
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-full sm:w-auto"
-                onClick={() => setIsDemoModalOpen(true)}
-              >
-                <Play className="w-4 h-4 mr-2" />
-                Watch Demo
+              <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
+                <Link href="#pricing">
+                  View Pricing
+                </Link>
               </Button>
             </div>
           </FadeInOnMount>

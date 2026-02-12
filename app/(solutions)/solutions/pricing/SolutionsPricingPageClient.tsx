@@ -6,6 +6,7 @@ import { FadeIn } from "@/components/animations";
 import { ArrowRight } from "lucide-react";
 import { SolutionsPricingHero } from "@/components/sections/SolutionsPricingHero";
 import { SolutionsPricingModels } from "@/components/sections/SolutionsPricingModels";
+import { SolutionsFeatureComparison } from "@/components/sections/SolutionsFeatureComparison";
 import { SolutionsROICalculator } from "@/components/sections/SolutionsROICalculator";
 import { SolutionsPricingFAQ } from "@/components/sections/SolutionsPricingFAQ";
 
@@ -51,6 +52,7 @@ export function SolutionsPricingPageClient() {
     <main className="min-h-screen">
       <SolutionsPricingHero />
       <SolutionsPricingModels />
+      <SolutionsFeatureComparison />
       <SolutionsROICalculator />
       <SolutionsPricingFAQ />
       <PricingCTASection />

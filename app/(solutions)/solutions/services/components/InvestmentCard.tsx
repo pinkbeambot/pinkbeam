@@ -33,7 +33,7 @@ export function InvestmentCard({
   tiers,
   priceRange,
   ctaText = "Book Discovery Call",
-  ctaHref = "/solutions/contact",
+  ctaHref = "/contact",
 }: InvestmentCardProps) {
   return (
     <section className="py-24 lg:py-32 bg-muted/30 border-y">

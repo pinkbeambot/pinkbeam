@@ -3,6 +3,7 @@
 import { Check, X, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FadeIn } from "@/components/animations";
+import { Card } from "@/components/ui/card";
 import type { FeatureComparison } from "../data/pricing";
 import {
   Tooltip,
@@ -16,9 +17,12 @@ interface FeatureComparisonProps {
 }
 
 export function FeatureComparisonTable({ features }: FeatureComparisonProps) {
+  const tiers = ['Starter', 'Growth', 'Scale'] as const;
+
   return (
     <TooltipProvider delayDuration={100}>
-      <div className="overflow-x-auto">
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full min-w-[700px]">
           <thead className="sticky top-0 z-10">
             <tr className="bg-surface-sunken">
@@ -83,6 +87,67 @@ export function FeatureComparisonTable({ features }: FeatureComparisonProps) {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-6">
+        {tiers.map((tier, tierIndex) => (
+          <Card key={tier} className={cn(
+            "p-4",
+            tier === 'Growth' && "border-pink-500/30 bg-pink-500/5"
+          )}>
+            <div className="mb-4 pb-3 border-b border-border">
+              <h3 className={cn(
+                "font-display font-semibold text-lg",
+                tier === 'Growth' && "text-pink-500"
+              )}>
+                {tier}
+              </h3>
+              {tier === 'Growth' && (
+                <span className="text-xs text-muted-foreground">Most Popular</span>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              {features.map((feature, featureIndex) => {
+                const value = tier === 'Starter' ? feature.starter
+                  : tier === 'Growth' ? feature.growth
+                  : feature.scale;
+
+                return (
+                  <div
+                    key={featureIndex}
+                    className="flex items-center justify-between py-2 border-b border-border last:border-0"
+                  >
+                    <div className="flex items-center gap-2 flex-1">
+                      <span className="text-sm font-medium text-foreground">
+                        {feature.feature}
+                      </span>
+                      {feature.tooltip && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button className="text-muted-foreground hover:text-pink-500 transition-colors">
+                              <HelpCircle className="w-4 h-4" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            side="top"
+                            className="max-w-xs bg-surface-elevated border-border text-foreground"
+                          >
+                            <p className="text-sm">{feature.tooltip}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
+                    <div className="ml-2">
+                      <FeatureValue value={value} highlight={tier === 'Growth'} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        ))}
       </div>
     </TooltipProvider>
   );

@@ -182,9 +182,9 @@ function UserDropdown({ user, onSignOut }: { user: SupabaseUser; onSignOut: () =
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/agents/dashboard" className="cursor-pointer">
+          <Link href="/portal/agents" className="cursor-pointer">
             <User className="mr-2 h-4 w-4" />
-            Dashboard
+            Portal
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -351,10 +351,10 @@ function MobileNav({ user, onSignOut }: { user: SupabaseUser | null; onSignOut: 
               </div>
               <div className="mt-3 space-y-2">
                 <SheetClose asChild>
-                  <Link href="/agents/dashboard">
+                  <Link href="/portal/agents">
                     <Button variant="outline" className="w-full justify-start gap-2">
                       <User className="h-4 w-4" />
-                      Dashboard
+                      Portal
                     </Button>
                   </Link>
                 </SheetClose>

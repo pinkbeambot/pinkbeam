@@ -20,6 +20,124 @@ import type {
 // Stripe Handlers
 // ============================================================================
 
+async function handleCheckoutCompleted(
+  payload: StripeWebhookPayload
+): Promise<WebhookProcessResult> {
+  const session = payload.data.object as any
+
+  console.log(`[Stripe Webhook] Checkout completed: ${session.id}`, {
+    customer: session.customer,
+    mode: session.mode,
+    status: session.status,
+    metadata: session.metadata,
+  })
+
+  try {
+    const { userId, planId, planSlug, serviceType } = session.metadata || {}
+
+    if (!userId) {
+      console.error('[Stripe Webhook] No userId in session metadata')
+      return {
+        success: false,
+        message: 'Missing userId in session metadata',
+        shouldRetry: false,
+      }
+    }
+
+    if (session.mode === 'subscription') {
+      // Handle subscription checkout
+      const subscriptionId = session.subscription as string
+
+      if (!subscriptionId) {
+        return {
+          success: false,
+          message: 'No subscription ID in session',
+          shouldRetry: false,
+        }
+      }
+
+      // Create subscription record
+      const currentDate = new Date()
+      const nextMonthDate = new Date(currentDate)
+      nextMonthDate.setMonth(nextMonthDate.getMonth() + 1)
+
+      await prisma.subscription.create({
+        data: {
+          userId,
+          planId: planId || planSlug, // Use planSlug as fallback
+          status: 'ACTIVE',
+          billingCycle: 'monthly',
+          currentPeriodStart: currentDate,
+          currentPeriodEnd: nextMonthDate,
+          stripeCustomerId: session.customer as string,
+          stripeSubscriptionId: subscriptionId,
+          stripePriceId: session.line_items?.data[0]?.price?.id,
+          paymentStatus: 'ACTIVE',
+        },
+      })
+
+      console.log(`[Stripe Webhook] Created subscription for user ${userId}`)
+
+      // Log activity
+      await prisma.activityLog.create({
+        data: {
+          action: 'subscription_created',
+          entityType: 'subscription',
+          entityId: subscriptionId,
+          metadata: {
+            userId,
+            planSlug,
+            serviceType,
+            stripeSessionId: session.id,
+          },
+        },
+      })
+
+      return {
+        success: true,
+        message: `Subscription created for user ${userId}`,
+      }
+    } else if (session.mode === 'payment') {
+      // Handle one-time payment
+      const paymentIntentId = session.payment_intent as string
+
+      await prisma.activityLog.create({
+        data: {
+          action: 'one_time_payment',
+          entityType: 'payment',
+          entityId: paymentIntentId,
+          metadata: {
+            userId,
+            serviceType,
+            amount: session.amount_total,
+            stripeSessionId: session.id,
+          },
+        },
+      })
+
+      console.log(`[Stripe Webhook] Logged one-time payment for user ${userId}`)
+
+      return {
+        success: true,
+        message: `One-time payment recorded for user ${userId}`,
+      }
+    }
+
+    return {
+      success: true,
+      message: 'Checkout session processed',
+    }
+  } catch (error) {
+    console.error('[Stripe Webhook] Error handling checkout.session.completed:', error)
+    return {
+      success: false,
+      message: 'Failed to process checkout completion',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      shouldRetry: true,
+    }
+  }
+}
+
 async function handleInvoicePaid(
   payload: StripeWebhookPayload
 ): Promise<WebhookProcessResult> {
@@ -29,31 +147,38 @@ async function handleInvoicePaid(
     number: invoice.number,
     amount: invoice.amount_paid,
     customer: invoice.customer,
+    subscription: invoice.subscription,
   })
 
   try {
-    const dbInvoice = await prisma.invoice.findFirst({
-      where: {
-        project: {
-          client: {},
-        },
-      },
-    })
-
-    if (dbInvoice) {
-      await prisma.invoice.update({
-        where: { id: dbInvoice.id },
-        data: {
-          status: 'PAID',
-          paidAt: new Date(),
-        },
+    // Update subscription period if this is a recurring payment
+    if (invoice.subscription) {
+      const subscription = await prisma.subscription.findUnique({
+        where: { stripeSubscriptionId: invoice.subscription as string },
       })
-      console.log(`[Stripe Webhook] Updated invoice ${dbInvoice.id} to PAID`)
+
+      if (subscription) {
+        const currentDate = new Date()
+        const nextMonthDate = new Date(currentDate)
+        nextMonthDate.setMonth(nextMonthDate.getMonth() + 1)
+
+        await prisma.subscription.update({
+          where: { id: subscription.id },
+          data: {
+            currentPeriodStart: currentDate,
+            currentPeriodEnd: nextMonthDate,
+            paymentStatus: 'ACTIVE',
+            failedAt: null,
+          },
+        })
+
+        console.log(`[Stripe Webhook] Extended subscription ${subscription.id}`)
+      }
     }
 
     return {
       success: true,
-      message: `Invoice ${invoice.id} marked as paid`,
+      message: `Invoice ${invoice.id} processed`,
     }
   } catch (error) {
     console.error('[Stripe Webhook] Error handling invoice.paid:', error)
@@ -76,11 +201,59 @@ async function handleInvoicePaymentFailed(
     amount: invoice.amount_due,
     customer: invoice.customer,
     attemptCount: invoice.attempt_count,
+    subscription: invoice.subscription,
   })
 
-  return {
-    success: true,
-    message: `Invoice ${invoice.id} payment failure logged`,
+  try {
+    // Mark subscription as past due
+    if (invoice.subscription) {
+      const subscription = await prisma.subscription.findUnique({
+        where: { stripeSubscriptionId: invoice.subscription as string },
+      })
+
+      if (subscription) {
+        const gracePeriodEnd = new Date()
+        gracePeriodEnd.setDate(gracePeriodEnd.getDate() + 3) // 3-day grace period
+
+        await prisma.subscription.update({
+          where: { id: subscription.id },
+          data: {
+            paymentStatus: 'PAST_DUE',
+            failedAt: new Date(),
+            gracePeriodEnds: gracePeriodEnd,
+          },
+        })
+
+        console.log(`[Stripe Webhook] Marked subscription ${subscription.id} as PAST_DUE`)
+
+        // Log activity
+        await prisma.activityLog.create({
+          data: {
+            action: 'payment_failed',
+            entityType: 'subscription',
+            entityId: subscription.id,
+            metadata: {
+              invoiceId: invoice.id,
+              attemptCount: invoice.attempt_count,
+              gracePeriodEnd: gracePeriodEnd.toISOString(),
+            },
+          },
+        })
+      }
+    }
+
+    return {
+      success: true,
+      message: `Invoice ${invoice.id} payment failure processed`,
+    }
+  } catch (error) {
+    console.error('[Stripe Webhook] Error handling invoice.payment_failed:', error)
+    return {
+      success: false,
+      message: 'Failed to process payment failure',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      shouldRetry: true,
+    }
   }
 }
 
@@ -95,9 +268,10 @@ async function handleSubscriptionCreated(
     plan: subscription.plan?.nickname || 'N/A',
   })
 
+  // Usually handled by checkout.session.completed, so just log
   return {
     success: true,
-    message: `Subscription ${subscription.id} created and recorded`,
+    message: `Subscription ${subscription.id} created (handled by checkout)`,
   }
 }
 
@@ -113,9 +287,46 @@ async function handleSubscriptionUpdated(
     previousStatus: previousAttributes?.status,
   })
 
-  return {
-    success: true,
-    message: `Subscription ${subscription.id} updated`,
+  try {
+    const dbSubscription = await prisma.subscription.findUnique({
+      where: { stripeSubscriptionId: subscription.id },
+    })
+
+    if (dbSubscription && previousAttributes?.status && subscription.status !== previousAttributes.status) {
+      // Status changed
+      const statusMap: Record<string, any> = {
+        active: 'ACTIVE',
+        past_due: 'PAST_DUE',
+        canceled: 'CANCELED',
+        unpaid: 'PAST_DUE',
+        trialing: 'TRIALING',
+      }
+
+      const newStatus = statusMap[subscription.status] || 'ACTIVE'
+
+      await prisma.subscription.update({
+        where: { id: dbSubscription.id },
+        data: {
+          status: newStatus,
+          paymentStatus: subscription.status === 'active' ? 'ACTIVE' : 'PAST_DUE',
+        },
+      })
+
+      console.log(`[Stripe Webhook] Updated subscription ${dbSubscription.id} status to ${newStatus}`)
+    }
+
+    return {
+      success: true,
+      message: `Subscription ${subscription.id} updated`,
+    }
+  } catch (error) {
+    console.error('[Stripe Webhook] Error handling subscription.updated:', error)
+    return {
+      success: false,
+      message: 'Failed to update subscription',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      shouldRetry: true,
+    }
   }
 }
 
@@ -129,9 +340,49 @@ async function handleSubscriptionDeleted(
     endedAt: subscription.ended_at,
   })
 
-  return {
-    success: true,
-    message: `Subscription ${subscription.id} marked as cancelled`,
+  try {
+    const dbSubscription = await prisma.subscription.findUnique({
+      where: { stripeSubscriptionId: subscription.id },
+    })
+
+    if (dbSubscription) {
+      await prisma.subscription.update({
+        where: { id: dbSubscription.id },
+        data: {
+          status: 'CANCELED',
+          canceledAt: new Date(),
+          paymentStatus: 'CANCELED',
+        },
+      })
+
+      console.log(`[Stripe Webhook] Cancelled subscription ${dbSubscription.id}`)
+
+      // Log activity
+      await prisma.activityLog.create({
+        data: {
+          action: 'subscription_canceled',
+          entityType: 'subscription',
+          entityId: dbSubscription.id,
+          metadata: {
+            stripeSubscriptionId: subscription.id,
+            endedAt: subscription.ended_at,
+          },
+        },
+      })
+    }
+
+    return {
+      success: true,
+      message: `Subscription ${subscription.id} cancelled`,
+    }
+  } catch (error) {
+    console.error('[Stripe Webhook] Error handling subscription.deleted:', error)
+    return {
+      success: false,
+      message: 'Failed to process subscription cancellation',
+      error: error instanceof Error ? error.message : 'Unknown error',
+      shouldRetry: true,
+    }
   }
 }
 
@@ -142,7 +393,10 @@ export async function handleStripeEvent(
   console.log(`[Stripe Webhook] Processing ${payload.type} (ID: ${payload.id})`)
 
   switch (payload.type) {
+    case 'checkout.session.completed':
+      return handleCheckoutCompleted(payload)
     case 'invoice.paid':
+    case 'invoice.payment_succeeded':
       return handleInvoicePaid(payload)
     case 'invoice.payment_failed':
       return handleInvoicePaymentFailed(payload)
@@ -305,7 +559,7 @@ async function handleIssuesEvent(
   console.log(`[GitHub Webhook] Issue ${action}: #${issue.number} ${issue.title}`, {
     repo: repository.full_name,
     state: issue.state,
-    labels: issue.labels.map(l => l.name),
+    labels: issue.labels.map((l: any) => l.name),
   })
 
   try {
@@ -330,8 +584,8 @@ async function handleIssuesEvent(
           issueUrl: issue.html_url,
           author: issue.user.login,
           action,
-          labels: issue.labels.map(l => l.name),
-          assignees: issue.assignees.map(a => a.login),
+          labels: issue.labels.map((l: any) => l.name),
+          assignees: issue.assignees.map((a: any) => a.login),
           comments: issue.comments,
         },
       },

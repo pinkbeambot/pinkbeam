@@ -1,10 +1,11 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { withAuth } from '@/lib/auth/apiMiddleware'
 import { prisma } from '@/lib/prisma'
 import { onboardingProjectSchema } from '@/lib/validation'
 import type { ProjectStatus } from '@prisma/client'
 
 // POST /api/onboarding/project - Create initial project
-export async function POST(request: Request) {
+export const POST = withAuth(async (request: NextRequest, { auth }) => {
   try {
     const body = await request.json()
     const result = onboardingProjectSchema.safeParse(body)
@@ -16,7 +17,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const userId = 'user-1' // TODO: Get from auth session
+    const userId = auth.userId
     const data = result.data
 
     // Get user to ensure they exist and get their services
@@ -82,4 +83,4 @@ export async function POST(request: Request) {
       { status: 500 }
     )
   }
-}
+})

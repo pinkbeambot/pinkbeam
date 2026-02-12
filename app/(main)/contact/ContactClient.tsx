@@ -240,7 +240,7 @@ export default function ContactClient() {
             </FadeIn>
 
             <FadeIn direction="up" delay={0.2} once>
-              <Link href="/security" className="block group">
+              <Link href="/privacy" className="block group">
                 <div className="bg-card border border-border rounded-xl p-6 hover:border-pink-500/30 transition-all duration-300 h-full">
                   <div className="w-12 h-12 rounded-lg bg-accent-cyan/10 flex items-center justify-center mb-4 group-hover:bg-accent-cyan/20 transition-colors">
                     <Shield className="w-6 h-6 text-accent-cyan" />

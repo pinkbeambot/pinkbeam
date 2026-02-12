@@ -7,14 +7,14 @@ import {
 } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
-  title: "FLUX — AI Motion Designer | Pink Beam",
+  title: "FLUX — AI Motion Designer — Pink Beam",
   description:
     "Hire FLUX, your AI Motion Designer. Creates product explainers, social video cuts, motion graphics, and multi-format exports for $447/month.",
   alternates: {
     canonical: "https://pinkbeam.io/agents/employees/video",
   },
   openGraph: {
-    title: "FLUX — AI Motion Designer | Pink Beam",
+    title: "FLUX — AI Motion Designer — Pink Beam",
     description:
       "Hire FLUX, your AI Motion Designer. Creates product explainers, social video cuts, and motion graphics.",
     url: "https://pinkbeam.io/agents/employees/video",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "FLUX — AI Motion Designer | Pink Beam",
+    title: "FLUX — AI Motion Designer — Pink Beam",
     description:
       "Hire FLUX, your AI Motion Designer. Creates product explainers and motion graphics.",
     images: ["/api/og?type=employee&employee=FLUX&subtitle=AI+Motion+Designer"],
@@ -52,7 +52,7 @@ export default function VideoPage() {
         ]}
       />
       <WebPageSchema
-        title="FLUX — AI Motion Designer | Pink Beam"
+        title="FLUX — AI Motion Designer — Pink Beam"
         description="Hire FLUX, your AI Motion Designer. Creates product explainers and motion graphics."
         url="https://pinkbeam.io/agents/employees/video"
       />

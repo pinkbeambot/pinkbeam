@@ -17,7 +17,7 @@ export async function GET(request: Request) {
 
     // Filter by category
     if (category && category !== 'ALL') {
-      where.category = category as Prisma.EnumBlogCategoryFilter
+      where.category = category as any
     }
 
     // Exclude specific post

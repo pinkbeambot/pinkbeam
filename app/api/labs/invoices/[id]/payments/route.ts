@@ -129,19 +129,45 @@ export async function POST(
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
       const invoiceUrl = `${baseUrl}/portal/invoices/${id}`
 
-      await sendInvoiceReceipt({
-        invoiceNumber: invoice.invoiceNumber,
-        clientName: invoice.client.name || invoice.client.email,
-        clientEmail: invoice.client.email,
-        amount: formatCurrency(invoice.total),
-        status: 'paid',
-        paymentDate: formatDate(new Date()),
-        invoiceUrl,
-      })
+      try {
+        await sendInvoiceReceipt({
+          invoiceNumber: invoice.invoiceNumber,
+          clientName: invoice.client.name || invoice.client.email,
+          clientEmail: invoice.client.email,
+          amount: formatCurrency(invoice.total.toNumber()),
+          status: 'paid',
+          paymentDate: formatDate(new Date()),
+          invoiceUrl,
+        })
+      } catch (emailError) {
+        // Log email failure but don't fail the request
+        console.error('[email-error] Invoice receipt failed:', {
+          invoiceId: id,
+          invoiceNumber: invoice.invoiceNumber,
+          recipient: invoice.client.email,
+          error: emailError instanceof Error ? emailError.message : String(emailError),
+          timestamp: new Date().toISOString(),
+        })
+
+        // Create activity log for email failure
+        await prisma.activityLog.create({
+          data: {
+            action: 'email_failed',
+            entityType: 'Invoice',
+            entityId: id,
+            userId: invoice.clientId,
+            metadata: {
+              emailType: 'invoice_receipt',
+              recipient: invoice.client.email,
+              error: emailError instanceof Error ? emailError.message : String(emailError),
+            },
+          },
+        }).catch((logErr) => console.error('[activitylog] Failed to log email error:', logErr))
+      }
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       data: { payment, invoice: updatedInvoice }
     }, { status: 201 })
   } catch (error) {

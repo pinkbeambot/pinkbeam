@@ -23,7 +23,7 @@ export async function GET(
     const tasks = await prisma.task.findMany({
       where: {
         projectId,
-        ...(status && status.length > 0 && status[0] !== 'ALL' && { status: { in: status } }),
+        ...(status && status.length > 0 && (status[0] as string) !== 'ALL' && { status: { in: status } }),
         ...(priority && { priority: { in: priority } }),
         ...(type && { type: { in: type } }),
         ...(assigneeId && { assigneeId: assigneeId === 'unassigned' ? null : assigneeId }),

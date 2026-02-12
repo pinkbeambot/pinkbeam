@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui";
@@ -11,9 +12,9 @@ interface PricingCardProps {
 }
 
 export function PricingCard({ tier, isAnnual }: PricingCardProps) {
-  const isCustom = tier.price.monthly === 0;
-  const price = isAnnual ? tier.price.annual : tier.price.monthly;
-  const period = isAnnual ? "/year" : "/month";
+  const isCustom = tier.price === 0;
+  const price = isAnnual ? tier.annualPrice : tier.price;
+  const period = "/month";
 
   return (
     <div
@@ -131,14 +132,27 @@ export function PricingCard({ tier, isAnnual }: PricingCardProps) {
       </ul>
 
       {/* CTA Button */}
-      <Button
-        className="w-full"
-        variant={tier.popular ? "secondary" : "beam"}
-        size="lg"
-        onClick={tier.ctaAction}
-      >
-        {tier.cta}
-      </Button>
+      {isCustom ? (
+        <Button
+          asChild
+          className="w-full"
+          variant={tier.popular ? "secondary" : "beam"}
+          size="lg"
+        >
+          <Link href="/contact">{tier.cta}</Link>
+        </Button>
+      ) : (
+        <Button
+          asChild
+          className="w-full"
+          variant={tier.popular ? "secondary" : "beam"}
+          size="lg"
+        >
+          <Link href={`/agents/purchase/${tier.id}?billing=${isAnnual ? 'annual' : 'monthly'}`}>
+            {tier.cta}
+          </Link>
+        </Button>
+      )}
     </div>
   );
 }

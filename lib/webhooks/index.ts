@@ -60,6 +60,13 @@ export {
   type ParsedPayload,
 } from './parse-payload'
 
+// Export payload sanitization
+export {
+  sanitizeWebhookPayload,
+  sanitizeStripePayload,
+  sanitizeGitHubPayload,
+} from './sanitize-payload'
+
 // Export handler wrapper
 export {
   createWebhookHandler,

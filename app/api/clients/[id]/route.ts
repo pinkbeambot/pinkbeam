@@ -41,9 +41,8 @@ export async function GET(
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,
-        amount: true,
         status: true,
-        dueAt: true,
+        dueDate: true,
         createdAt: true,
         project: {
           select: { id: true, title: true },

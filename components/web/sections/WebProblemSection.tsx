@@ -50,7 +50,7 @@ export function WebProblemSection() {
         <FadeIn className="text-center mb-16">
           <h2 className="text-h2 font-display font-bold mb-4">
             Your Website Isn't{" "}
-            <span className="text-gradient-beam">Working for You</span>
+            <span className="text-violet-400">Working for You</span>
           </h2>
           <p className="text-lead text-muted-foreground max-w-2xl mx-auto">
             If any of these sound familiar, you're leaving money on the table.

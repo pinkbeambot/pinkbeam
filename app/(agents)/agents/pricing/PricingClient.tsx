@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { DollarSign, HelpCircle, Plus, Mail, ChevronDown } from "lucide-react";
+import { DollarSign, HelpCircle, Plus, Mail } from "lucide-react";
 import { FadeIn } from "@/components/animations";
 import { Button, Input } from "@/components/ui";
+import { CompactHero } from "@/components/sections/CompactHero";
 import { PricingToggle } from "./components/PricingToggle";
 import { PricingCard } from "./components/PricingCard";
-import { FeatureComparisonTable } from "./components/FeatureComparison";
-import { PricingFAQ } from "./components/PricingFAQ";
+import { FeatureComparisonTable } from "@/components/pricing/FeatureComparisonTable";
+import { PricingFAQ } from "@/components/pricing/PricingFAQ";
 import { ROICalculator } from "./components/ROICalculator";
 import { cn } from "@/lib/utils";
 import { getFieldErrors, pricingContactSchema } from "@/lib/validation";
@@ -43,34 +44,14 @@ export default function PricingClient() {
 
   return (
     <main className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-void">
-        {/* Background Effects */}
-        <div className="absolute inset-0 bg-gradient-beam-glow opacity-20 pointer-events-none" />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] md:w-[800px] md:h-[800px] bg-pink-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <FadeIn className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-pink-500/10 mb-6">
-              <DollarSign className="w-7 h-7 text-pink-500" />
-            </div>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold mb-6 text-white tracking-tight">
-              Simple, Transparent{" "}
-              <span className="text-gradient-beam">Pricing</span>
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              AI employees starting at $397/month. Start small,
-              scale as you grow. No hidden fees, no surprises.
-            </p>
-          </FadeIn>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground">
-          <span className="text-xs uppercase tracking-wider">Scroll</span>
-          <ChevronDown className="w-5 h-5 text-pink-500 animate-bounce" />
-        </div>
-      </section>
+      {/* Compact Hero Section */}
+      <CompactHero
+        icon={DollarSign}
+        title="Simple, Transparent Pricing"
+        highlightText="Pricing"
+        subtitle="AI employees starting at $397/month. Start small, scale as you grow. No hidden fees, no surprises."
+        accentColor="pink-500"
+      />
 
       {/* Pricing Tiers */}
       <section className="py-16 md:py-24 bg-surface-sunken">
@@ -111,7 +92,12 @@ export default function PricingClient() {
           </FadeIn>
 
           <FadeIn delay={0.1}>
-            <FeatureComparisonTable features={featureComparisons} />
+            <FeatureComparisonTable
+              features={featureComparisons}
+              tiers={["Starter", "Growth", "Scale"]}
+              popularTier="Growth"
+              accentColor="pink"
+            />
           </FadeIn>
         </div>
       </section>
@@ -172,7 +158,7 @@ export default function PricingClient() {
           </FadeIn>
 
           <FadeIn delay={0.1}>
-            <PricingFAQ items={pricingFAQ} />
+            <PricingFAQ items={pricingFAQ} accentColor="pink" />
           </FadeIn>
         </div>
       </section>
@@ -195,7 +181,7 @@ export default function PricingClient() {
           <FadeIn delay={0.1}>
             <form
               onSubmit={handleContactSubmit}
-              className="bg-surface-elevated rounded-2xl border border-border p-8"
+              className="bg-surface-elevated rounded-2xl border border-border p-4 sm:p-6 md:p-8"
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>

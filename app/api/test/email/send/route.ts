@@ -8,9 +8,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import * as templates from '@/lib/email-templates'
 
-// Template mapping for lookup
+// Type for email template functions
+// Template functions have different parameter signatures per template
+// Using any[] for params is intentional as we handle heterogeneous function types
+type EmailTemplateResult = { subject: string; html: string; text?: string }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const templateRegistry: Record<string, Record<string, (...args: any[]) => { subject: string; html: string; text?: string }>> = {
+type EmailTemplateFunction = (...args: any[]) => EmailTemplateResult
+
+// Template mapping for lookup
+const templateRegistry: Record<string, Record<string, EmailTemplateFunction>> = {
   quotes: {
     'admin-notification': templates.adminNotificationTemplate,
     'client-auto-response': templates.clientAutoResponseTemplate,

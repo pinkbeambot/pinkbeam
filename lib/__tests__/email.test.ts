@@ -23,7 +23,7 @@ const baseQuote = {
   timeline: '1-3months',
   description: 'We need a full ecommerce storefront with custom checkout.',
   leadScore: 82,
-  leadQuality: 'hot',
+  leadQuality: 'hot' as 'hot' | 'warm' | 'cold',
 }
 
 describe('adminNotificationTemplate', () => {
@@ -134,12 +134,13 @@ describe('welcomeTemplate', () => {
   it('greets the user and includes the login url', () => {
     const { subject, html } = welcomeTemplate({
       fullName: 'Jane Doe',
-      loginUrl: 'https://pinkbeam.io/dashboard',
+      email: 'jane@example.com',
+      loginUrl: 'https://pinkbeam.io/portal',
     })
 
     expect(subject).toContain('Welcome')
     expect(html).toContain('Hi Jane')
-    expect(html).toContain('https://pinkbeam.io/dashboard')
+    expect(html).toContain('https://pinkbeam.io/portal')
   })
 })
 
@@ -147,6 +148,7 @@ describe('passwordResetTemplate', () => {
   it('includes the reset link and expiry info when provided', () => {
     const { subject, html } = passwordResetTemplate({
       fullName: 'Jane Doe',
+      email: 'jane@example.com',
       resetUrl: 'https://pinkbeam.io/reset?token=abc',
       expiresInMinutes: 30,
     })
@@ -162,6 +164,7 @@ describe('invoiceReceiptTemplate', () => {
     const { subject, html } = invoiceReceiptTemplate({
       invoiceNumber: 'INV-1001',
       clientName: 'Jane Doe',
+      clientEmail: 'jane@example.com',
       amount: '$1,200.00',
       status: 'due',
       dueDate: 'March 1, 2026',

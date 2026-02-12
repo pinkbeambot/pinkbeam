@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { Prisma, ProjectStatus } from '@prisma/client'
 import { z } from 'zod'
+import { withAuth, applyUserFilter } from '@/lib/auth/apiMiddleware'
 
-// GET /api/labs/projects - List projects
-export async function GET(request: Request) {
+// GET /api/labs/projects - List projects (filtered by user role)
+export const GET = withAuth(async (request, { auth }) => {
   try {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
@@ -13,22 +14,25 @@ export async function GET(request: Request) {
     const sortBy = searchParams.get('sortBy') || 'createdAt'
     const sortOrder = searchParams.get('sortOrder') || 'desc'
 
-    const where: Prisma.ProjectWhereInput = {}
-    
+    let where: Prisma.ProjectWhereInput = {}
+
     if (status && status !== 'ALL') {
       where.status = status.toUpperCase() as ProjectStatus
     }
-    
+
     if (clientId) {
       where.clientId = clientId
     }
-    
+
     if (search) {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
       ]
     }
+
+    // Apply user-based filtering (clients see only their projects, admins see all)
+    where = applyUserFilter(where, auth, 'clientId')
 
     const orderBy: Prisma.ProjectOrderByWithRelationInput = {}
     if (sortBy === 'name') {
@@ -72,7 +76,7 @@ export async function GET(request: Request) {
       { status: 500 }
     )
   }
-}
+})
 
 // POST /api/labs/projects - Create project
 const createProjectSchema = z.object({

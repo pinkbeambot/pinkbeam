@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { createClient } from '@/lib/supabase/server'
+import type { Prisma } from '@prisma/client'
 
 // GET /api/admin/blog - List all blog posts with admin details
 export async function GET(request: Request) {
@@ -25,9 +26,9 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const service = searchParams.get('service') || 'ALL'
 
-    const where: { service?: string } = {}
+    const where: Prisma.BlogPostWhereInput = {}
     if (service !== 'ALL') {
-      where.service = service
+      where.service = service as Prisma.BlogPostWhereInput['service']
     }
 
     const posts = await prisma.blogPost.findMany({

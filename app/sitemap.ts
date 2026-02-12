@@ -8,23 +8,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch dynamic content
   const [
     webBlogPosts,
-    solutionsBlogPosts,
-    caseStudies,
     resources,
   ] = await Promise.all([
     // Web blog posts
     prisma.blogPost.findMany({
       where: { published: true, service: 'WEB' },
-      select: { slug: true, updatedAt: true },
-    }),
-    // Solutions blog posts
-    prisma.blogPost.findMany({
-      where: { published: true, service: 'SOLUTIONS' },
-      select: { slug: true, updatedAt: true },
-    }),
-    // Case studies
-    prisma.caseStudy.findMany({
-      where: { published: true },
       select: { slug: true, updatedAt: true },
     }),
     // Resources
@@ -55,12 +43,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/agents/calculator`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.7,
     },
     // AI Employees
     {
@@ -124,48 +106,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 0.7,
     },
-    {
-      url: `${baseUrl}/web/design`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/web/seo`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/web/maintenance`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
     // Labs Service
     {
       url: `${baseUrl}/labs`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/labs/mvp`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/labs/architecture`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/labs/augmentation`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
     },
     // Labs Services
     {
@@ -198,6 +144,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    // Labs Pricing
+    {
+      url: `${baseUrl}/labs/pricing`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
     // Solutions Service
     {
       url: `${baseUrl}/solutions`,
@@ -206,108 +159,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/solutions/consulting`,
+      url: `${baseUrl}/solutions/pricing`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
     },
-    // Solutions Services
-    {
-      url: `${baseUrl}/solutions/services/growth-strategy`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/solutions/services/digital-transformation`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/solutions/services/ai-strategy`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/solutions/services/process-automation`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/solutions/services/technology-architecture`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    // Solutions Engagement
-    {
-      url: `${baseUrl}/solutions/engagement`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/solutions/engagement/workshops`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/solutions/engagement/assessments`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/solutions/engagement/retainers`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/solutions/engagement/projects`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    // Solutions Workshops (standalone)
-    {
-      url: `${baseUrl}/solutions/workshops`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    // Solutions Case Studies
-    {
-      url: `${baseUrl}/solutions/case-studies`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    // Solutions Blog
-    {
-      url: `${baseUrl}/solutions/blog`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.7,
-    },
-    // Solutions Resources
-    {
-      url: `${baseUrl}/solutions/resources`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    // Solutions Calculators
-    {
-      url: `${baseUrl}/solutions/resources/calculators`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
+    // Resources
     {
       url: `${baseUrl}/solutions/resources/ai-readiness-score`,
       lastModified: new Date(),
@@ -320,6 +177,45 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    // Legal pages
+    {
+      url: `${baseUrl}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/terms`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/cookies`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.3,
+    },
+    // Contact & About
+    {
+      url: `${baseUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/about`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    // Help Center
+    {
+      url: `${baseUrl}/help`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
   ];
 
   // Add web blog posts
@@ -329,26 +225,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: post.updatedAt,
       changeFrequency: "monthly",
       priority: 0.6,
-    });
-  });
-
-  // Add solutions blog posts
-  solutionsBlogPosts.forEach(post => {
-    routes.push({
-      url: `${baseUrl}/solutions/blog/${post.slug}`,
-      lastModified: post.updatedAt,
-      changeFrequency: "monthly",
-      priority: 0.6,
-    });
-  });
-
-  // Add case studies
-  caseStudies.forEach(caseStudy => {
-    routes.push({
-      url: `${baseUrl}/solutions/case-studies/${caseStudy.slug}`,
-      lastModified: caseStudy.updatedAt,
-      changeFrequency: "monthly",
-      priority: 0.7,
     });
   });
 

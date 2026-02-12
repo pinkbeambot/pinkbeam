@@ -497,7 +497,7 @@ export interface WebhookProcessResult {
 
 // Webhook handler options
 export interface WebhookHandlerOptions {
-  verifySignature: boolean
+  skipVerification?: boolean // Optional - verification is ON by default
   maxRetries?: number
   retryDelayMs?: number
   timeoutMs?: number

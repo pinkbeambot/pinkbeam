@@ -1,8 +1,32 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
-import { sendStatusUpdateEmail } from '@/lib/email'
+import {
+  sendStatusUpdateEmail,
+  sendQuoteAcceptedNotification,
+  sendQuoteDeclinedNotification,
+} from '@/lib/email'
 import { createNotification } from '@/lib/notifications'
+import type { QuoteRequest } from '@prisma/client'
+import type { QuoteVariables } from '@/lib/email-templates'
+
+// Helper to convert Prisma QuoteRequest to QuoteVariables
+function toQuoteVariables(quote: QuoteRequest): QuoteVariables {
+  return {
+    id: quote.id,
+    fullName: quote.fullName,
+    email: quote.email,
+    company: quote.company,
+    projectType: quote.projectType,
+    services: quote.services,
+    budgetRange: quote.budgetRange,
+    timeline: quote.timeline,
+    description: quote.description,
+    leadScore: quote.leadScore,
+    leadQuality: quote.leadQuality as 'hot' | 'warm' | 'cold' | null | undefined,
+    status: quote.status,
+  }
+}
 
 // Valid status transitions: from → allowed destinations
 const ALLOWED_TRANSITIONS: Record<string, string[]> = {
@@ -118,10 +142,75 @@ export async function PUT(
         },
       })
 
-      // Send status update email
-      sendStatusUpdateEmail(quote, newStatus).catch((err) =>
-        console.error('Status update email failed:', err)
-      )
+      // Send status update email to client with structured error handling
+      sendStatusUpdateEmail(toQuoteVariables(quote), newStatus).catch(async (err) => {
+        console.error('[email-error] Quote status update email failed:', {
+          quoteId: id,
+          recipient: quote.email,
+          newStatus,
+          error: err instanceof Error ? err.message : String(err),
+          timestamp: new Date().toISOString(),
+        })
+        await prisma.activityLog.create({
+          data: {
+            action: 'email_failed',
+            entityType: 'QuoteRequest',
+            entityId: id,
+            metadata: {
+              emailType: 'status_update',
+              recipient: quote.email,
+              newStatus,
+              error: err instanceof Error ? err.message : String(err),
+            },
+          },
+        }).catch((logErr) => console.error('[activitylog] Failed to log email error:', logErr))
+      })
+
+      // Send admin notification for ACCEPTED quotes (triggers onboarding)
+      if (newStatus === 'ACCEPTED') {
+        sendQuoteAcceptedNotification(toQuoteVariables(quote)).catch(async (err) => {
+          console.error('[email-error] Quote accepted admin notification failed:', {
+            quoteId: id,
+            recipient: process.env.QUOTE_NOTIFY_EMAIL || 'team@pinkbeam.io',
+            error: err instanceof Error ? err.message : String(err),
+            timestamp: new Date().toISOString(),
+          })
+          await prisma.activityLog.create({
+            data: {
+              action: 'email_failed',
+              entityType: 'QuoteRequest',
+              entityId: id,
+              metadata: {
+                emailType: 'quote_accepted_admin',
+                error: err instanceof Error ? err.message : String(err),
+              },
+            },
+          }).catch((logErr) => console.error('[activitylog] Failed to log email error:', logErr))
+        })
+      }
+
+      // Send admin notification for DECLINED quotes (for tracking)
+      if (newStatus === 'DECLINED') {
+        sendQuoteDeclinedNotification(toQuoteVariables(quote)).catch(async (err) => {
+          console.error('[email-error] Quote declined admin notification failed:', {
+            quoteId: id,
+            recipient: process.env.QUOTE_NOTIFY_EMAIL || 'team@pinkbeam.io',
+            error: err instanceof Error ? err.message : String(err),
+            timestamp: new Date().toISOString(),
+          })
+          await prisma.activityLog.create({
+            data: {
+              action: 'email_failed',
+              entityType: 'QuoteRequest',
+              entityId: id,
+              metadata: {
+                emailType: 'quote_declined_admin',
+                error: err instanceof Error ? err.message : String(err),
+              },
+            },
+          }).catch((logErr) => console.error('[activitylog] Failed to log email error:', logErr))
+        })
+      }
 
       // Find the user by email to create notification
       const user = await prisma.user.findUnique({
@@ -166,7 +255,7 @@ export async function PUT(
               quoteEmail: existing.email,
               previousStatus: existing.status,
               newStatus,
-              link: `/dashboard/quotes`,
+              link: `/portal/projects`,
             },
           }).catch((err) => console.error('[notifications] Failed to create quote notification:', err))
         }

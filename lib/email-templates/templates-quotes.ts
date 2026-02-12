@@ -222,7 +222,7 @@ export function statusUpdateTemplate(
     ${EmailFooterMinimal()}
   `
 
-  const html = EmailLayout({ 
+  const html = EmailLayout({
     children: content,
     previewText: msg.heading,
   })
@@ -239,6 +239,135 @@ If you have any questions, just reply to this email — we're always happy to he
 
   return {
     subject: `${msg.heading} — Pink Beam`,
+    html,
+    text,
+  }
+}
+
+/** Admin notification when quote is ACCEPTED - triggers project onboarding */
+export function quoteAcceptedAdminTemplate(quote: QuoteVariables): { subject: string; html: string; text: string } {
+  const content = `
+    ${EmailHeader({ title: '🎉 Quote Accepted!', subtitle: 'Time to onboard the client' })}
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+      <tr>
+        <td style="padding: 28px;">
+          <p style="font-size: 15px; line-height: 1.6; margin: 0 0 24px 0; color: ${COLORS.text};" class="dark-text">
+            Great news! <strong>${quote.fullName}</strong> has been marked as ACCEPTED. Time to start the onboarding process.
+          </p>
+          ${EmailCardList({
+            items: [
+              { label: 'Client', value: quote.fullName, highlight: true },
+              { label: 'Email', value: quote.email },
+              ...(quote.company ? [{ label: 'Company', value: quote.company, highlight: false } as const] : []),
+              { label: 'Project Type', value: quote.projectType },
+              { label: 'Budget', value: quote.budgetRange },
+              { label: 'Timeline', value: quote.timeline },
+            ],
+            variant: 'filled',
+          })}
+          ${EmailCard({
+            children: `
+              <p style="margin: 0 0 12px 0; font-weight: 600; color: ${COLORS.primary};">Next Steps:</p>
+              <ol style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.8; color: ${COLORS.textLight};">
+                <li>Create project in dashboard</li>
+                <li>Set up client portal access</li>
+                <li>Schedule kickoff call</li>
+                <li>Send contract & onboarding docs</li>
+                <li>Assign project team</li>
+              </ol>
+            `,
+            variant: 'outlined',
+          })}
+          <p style="font-size: 14px; line-height: 1.6; margin: 24px 0 0 0; color: ${COLORS.textLight};" class="dark-text-secondary">
+            <strong>Services:</strong> ${quote.services.join(', ')}
+          </p>
+        </td>
+      </tr>
+    </table>
+    ${EmailFooterMinimal()}
+  `
+
+  const html = EmailLayout({
+    children: content,
+    previewText: `Quote accepted: ${quote.fullName}`,
+  })
+
+  const text = `🎉 Quote Accepted!
+
+Great news! ${quote.fullName} has been marked as ACCEPTED. Time to start the onboarding process.
+
+Client: ${quote.fullName}
+Email: ${quote.email}
+${quote.company ? `Company: ${quote.company}\n` : ''}Project Type: ${quote.projectType}
+Budget: ${quote.budgetRange}
+Timeline: ${quote.timeline}
+Services: ${quote.services.join(', ')}
+
+Next Steps:
+1. Create project in dashboard
+2. Set up client portal access
+3. Schedule kickoff call
+4. Send contract & onboarding docs
+5. Assign project team
+
+Quote ID: ${quote.id}`
+
+  return {
+    subject: `🎉 Quote Accepted: ${quote.fullName}${quote.company ? ` — ${quote.company}` : ''}`,
+    html,
+    text,
+  }
+}
+
+/** Admin notification when quote is DECLINED - for tracking and follow-up */
+export function quoteDeclinedAdminTemplate(quote: QuoteVariables): { subject: string; html: string; text: string } {
+  const content = `
+    ${EmailHeaderCompact({ title: 'Quote Declined' })}
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+      <tr>
+        <td style="padding: 0 28px 28px 28px;">
+          <p style="font-size: 15px; line-height: 1.6; margin: 0 0 24px 0; color: ${COLORS.text};" class="dark-text">
+            The quote for <strong>${quote.fullName}</strong> has been marked as DECLINED.
+          </p>
+          ${EmailCardList({
+            items: [
+              { label: 'Client', value: quote.fullName },
+              { label: 'Email', value: quote.email },
+              ...(quote.company ? [{ label: 'Company', value: quote.company, highlight: false } as const] : []),
+              { label: 'Project Type', value: quote.projectType },
+              { label: 'Budget', value: quote.budgetRange },
+            ],
+            variant: 'outlined',
+          })}
+          <p style="font-size: 14px; line-height: 1.6; margin: 24px 0 0 0; color: ${COLORS.textLight};" class="dark-text-secondary">
+            Consider following up in 3-6 months to see if their needs have changed, or add them to the newsletter list.
+          </p>
+        </td>
+      </tr>
+    </table>
+    ${EmailFooterMinimal()}
+  `
+
+  const html = EmailLayout({
+    children: content,
+    previewText: `Quote declined: ${quote.fullName}`,
+  })
+
+  const text = `Quote Declined
+
+The quote for ${quote.fullName} has been marked as DECLINED.
+
+Client: ${quote.fullName}
+Email: ${quote.email}
+${quote.company ? `Company: ${quote.company}\n` : ''}Project Type: ${quote.projectType}
+Budget: ${quote.budgetRange}
+
+Consider following up in 3-6 months to see if their needs have changed, or add them to the newsletter list.
+
+Quote ID: ${quote.id}`
+
+  return {
+    subject: `Quote Declined: ${quote.fullName}${quote.company ? ` — ${quote.company}` : ''}`,
     html,
     text,
   }

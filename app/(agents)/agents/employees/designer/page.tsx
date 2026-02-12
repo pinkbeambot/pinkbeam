@@ -7,14 +7,14 @@ import {
 } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
-  title: "LUMEN — AI Visual Designer | Pink Beam",
+  title: "LUMEN — AI Visual Designer — Pink Beam",
   description:
     "Hire LUMEN, your AI Visual Designer. Creates marketing assets, brand collateral, social graphics, and presentations for $347/month.",
   alternates: {
     canonical: "https://pinkbeam.io/agents/employees/designer",
   },
   openGraph: {
-    title: "LUMEN — AI Visual Designer | Pink Beam",
+    title: "LUMEN — AI Visual Designer — Pink Beam",
     description:
       "Hire LUMEN, your AI Visual Designer. Creates marketing assets, brand collateral, and social graphics.",
     url: "https://pinkbeam.io/agents/employees/designer",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "LUMEN — AI Visual Designer | Pink Beam",
+    title: "LUMEN — AI Visual Designer — Pink Beam",
     description:
       "Hire LUMEN, your AI Visual Designer. Creates marketing assets and social graphics.",
     images: ["/api/og?type=employee&employee=LUMEN&subtitle=AI+Visual+Designer"],
@@ -52,7 +52,7 @@ export default function DesignerPage() {
         ]}
       />
       <WebPageSchema
-        title="LUMEN — AI Visual Designer | Pink Beam"
+        title="LUMEN — AI Visual Designer — Pink Beam"
         description="Hire LUMEN, your AI Visual Designer. Creates marketing assets and social graphics."
         url="https://pinkbeam.io/agents/employees/designer"
       />

@@ -7,14 +7,14 @@ import {
 } from "@/components/seo/StructuredData";
 
 export const metadata: Metadata = {
-  title: "Sarah — AI Market Intelligence Analyst | Pink Beam",
+  title: "Sarah — AI Market Intelligence Analyst — Pink Beam",
   description:
     "Hire Sarah, your AI Market Intelligence Analyst. Monitors competitors, tracks funding rounds, and delivers weekly intelligence briefs for $397/month.",
   alternates: {
     canonical: "https://pinkbeam.io/agents/employees/researcher",
   },
   openGraph: {
-    title: "Sarah — AI Market Intelligence Analyst | Pink Beam",
+    title: "Sarah — AI Market Intelligence Analyst — Pink Beam",
     description:
       "Hire Sarah, your AI Market Intelligence Analyst. Monitors competitors, tracks funding rounds, and delivers weekly intelligence briefs.",
     url: "https://pinkbeam.io/agents/employees/researcher",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sarah — AI Market Intelligence Analyst | Pink Beam",
+    title: "Sarah — AI Market Intelligence Analyst — Pink Beam",
     description:
       "Hire Sarah, your AI Market Intelligence Analyst. Monitors competitors and delivers weekly intelligence briefs.",
     images: ["/api/og?type=employee&employee=Sarah&subtitle=AI+Market+Intelligence+Analyst"],
@@ -52,7 +52,7 @@ export default function ResearcherPage() {
         ]}
       />
       <WebPageSchema
-        title="Sarah — AI Market Intelligence Analyst | Pink Beam"
+        title="Sarah — AI Market Intelligence Analyst — Pink Beam"
         description="Hire Sarah, your AI Market Intelligence Analyst. Monitors competitors and delivers weekly intelligence briefs."
         url="https://pinkbeam.io/agents/employees/researcher"
       />

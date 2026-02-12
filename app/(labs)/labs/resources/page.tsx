@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = createMetadata({
   ...serviceMetadata.labs,
-  title: "Labs Resources — Templates, Guides & Tools | Pink Beam Labs",
+  title: "Labs Resources — Templates, Guides & Tools — Pink Beam Labs",
   description: "Download free resources for software development. Templates, checklists, and guides for MVP development, technical architecture, and code quality.",
   path: "/labs/resources",
 });

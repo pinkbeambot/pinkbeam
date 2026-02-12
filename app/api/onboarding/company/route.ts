@@ -1,9 +1,10 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { withAuth } from '@/lib/auth/apiMiddleware'
 import { prisma } from '@/lib/prisma'
 import { onboardingCompanySchema } from '@/lib/validation'
 
 // POST /api/onboarding/company - Save company details
-export async function POST(request: Request) {
+export const POST = withAuth(async (request: NextRequest, { auth }) => {
   try {
     const body = await request.json()
     const result = onboardingCompanySchema.safeParse(body)
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const userId = 'user-1' // TODO: Get from auth session
+    const userId = auth.userId
     const data = result.data
 
     await prisma.user.update({
@@ -39,4 +40,4 @@ export async function POST(request: Request) {
       { status: 500 }
     )
   }
-}
+})

@@ -87,7 +87,7 @@ const employees = [
 const solutionsServices = [
   { id: "ai-strategy", name: "AI Strategy", href: "/solutions/services/ai-strategy" },
   { id: "digital-transformation", name: "Digital Transformation", href: "/solutions/services/digital-transformation" },
-  { id: "technology-advisory", name: "Technology Advisory", href: "/solutions/services/technology-advisory" },
+  { id: "technology-advisory", name: "Technology Advisory", href: "/solutions/services/technology-architecture" },
   { id: "growth-strategy", name: "Growth Strategy", href: "/solutions/services/growth-strategy" },
 ];
 
@@ -140,7 +140,7 @@ function Logo({ className }: { className?: string }) {
         <span className="text-white font-display font-bold text-sm">PB</span>
         <div className="absolute inset-0 rounded-lg bg-gradient-beam blur-md opacity-50" />
       </div>
-      <span className="font-display font-bold text-xl tracking-tight">
+      <span className="font-display font-bold text-xl tracking-tight whitespace-nowrap">
         <span className="text-gradient-beam">Pink</span>
         <span className="text-foreground"> Beam</span>
       </span>
@@ -314,9 +314,9 @@ function UserDropdown({ user, onSignOut }: { user: SupabaseUser; onSignOut: () =
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuItem asChild>
-          <Link href="/agents/dashboard">
+          <Link href="/portal">
             <User className="mr-2 h-4 w-4" />
-            Dashboard
+            Portal
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -349,7 +349,7 @@ function MobileNav({
           <span className="sr-only">Open menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-full sm:w-80">
+      <SheetContent side="right" className="w-[min(100%,320px)] sm:w-80">
         <SheetHeader>
           <SheetTitle>
             <div className="flex items-center gap-2">

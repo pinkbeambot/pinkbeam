@@ -31,8 +31,8 @@ const hero = {
     href: "/contact",
   },
   secondaryCta: {
-    text: "View Case Studies",
-    href: "/labs/case-studies",
+    text: "View Pricing",
+    href: "/labs/pricing",
   },
 };
 

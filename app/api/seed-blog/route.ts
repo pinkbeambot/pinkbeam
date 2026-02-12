@@ -141,13 +141,14 @@ export async function POST() {
 
     for (const post of samplePosts) {
       const existing = await prisma.blogPost.findUnique({
-        where: { slug: post.slug },
+        where: { slug_service: { slug: post.slug, service: 'WEB' } },
       })
 
       if (!existing) {
         await prisma.blogPost.create({
           data: {
             ...post,
+            service: 'WEB',
             publishedAt: new Date(),
           },
         })

@@ -280,7 +280,7 @@ export function AIStrategyClient() {
           </>
         }
         description="Cut through the AI hype. We help you identify real opportunities, build practical roadmaps, and implement AI solutions that deliver measurable business results."
-        primaryCta={{ text: "Book Discovery Call", href: "/solutions/contact" }}
+        primaryCta={{ text: "Book Discovery Call", href: "/contact" }}
         secondaryCta={{ text: "View AI Readiness Guide", href: "#readiness" }}
       />
 
@@ -512,7 +512,7 @@ export function AIStrategyClient() {
         timeline={timeline}
         priceRange="$20,000"
         ctaText="Book AI Strategy Session"
-        ctaHref="/solutions/contact"
+        ctaHref="/contact"
       />
 
       {/* FAQ */}
@@ -529,7 +529,7 @@ export function AIStrategyClient() {
         title="Ready to Unlock AI's Potential?"
         description="Let's explore how AI can transform your business. Schedule a free AI readiness assessment and discover your highest-impact opportunities."
         buttonText="Schedule AI Assessment"
-        buttonHref="/solutions/contact"
+        buttonHref="/contact"
       />
     </main>
   );

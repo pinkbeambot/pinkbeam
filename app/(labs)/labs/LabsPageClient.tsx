@@ -7,6 +7,7 @@ import { LabsPricingPreview } from "@/components/sections/LabsPricingPreview";
 import { LabsProcessTimeline } from "@/components/sections/LabsProcessTimeline";
 import { LabsTechnologyStack } from "@/components/sections/LabsTechnologyStack";
 import { LabsFAQSection } from "@/components/sections/LabsFAQSection";
+import { ExploreServices } from "@/components/sections/ExploreServices";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -67,6 +68,7 @@ export function LabsPageClient() {
       <LabsPricingPreview />
       <LabsProcessTimeline />
       <LabsTechnologyStack />
+      <ExploreServices currentService="labs" />
       <LabsFAQSection />
       <LabsCTASection />
     </main>

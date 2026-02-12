@@ -3,6 +3,26 @@ import { prisma } from '@/lib/prisma'
 import { sendQuoteNotification, sendClientAutoResponse } from '@/lib/email'
 import { calculateLeadScore } from '@/lib/lead-scoring'
 import { quoteSchema } from '@/lib/validation'
+import type { QuoteRequest } from '@prisma/client'
+import type { QuoteVariables } from '@/lib/email-templates'
+
+// Helper to convert Prisma QuoteRequest to QuoteVariables
+function toQuoteVariables(quote: QuoteRequest): QuoteVariables {
+  return {
+    id: quote.id,
+    fullName: quote.fullName,
+    email: quote.email,
+    company: quote.company,
+    projectType: quote.projectType,
+    services: quote.services,
+    budgetRange: quote.budgetRange,
+    timeline: quote.timeline,
+    description: quote.description,
+    leadScore: quote.leadScore,
+    leadQuality: quote.leadQuality as 'hot' | 'warm' | 'cold' | null | undefined,
+    status: quote.status,
+  }
+}
 
 // GET /api/quotes - List quote requests
 export async function GET(request: Request) {
@@ -66,13 +86,48 @@ export async function POST(request: Request) {
       },
     })
 
-    // Fire-and-forget email notifications
-    sendQuoteNotification(quote).catch((err) =>
-      console.error('Email notification failed:', err)
-    )
-    sendClientAutoResponse(quote).catch((err) =>
-      console.error('Client auto-response failed:', err)
-    )
+    // Fire-and-forget email notifications with structured error handling
+    sendQuoteNotification(toQuoteVariables(quote)).catch(async (err) => {
+      console.error('[email-error] Quote admin notification failed:', {
+        quoteId: quote.id,
+        recipient: process.env.QUOTE_NOTIFY_EMAIL || 'team@pinkbeam.ai',
+        error: err instanceof Error ? err.message : String(err),
+        timestamp: new Date().toISOString(),
+      })
+      await prisma.activityLog.create({
+        data: {
+          action: 'email_failed',
+          entityType: 'QuoteRequest',
+          entityId: quote.id,
+          metadata: {
+            emailType: 'admin_notification',
+            recipient: process.env.QUOTE_NOTIFY_EMAIL || 'team@pinkbeam.ai',
+            error: err instanceof Error ? err.message : String(err),
+          },
+        },
+      }).catch((logErr) => console.error('[activitylog] Failed to log email error:', logErr))
+    })
+
+    sendClientAutoResponse(toQuoteVariables(quote)).catch(async (err) => {
+      console.error('[email-error] Quote client auto-response failed:', {
+        quoteId: quote.id,
+        recipient: quote.email,
+        error: err instanceof Error ? err.message : String(err),
+        timestamp: new Date().toISOString(),
+      })
+      await prisma.activityLog.create({
+        data: {
+          action: 'email_failed',
+          entityType: 'QuoteRequest',
+          entityId: quote.id,
+          metadata: {
+            emailType: 'client_auto_response',
+            recipient: quote.email,
+            error: err instanceof Error ? err.message : String(err),
+          },
+        },
+      }).catch((logErr) => console.error('[activitylog] Failed to log email error:', logErr))
+    })
 
     return NextResponse.json({ success: true, data: quote }, { status: 201 })
   } catch (error) {

@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 import { LabsPricingHero } from "@/components/sections/LabsPricingHero";
 import { LabsPricingModels } from "@/components/sections/LabsPricingModels";
 import { LabsProjectRanges } from "@/components/sections/LabsProjectRanges";
+import { LabsFeatureComparison } from "@/components/sections/LabsFeatureComparison";
 import { LabsROICalculator } from "@/components/sections/LabsROICalculator";
 import { LabsPricingFAQ } from "@/components/sections/LabsPricingFAQ";
 
@@ -56,6 +57,7 @@ export function LabsPricingPageClient() {
       <LabsPricingModels />
       <LabsProjectRanges />
       <LabsROICalculator />
+      <LabsFeatureComparison />
       <LabsPricingFAQ />
       <PricingCTASection />
     </main>

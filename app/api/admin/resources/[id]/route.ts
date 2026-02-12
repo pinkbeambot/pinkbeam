@@ -86,7 +86,7 @@ export async function PUT(
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, error: 'Invalid data provided', details: error.errors },
+        { success: false, error: 'Invalid data provided', details: error.issues },
         { status: 400 }
       );
     }

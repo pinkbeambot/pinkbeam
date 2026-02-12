@@ -15,9 +15,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowRight, ArrowLeft, Check, Send, Save } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, Send, Save, FileText } from "lucide-react";
 import { FadeIn } from "@/components/animations";
-import { WebHero } from "../components/WebHero";
+import { CompactHero } from "@/components/sections/CompactHero";
 import {
   getErrorMessages,
   quoteSchema,
@@ -244,7 +244,13 @@ export function QuotePageClient() {
   if (isSuccess) {
     return (
       <div className="min-h-screen">
-        <WebHero />
+        <CompactHero
+          icon={Check}
+          title="Quote Request Submitted"
+          highlightText="Submitted"
+          subtitle="Thank you for your interest. We'll review your project details and get back to you within 24 hours."
+          accentColor="violet-500"
+        />
         <section className="py-20 lg:py-32">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <FadeIn className="max-w-2xl mx-auto text-center">
@@ -269,8 +275,14 @@ export function QuotePageClient() {
 
   return (
     <div className="min-h-screen">
-      <WebHero />
-      
+      <CompactHero
+        icon={FileText}
+        title="Request a Quote"
+        highlightText="Quote"
+        subtitle="Tell us about your project and we'll get back to you within 24 hours with a custom quote."
+        accentColor="violet-500"
+      />
+
       <section className="py-20 lg:py-32 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn className="max-w-2xl mx-auto">

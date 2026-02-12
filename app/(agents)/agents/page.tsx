@@ -10,6 +10,7 @@ import {
   FAQ,
   FinalCTA,
 } from "@/components/agents/sections";
+import { ExploreServices } from "@/components/sections/ExploreServices";
 
 export const metadata: Metadata = createMetadata({
   ...serviceMetadata.agents,
@@ -54,6 +55,7 @@ export default function HomePage() {
         <HowItWorks />
         <PricingSection />
         <Testimonials title="Why We Built Pink Beam Agents" />
+        <ExploreServices currentService="agents" />
         <FAQ />
         <FinalCTA />
       </main>

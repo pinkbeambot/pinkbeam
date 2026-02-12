@@ -1,0 +1,60 @@
+import { Pool } from 'pg';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
+import dotenv from 'dotenv';
+
+dotenv.config({ path: resolve(__dirname, '../.env.local'), override: true });
+
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  console.error('❌ DATABASE_URL not found in environment');
+  process.exit(1);
+}
+
+async function main() {
+  const pool = new Pool({ connectionString });
+
+  try {
+    // Check current column types in plans table
+    const plansBefore = await pool.query(`
+      SELECT column_name, data_type, udt_name
+      FROM information_schema.columns
+      WHERE table_name = 'plans'
+      AND column_name IN ('serviceType', 'tier')
+      ORDER BY column_name;
+    `);
+
+    console.log('Current column types in plans table:');
+    console.table(plansBefore.rows);
+
+    // Run the fix script
+    const sql = readFileSync(
+      resolve(__dirname, 'fix-all-enum-columns.sql'),
+      'utf-8'
+    );
+
+    console.log('\nFixing plans table columns...');
+    await pool.query(sql);
+    console.log('✅ Plans table fixed successfully');
+
+    // Check updated column types
+    const plansAfter = await pool.query(`
+      SELECT column_name, data_type, udt_name
+      FROM information_schema.columns
+      WHERE table_name = 'plans'
+      AND column_name IN ('serviceType', 'tier')
+      ORDER BY column_name;
+    `);
+
+    console.log('\nUpdated column types:');
+    console.table(plansAfter.rows);
+  } catch (error) {
+    console.error('❌ Error fixing enum columns:', error);
+    throw error;
+  } finally {
+    await pool.end();
+  }
+}
+
+main();

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { Prisma } from '@prisma/client'
+import { Prisma, InvoiceStatus } from '@prisma/client'
 import { z } from 'zod'
 
 // GET /api/invoices/[id] - Get invoice detail
@@ -35,8 +35,8 @@ export async function GET(
       success: true,
       data: {
         ...invoice,
-        project: { id: invoice.project.id, title: invoice.project.title },
-        client: invoice.project.client,
+        project: invoice.project ? { id: invoice.project.id, title: invoice.project.title } : null,
+        client: invoice.project?.client || null,
       },
     })
   } catch (error) {
@@ -51,8 +51,8 @@ export async function GET(
 // PUT /api/invoices/[id] - Update invoice
 const updateInvoiceSchema = z.object({
   status: z.string().optional(),
-  amount: z.number().min(0).optional(),
-  description: z.string().optional(),
+  total: z.number().min(0).optional(),
+  notes: z.string().optional(),
   dueDate: z.string().datetime().optional(),
   paidAt: z.string().datetime().optional().nullable(),
 })
@@ -74,11 +74,11 @@ export async function PUT(
     }
 
     const updateData: Prisma.InvoiceUpdateInput = {
-      amount: result.data.amount,
-      description: result.data.description,
+      total: result.data.total,
+      notes: result.data.notes,
       paidAt: result.data.paidAt ? new Date(result.data.paidAt) : result.data.paidAt,
-      dueAt: result.data.dueDate ? new Date(result.data.dueDate) : undefined,
-      status: result.data.status ? result.data.status.toUpperCase() : undefined,
+      dueDate: result.data.dueDate ? new Date(result.data.dueDate) : undefined,
+      status: result.data.status ? (result.data.status.toUpperCase() as InvoiceStatus) : undefined,
     }
 
     const invoice = await prisma.invoice.update({
@@ -99,8 +99,8 @@ export async function PUT(
       success: true,
       data: {
         ...invoice,
-        project: { id: invoice.project.id, title: invoice.project.title },
-        client: invoice.project.client,
+        project: invoice.project ? { id: invoice.project.id, title: invoice.project.title } : null,
+        client: invoice.project?.client || null,
       },
     })
   } catch (error) {

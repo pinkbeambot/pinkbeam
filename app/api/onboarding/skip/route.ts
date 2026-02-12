@@ -1,10 +1,11 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { withAuth } from '@/lib/auth/apiMiddleware'
 import { prisma } from '@/lib/prisma'
 
 // POST /api/onboarding/skip - Skip onboarding (mark as completed)
-export async function POST() {
+export const POST = withAuth(async (request: NextRequest, { auth }) => {
   try {
-    const userId = 'user-1' // TODO: Get from auth session
+    const userId = auth.userId
 
     await prisma.user.update({
       where: { id: userId },
@@ -36,4 +37,4 @@ export async function POST() {
       { status: 500 }
     )
   }
-}
+})

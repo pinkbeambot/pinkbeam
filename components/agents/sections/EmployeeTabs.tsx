@@ -101,7 +101,7 @@ const employeeTabs = [
 
 export function EmployeeTabs() {
   return (
-    <section className="py-20 md:py-32 bg-surface-sunken">
+    <section id="employees" className="py-20 md:py-32 bg-surface-sunken">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <FadeIn className="text-center mb-12">
