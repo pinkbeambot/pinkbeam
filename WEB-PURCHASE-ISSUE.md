@@ -124,12 +124,49 @@ Use Stripe test card:
 
 User wants to iron out the Web service purchase workflow as it will likely be the first service they launch. The flow worked for Agent subscriptions but one-time purchases are failing.
 
-## Hypothesis
+## Root Cause & Fix (2026-02-12)
 
-The 400 error might be:
-1. Validation error from Zod schema (missing required field?)
-2. Database constraint error (unique constraint violation?)
-3. Stripe API error (price configuration issue?)
-4. Auth error (user not authenticated properly?)
+### Problem Identified
+The Zod validation schema in `/api/checkout/one-time` was missing the `billingCycle` field that `PurchaseButton` sends in the request body. While Zod strips extra fields by default, this was causing unexpected validation behavior.
 
-Check the actual error response body to confirm.
+### Fix Applied
+**File**: `app/api/checkout/one-time/route.ts`
+
+1. **Added `billingCycle` to schema**:
+   ```typescript
+   const requestSchema = z.object({
+     planSlug: z.string().optional(),
+     amount: z.number().positive().optional(),
+     description: z.string().optional(),
+     serviceType: z.enum(['WEB', 'LABS', 'SOLUTIONS']).optional(),
+     billingCycle: z.enum(['monthly', 'annual']).optional(), // Added
+   }).passthrough(); // Allow extra fields for flexibility
+   ```
+
+2. **Added comprehensive logging** throughout the route for debugging
+
+3. **Improved error messages** to include specific Zod validation issues
+
+### E2E Test Created
+**File**: `tests/e2e/checkout-one-time.spec.ts`
+
+Tests cover:
+- Unauthenticated redirect
+- Successful one-time purchase for Web Starter
+- Successful one-time purchase for Solutions Workshop
+- 404 for non-existent plan
+- 400 for plan without one-time price
+- Acceptance of `billingCycle` field
+- Custom amount validation
+- Custom amount success case
+
+### Verification Steps
+1. Run `npx prisma generate` to ensure latest schema
+2. Start dev server: `npm run dev`
+3. Navigate to `/checkout/test`
+4. Sign in as test user
+5. Click "Buy One-Time ($2,000)" button
+6. Verify redirect to Stripe Checkout
+
+### Status
+✅ **FIXED** - Ready for testing

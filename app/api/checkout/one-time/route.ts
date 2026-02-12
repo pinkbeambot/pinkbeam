@@ -13,10 +13,13 @@ const requestSchema = z.object({
   amount: z.number().positive().optional(),
   description: z.string().optional(), // Optional when planSlug is provided
   serviceType: z.enum(['WEB', 'LABS', 'SOLUTIONS']).optional(), // Optional when planSlug is provided
-});
+  billingCycle: z.enum(['monthly', 'annual']).optional(), // Passed by PurchaseButton but not used for one-time
+}).passthrough(); // Allow extra fields for flexibility
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('[One-Time Checkout] Request received');
+    
     // 1. Verify authentication
     const supabase = await createClient();
     const {
@@ -24,12 +27,17 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (!user) {
+      console.log('[One-Time Checkout] Unauthorized - no user');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    console.log('[One-Time Checkout] User authenticated:', user.id);
 
     // 2. Parse and validate request
     const body = await request.json();
+    console.log('[One-Time Checkout] Request body:', JSON.stringify(body));
+    
     const parsed = requestSchema.parse(body);
+    console.log('[One-Time Checkout] Parsed data:', JSON.stringify(parsed));
 
     let priceAmount: number;
     let priceId: string | null = null;
@@ -39,16 +47,28 @@ export async function POST(request: NextRequest) {
 
     // 3. Determine price (either from plan or custom amount)
     if (parsed.planSlug) {
+      console.log('[One-Time Checkout] Looking up plan:', parsed.planSlug);
       // Use predefined plan
       const plan = await prisma.plan.findUnique({
         where: { slug: parsed.planSlug, active: true },
       });
+      console.log('[One-Time Checkout] Plan lookup result:', plan ? 'found' : 'not found');
 
       if (!plan) {
+        console.log('[One-Time Checkout] Plan not found:', parsed.planSlug);
         return NextResponse.json({ error: 'Plan not found' }, { status: 404 });
       }
 
+      console.log('[One-Time Checkout] Plan data:', JSON.stringify({
+        id: plan.id,
+        slug: plan.slug,
+        priceOneTime: plan.priceOneTime,
+        stripePriceIdOneTime: plan.stripePriceIdOneTime,
+        serviceType: plan.serviceType,
+      }));
+
       if (!plan.priceOneTime) {
+        console.log('[One-Time Checkout] Plan has no priceOneTime');
         return NextResponse.json({ error: 'Plan does not support one-time purchases' }, { status: 400 });
       }
 
@@ -57,6 +77,7 @@ export async function POST(request: NextRequest) {
       planId = plan.id;
       description = parsed.description || plan.description || plan.name;
       serviceType = plan.serviceType as 'WEB' | 'LABS' | 'SOLUTIONS';
+      console.log('[One-Time Checkout] Using plan pricing:', { priceAmount, priceId, planId, serviceType });
     } else if (parsed.amount) {
       // Use custom amount (for variable pricing)
       if (!parsed.description || !parsed.serviceType) {
@@ -157,22 +178,26 @@ export async function POST(request: NextRequest) {
       url: session.url,
     });
   } catch (error) {
-    console.error('One-time checkout creation failed:', error);
+    console.error('[One-Time Checkout] Error:', error);
 
     if (error instanceof z.ZodError) {
+      const issues = error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join(', ');
+      console.error('[One-Time Checkout] Zod validation error:', issues);
       return NextResponse.json(
-        { error: 'Invalid request data', details: error.issues },
+        { error: `Invalid request data: ${issues}`, details: error.issues },
         { status: 400 }
       );
     }
 
     if (error instanceof Stripe.errors.StripeError) {
+      console.error('[One-Time Checkout] Stripe error:', error.message, error.code);
       return NextResponse.json(
         { error: error.message },
         { status: error.statusCode || 500 }
       );
     }
 
+    console.error('[One-Time Checkout] Unknown error type:', typeof error, error);
     return NextResponse.json(
       { error: 'Failed to create checkout session' },
       { status: 500 }
