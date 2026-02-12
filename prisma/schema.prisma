@@ -874,11 +874,13 @@ model Plan {
   tier                  PlanTier
   priceMonthly          Decimal         @db.Decimal(10, 2)
   priceAnnual           Decimal         @db.Decimal(10, 2)
+  priceOneTime          Decimal?        @db.Decimal(10, 2)
   features              Json            // Feature list
   limits                Json            // Usage limits (interactions/month, projects, etc.)
   stripeProductId       String?         @unique
   stripePriceIdMonthly  String?         @unique
   stripePriceIdAnnual   String?         @unique
+  stripePriceIdOneTime  String?         @unique
   active                Boolean         @default(true)
   displayOrder          Int             @default(0)
   description           String?

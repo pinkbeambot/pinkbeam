@@ -104,8 +104,9 @@ async function syncProducts() {
         const slug = `${serviceType.toLowerCase()}-${productSlug}-${tierName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
         // Determine pricing
-        const priceMonthly = monthlyPrice?.unit_amount || oneTimePrice?.unit_amount || 0;
-        const priceAnnual = annualPrice?.unit_amount || (priceMonthly * 12 * 0.9); // 10% annual discount
+        const priceMonthly = monthlyPrice?.unit_amount || 0;
+        const priceAnnual = annualPrice?.unit_amount || (priceMonthly > 0 ? priceMonthly * 12 * 0.9 : 0); // 10% annual discount
+        const priceOneTime = oneTimePrice?.unit_amount || null;
 
         // Build features and limits based on service type and tier
         const features = buildFeatures(serviceType, tier, product);
@@ -113,7 +114,11 @@ async function syncProducts() {
 
         console.log(`   ⚙️  Creating/updating Plan: ${slug}`);
         console.log(`      Service: ${serviceType}, Tier: ${tier}`);
-        console.log(`      Monthly: $${(priceMonthly / 100).toFixed(2)}, Annual: $${(priceAnnual / 100).toFixed(2)}`);
+        if (priceOneTime) {
+          console.log(`      One-Time: $${(priceOneTime / 100).toFixed(2)}`);
+        } else {
+          console.log(`      Monthly: $${(priceMonthly / 100).toFixed(2)}, Annual: $${(priceAnnual / 100).toFixed(2)}`);
+        }
 
         await prisma.plan.upsert({
           where: { slug },
@@ -124,12 +129,14 @@ async function syncProducts() {
             tier,
             priceMonthly: priceMonthly / 100,
             priceAnnual: priceAnnual / 100,
+            priceOneTime: priceOneTime ? priceOneTime / 100 : null,
             features,
             limits,
             // Don't set stripeProductId to avoid unique constraint issues with multi-tier products
             stripeProductId: null,
-            stripePriceIdMonthly: monthlyPrice?.id || oneTimePrice?.id || null,
+            stripePriceIdMonthly: monthlyPrice?.id || null,
             stripePriceIdAnnual: annualPrice?.id || null,
+            stripePriceIdOneTime: oneTimePrice?.id || null,
             active: true,
             description: product.description || null,
           },
@@ -137,8 +144,10 @@ async function syncProducts() {
             name: `${product.name} - ${tierName}`,
             priceMonthly: priceMonthly / 100,
             priceAnnual: priceAnnual / 100,
-            stripePriceIdMonthly: monthlyPrice?.id || oneTimePrice?.id || null,
+            priceOneTime: priceOneTime ? priceOneTime / 100 : null,
+            stripePriceIdMonthly: monthlyPrice?.id || null,
             stripePriceIdAnnual: annualPrice?.id || null,
+            stripePriceIdOneTime: oneTimePrice?.id || null,
             description: product.description || null,
           },
         });
