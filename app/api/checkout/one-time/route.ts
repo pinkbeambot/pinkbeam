@@ -11,8 +11,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 const requestSchema = z.object({
   planSlug: z.string().optional(),
   amount: z.number().positive().optional(),
-  description: z.string(),
-  serviceType: z.enum(['WEB', 'LABS', 'SOLUTIONS']),
+  description: z.string().optional(), // Optional when planSlug is provided
+  serviceType: z.enum(['WEB', 'LABS', 'SOLUTIONS']).optional(), // Optional when planSlug is provided
 });
 
 export async function POST(request: NextRequest) {
@@ -29,29 +29,45 @@ export async function POST(request: NextRequest) {
 
     // 2. Parse and validate request
     const body = await request.json();
-    const { planSlug, amount, description, serviceType } = requestSchema.parse(body);
+    const parsed = requestSchema.parse(body);
 
     let priceAmount: number;
     let priceId: string | null = null;
     let planId: string | null = null;
+    let description: string;
+    let serviceType: 'WEB' | 'LABS' | 'SOLUTIONS';
 
     // 3. Determine price (either from plan or custom amount)
-    if (planSlug) {
+    if (parsed.planSlug) {
       // Use predefined plan
       const plan = await prisma.plan.findUnique({
-        where: { slug: planSlug, active: true },
+        where: { slug: parsed.planSlug, active: true },
       });
 
       if (!plan) {
         return NextResponse.json({ error: 'Plan not found' }, { status: 404 });
       }
 
-      priceAmount = Math.round(Number(plan.priceMonthly) * 100); // Convert to cents
-      priceId = plan.stripePriceIdMonthly;
+      if (!plan.priceOneTime) {
+        return NextResponse.json({ error: 'Plan does not support one-time purchases' }, { status: 400 });
+      }
+
+      priceAmount = Math.round(Number(plan.priceOneTime) * 100); // Convert to cents
+      priceId = plan.stripePriceIdOneTime;
       planId = plan.id;
-    } else if (amount) {
+      description = parsed.description || plan.description || plan.name;
+      serviceType = plan.serviceType as 'WEB' | 'LABS' | 'SOLUTIONS';
+    } else if (parsed.amount) {
       // Use custom amount (for variable pricing)
-      priceAmount = Math.round(amount * 100); // Convert to cents
+      if (!parsed.description || !parsed.serviceType) {
+        return NextResponse.json(
+          { error: 'description and serviceType are required when using custom amount' },
+          { status: 400 }
+        );
+      }
+      priceAmount = Math.round(parsed.amount * 100); // Convert to cents
+      description = parsed.description;
+      serviceType = parsed.serviceType;
     } else {
       return NextResponse.json(
         { error: 'Either planSlug or amount must be provided' },
